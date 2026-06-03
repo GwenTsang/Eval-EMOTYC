@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+.venv-gpu/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Outputs temporaires
+results_normalized/
+*.html
+
+# Modèles HuggingFace en cache
+.cache/
+
+# Symlinks et modèles ONNX
+model_onnx/
+
+# Fichiers générés par les inférences
+results/**/emotyc_predictions_output.xlsx
+results/**/emotyc_predictions.jsonl
+results/**/command.txt
+results/**/rerun_metadata.json
+*.html
+

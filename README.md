@@ -38,7 +38,7 @@ Ce dépôt a été conçu pour évaluer les performances du modèle **[EMOTYC](h
 
 ## 1.1 L'Unité d'annotation
 
-Le schéma d'annotation utilisé est celui proposé par Etienne et Battistelli ([2021](https://hal.science/hal-03263194v1/document)) et développé dans Etienne ([2023](https://bdr.parisnanterre.fr/theses/internet/2023/2023PA100047/2023PA100047.pdf)). Il modélise l'expression émotionnelle dans les textes à travers la notion d'*événement émotionnel*. L'unité d'annotation est la `SitEmo` (pour "Situation Émotionnelle"). Nous représentons chaque SitEmo comme un triplet :
+Le schéma d'annotation utilisé est celui proposé par Etienne et Battistelli ([2021](https://hal.science/hal-03263194v1/document)) et développé dans Etienne ([2023](https://bdr.parisnanterre.fr/theses/internet/2023/2023PA100047/2023PA100047.pdf)). Il modélise l'expression émotionnelle dans les textes à travers un triplet :
 
 <p align="center">
   <code>SitEmo = (Span ; Catégorie émotionnelle ; Mode d'expression)</code>
@@ -232,32 +232,6 @@ Le script [`orchestrate_emotyc_folder.py`](orchestrate_emotyc_folder.py) (avec l
 
 Performances détaillées par label :
 
-*(Les illustrations SVG de cette section ont été retirées)*
-
-
-
-### 4.4 CyberAggAdo — contexte + seuil modes 0.06
-
-**Configuration** : template BCA + contexte + seuil 0.06 pour les 4 labels de mode (seuil 0.5 pour les autres).
-
-*(Les illustrations SVG de cette section ont été retirées)*
-
-
-### 4.5 TTK — contexte + seuil modes 0.06
-
-**Configuration** : template BCA + contexte + seuil 0.06 pour les 4 labels de mode.
-
-*(Les illustrations SVG de cette section ont été retirées)*
-
-### 4.6 CyberAggAdo — sans contexte + seuil modes 0.06
-
-**Configuration** : template BCA (phrase cible seule) + seuil 0.06 pour les 4 labels de mode.
-
-*(Les illustrations SVG de cette section ont été retirées)*
-
-### 4.7 TTK — sans contexte + seuil modes 0.06
-
-**Configuration** : template BCA (phrase cible seule) + seuil 0.06 pour les 4 labels de mode.
 
 > **Observation** : dans CyberAggAdo, les erreurs sont légèrement plus élevées sur les domaines Religion et Homophobie que sur Obésité et Racisme. Obésité étant un corpus plus grand, l'agrégation par tirage aléatoire donne des performances très légèrement inférieures.
 
@@ -360,8 +334,8 @@ python orchestrate_emotyc_folder.py --groups
 
 ## 6. Remarques relatives à l'optimisation des scripts d'inférence
 
-Les scripts d'inférence ont été optimisés en migrant de PyTorch/Transformers vers **ONNX Runtime** et la bibliothèque Rust `tokenizers` :
-- **ONNX Runtime** applique des optimisations de graphe avancées (fusions de nœuds, élimination de sous-graphes redondants) grâce à `ORT_ENABLE_ALL`.
+Les scripts d'inférence utilisent ONNX Runtime et la bibliothèque Rust `tokenizers` :
+- ONNX Runtime applique des optimisations de graphe (fusions de nœuds, élimination de sous-graphes redondants) grâce à `ORT_ENABLE_ALL`.
 - Le chargement utilise `CUDAExecutionProvider` si un GPU CUDA est détecté, avec un repli automatique et performant sur `CPUExecutionProvider` le cas échéant.
 - Les paramètres de mémoire `enable_cpu_mem_arena` et `enable_mem_pattern` sont activés pour réduire l'allocation dynamique de mémoire lors de l'inférence.
 - Le parallélisme interne est contrôlé via `intra_op_num_threads` (2 par défaut) pour limiter l'utilisation CPU excédentaire.

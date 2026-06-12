@@ -116,7 +116,7 @@ EMOTYC est une version fine-tunée de [CamemBERT-base](https://arxiv.org/abs/191
 
 $$\hat{\mathbf{y}} = [\hat{y}_1, \ldots, \hat{y}_{19}] $$
 
-où chaque $\hat{y}_i$ est dans l'intervalle {0, 1}.
+où chaque $\hat{y}_i$ est dans {0, 1}.
 
 Concrètement, une phrase qui exprime la joie sur un mode comportemental (p. ex. la phrase "Il lui a adressé un sourire") sera représentée par ce vecteur :
 <br>
@@ -345,9 +345,6 @@ Les scripts d'inférence utilisent ONNX Runtime et la bibliothèque Rust `tokeni
 Inférence sur les fichiers XLSX du gold (TextToKids ou CyberAggAdo) :
 
 ```bash
-# Inférence rapide (par défaut avec le modèle model_onnx/)
-python emotyc_predict.py --xlsx ./golds/emotexttokids_gold_flat.xlsx --out_dir ./results/TTK/NoContextTemplateMode05
-
 # Inférence avec contexte
 python emotyc_predict.py --xlsx ./golds/emotexttokids_gold_flat.xlsx --out_dir ./results/TTK/ContextTemplateMode05 --use-context
 ```
@@ -370,4 +367,3 @@ Pour orchestrer l'inférence sur tout un dossier de fichiers XLSX :
 # Évaluation sur un dossier (charge le modèle ONNX une seule fois)
 python orchestrate_emotyc_folder.py ./results/prepared_xlsx_samples/subsets
 ```
-

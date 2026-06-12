@@ -1,0 +1,163 @@
+\documentclass[aspectratio=169,xcolor=table]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{array}
+
+\definecolor{emotycText}{HTML}{1A1A1A}
+\definecolor{emotycMuted}{HTML}{71717A}
+\definecolor{emotycAccent}{HTML}{3B3B3F}
+\definecolor{ttkBlue}{HTML}{4F46E5}
+\definecolor{cyberOrange}{HTML}{B45309}
+\definecolor{softSurface}{HTML}{F7F7F8}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamercolor{normal text}{fg=emotycText,bg=white}
+\setbeamercolor{frametitle}{fg=emotycAccent,bg=white}
+\setbeamerfont{frametitle}{series=\bfseries,size=\Large}
+\setbeamerfont{title}{series=\bfseries,size=\LARGE}
+\setbeamerfont{subtitle}{size=\normalsize}
+\setbeamerfont{footline}{size=\scriptsize}
+\setbeamersize{text margin left=8mm,text margin right=8mm}
+
+\newcommand{\InputHeatmapTable}{%
+  \IfFileExists{figures/heatmap_delta_table.tex}{%
+    \input{figures/heatmap_delta_table.tex}%
+  }{%
+    \input{slides/figures/heatmap_delta_table.tex}%
+  }%
+}
+
+\newcommand{\metricbox}[3]{%
+  \begin{minipage}[t]{0.31\textwidth}
+    \setlength{\fboxsep}{0pt}%
+    \colorbox{softSurface}{%
+      \begin{minipage}[t][1.65cm][c]{\linewidth}
+        \centering
+        {\Large\bfseries #1}\par
+        \vspace{0.15em}
+        {\scriptsize\color{emotycMuted}#2}\par
+        \vspace{0.15em}
+        {\scriptsize #3}
+      \end{minipage}%
+    }
+  \end{minipage}%
+}
+
+\title{Transferabilit\'e d'EMOTYC}
+\subtitle{Lecture de la heatmap des deltas TextToKids $\rightarrow$ CyberAggAdo}
+\author{}
+\date{}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+  \vspace{-2.2em}
+  \begin{center}
+    \small
+    Heatmap source : \texttt{results/heatmap\_delta.html}\\
+    Script source : \texttt{visualizations/delta\_heatmap.py}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Ce que mesure la heatmap}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.58\textwidth}
+      \[
+        \Delta_m(\ell)=m_{\text{TextToKids}}(\ell)-m_{\text{CyberAggAdo}}(\ell)
+      \]
+
+      \begin{itemize}
+        \item Les colonnes comparent $F_1$, la pr\'ecision et le rappel, label par label.
+        \item La couleur encode $|\Delta|$ : vert clair si les performances sont proches, orange/rouge si l'\'ecart est fort.
+        \item Une valeur positive signifie que le mod\`ele performe mieux sur TextToKids que sur CyberAggAdo.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \vspace{0.4em}
+      \begin{tabular}{@{}lr@{}}
+        \toprule
+        Corpus & Unit\'es textuelles \\
+        \midrule
+        \textcolor{ttkBlue}{TextToKids} & 27\,911 \\
+        \textcolor{cyberOrange}{CyberAggAdo} & 781 \\
+        \bottomrule
+      \end{tabular}
+
+      \vspace{1.2em}
+      \small
+      Configuration : template avec contexte, seuil 0.5, comparaison directe des r\'esum\'es JSON.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Heatmap compl\`ete des deltas}
+  \vspace{-0.7em}
+  \begin{center}
+    \scriptsize
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{0.82}
+    \resizebox{0.96\textwidth}{!}{\InputHeatmapTable}
+  \end{center}
+
+  \vspace{-0.4em}
+  \scriptsize
+  \textcolor{emotycMuted}{Lecture : $\Delta>0$ indique une performance sup\'erieure sur TextToKids ; la couleur indique l'amplitude, pas le sens.}
+\end{frame}
+
+\begin{frame}{Signal principal : forte perte hors domaine}
+  \metricbox{$+0.4570$}{Macro $F_1$}{\'ecart TextToKids -- CyberAggAdo}
+  \hfill
+  \metricbox{$+0.4246$}{Micro $F_1$}{\'ecart TextToKids -- CyberAggAdo}
+  \hfill
+  \metricbox{781}{unit\'es CyberAggAdo}{contre 27\,911 pour TextToKids}
+
+  \vspace{1.5em}
+  \begin{itemize}
+    \item Le mod\`ele conserve une d\'etection globale de l'\'emotion, mais les performances baissent nettement en transfert.
+    \item Les labels fr\'equents dans CyberAggAdo montrent d\'ej\`a un d\'ecrochage substantiel : \textit{\'Emo} ($\Delta F_1=+0.27$), \textit{Base} ($+0.37$), \textit{Montr\'ee} ($+0.42$), \textit{Col\`ere} ($+0.46$).
+    \item Le d\'ecalage touche \`a la fois la pr\'ecision et le rappel, ce qui sugg\`ere des faux positifs et des faux n\'egatifs hors domaine.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Labels qui concentrent le d\'ecrochage}
+  \small
+  \begin{tabular}{@{}lrrrrr@{}}
+    \toprule
+    Label & Cyber & TTK & $\Delta F_1$ & $\Delta P$ & $\Delta R$ \\
+    \midrule
+    Autre & 62 & 1\,270 & +0.76 & +0.78 & +0.68 \\
+    Sugg\'er\'ee & 54 & 1\,909 & +0.73 & +0.67 & +0.74 \\
+    D\'esign\'ee & 55 & 1\,499 & +0.56 & +0.50 & +0.60 \\
+    Col\`ere & 290 & 1\,180 & +0.46 & +0.42 & +0.49 \\
+    Montr\'ee & 301 & 971 & +0.42 & +0.42 & +0.41 \\
+    Base & 364 & 4\,133 & +0.37 & +0.29 & +0.43 \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{1.1em}
+  \begin{itemize}
+    \item Le mode \textit{Sugg\'er\'ee} d\'ecroche fortement : les indices contextuels appris sur TextToKids transf\`erent mal vers les messages de cyberharc\`element.
+    \item \textit{Autre} est le plus grand \'ecart parmi les labels avec au moins 50 occurrences positives dans CyberAggAdo.
+    \item \textit{Col\`ere} et \textit{Montr\'ee} restent suffisamment repr\'esent\'es pour signaler une vraie difficult\'e, pas seulement un bruit d'effectif.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Points de vigilance}
+  \begin{itemize}
+    \item Les labels tr\`es rares dans CyberAggAdo doivent \^etre interpr\'et\'es avec prudence : \textit{Admiration} a 0 occurrence positive, \textit{Embarras} 2, \textit{Fiert\'e} 3, \textit{Peur} 4.
+    \item La couleur ne distingue pas le signe : une case claire peut aussi correspondre \`a une absence de cas suffisants pour comparer.
+    \item La heatmap sert surtout \`a localiser les zones de non-transf\'erabilit\'e ; l'analyse qualitative des erreurs reste n\'ecessaire pour expliquer les m\'ecanismes.
+  \end{itemize}
+
+  \vspace{1em}
+  \small
+  Conclusion : EMOTYC apprend bien le domaine TextToKids, mais les formes discursives de CyberAggAdo changent assez pour d\'egrader la g\'en\'eralisation, notamment sur les modes d'expression et certains labels \'emotionnels.
+\end{frame}
+
+\end{document}

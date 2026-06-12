@@ -5,6 +5,32 @@ Ce dépôt a été conçu pour évaluer les performances du modèle **[EMOTYC](h
 
 # Table des matières
 
+- [1. Cadre théorique et schéma d'annotation utilisé](#1-cadre-théorique-et-schéma-dannotation-utilisé)
+  - [1.1 L'Unité d'annotation](#11-lunité-dannotation)
+  - [1.2 Les catégories émotionnelles](#12-les-catégories-émotionnelles)
+  - [1.3 Les modes d'expression](#13-les-modes-dexpression)
+  - [1.4 Les trois types](#14-les-trois-types)
+  - [1.5 Transposition au niveau phrastique : le vecteur à 19 labels](#15-transposition-au-niveau-phrastique--le-vecteur-à-19-labels)
+- [2. Architecture du modèle EMOTYC](#2-architecture-du-modèle-emotyc)
+  - [2.1 De CamemBERT-base à EMOTYC](#21-de-camembert-base-à-emotyc)
+  - [2.2 Format d'entrée](#22-format-dentrée)
+- [3. Données évaluées](#3-données-évaluées)
+  - [3.1 Échantillons](#31-échantillons)
+- [4. Performances du modèle EMOTYC](#4-performances-du-modèle-emotyc)
+  - [4.1 Métriques utilisées](#41-métriques-utilisées)
+  - [4.2 Répliquer les résultats officiels sur le corpus Test](#42-répliquer-les-résultats-officiels-sur-le-corpus-test)
+  - [4.3 Performance sur CyberAggAdo avec les mêmes paramètres](#43-performance-sur-cyberaggado-avec-les-mêmes-paramètres)
+  - [4.8 Échantillons XLSX aléatoires contigus](#48-échantillons-xlsx-aléatoires-contigus)
+  - [4.9 Échantillon XLSX non contigus](#49-échantillon-xlsx-non-contigus)
+  - [4.10 Écarts TTK vs. CyberAggAdo — avec contexte](#410-écarts-ttk-vs-cyberaggado--avec-contexte)
+  - [4.11 Écarts TTK vs. CyberAggAdo — sans contexte](#411-écarts-ttk-vs-cyberaggado--sans-contexte)
+- [5. Remarques relatives à la configuration et aux hyperparamètres](#5-remarques-relatives-à-la-configuration-et-aux-hyperparamètres)
+  - [5.1 Génération d'un rapport HTML](#51-génération-dun-rapport-html)
+  - [5.2 Génération d'une Heatmap de transferabilité](#52-génération-dune-heatmap-de-transferabilité)
+  - [5.3 Contiguité et non-contiguité](#53-contiguité-et-non-contiguité)
+- [6. Remarques relatives à l'optimisation des scripts d'inférence](#6-remarques-relatives-à-loptimisation-des-scripts-dinférence)
+- [7. Reproductibilité et commandes utilisées](#7-reproductibilité-et-commandes-utilisées)
+
 
 
 # 1. Cadre théorique et schéma d'annotation utilisé
@@ -57,7 +83,7 @@ Une unité SitEmo ne peut recevoir qu'un seul mode.
 
 ## 1.4 Les trois types
 
-Les 12 catégories émotinonnelles sont regroupées en trois types :
+Les 12 catégories émotionnelles sont regroupées en trois types :
 
 <br>
 <p align="center">
@@ -83,7 +109,7 @@ Il est possible de mesurer la « cohérence » des prédictions du modèle EMOTY
 
 ## 2. Architecture du modèle EMOTYC
 
-### 2.1 De CamemBERT-base à EMOTYC
+## 2. Architecture du modèle EMOTYC
 
 EMOTYC est une version fine-tunée de [CamemBERT-base](https://arxiv.org/abs/1911.03894) avec une tête de classification multi-label ajoutée. La sortie est un vecteur de prédictions :
 
@@ -97,7 +123,7 @@ Concrètement, une phrase qui exprime la joie sur un mode comportemental (p. ex.
   <img src="illustrations/emotyc_output_vector.svg" width="650">
 </p>
 
-Pour ce qui concerne le fine-tuning, Etienne et al. (2024, p. 5) rapportent une stratégorie en deux temps. Dans une première phase, ils ont fait l'affinage sur la seule tâche de détection de présence/absence d'émotion (1 sortie binaire). Dans un second temps, ils ont fait un affinage multi-tâches sur les 19 labels simultanément, à partir des poids de la phase 1. L'optimiseur est Adam (lr = 10⁻⁵, pas de decay, batch size = 8) avec une pondération des classes plafonnée à 50 pour gérer le déséquilibre.
+Pour ce qui concerne le fine-tuning, Etienne et al. (2024, p. 5) rapportent une stratégie en deux temps. Dans une première phase, ils ont fait l'affinage sur la seule tâche de détection de présence/absence d'émotion (1 sortie binaire). Dans un second temps, ils ont fait un affinage multi-tâches sur les 19 labels simultanément, à partir des poids de la phase 1. L'optimiseur est Adam (lr = 10⁻⁵, pas de decay, batch size = 8) avec une pondération des classes plafonnée à 50 pour gérer le déséquilibre.
 
 ### 2.2 Format d'entrée
 
@@ -126,23 +152,31 @@ D'autre part, un corpus contenant des messages de Cyber Harcèlement qui est sou
 
 
 
-## 3.1. Echantillons
+# 3. Données évaluées
 
-Le script [`prepare_xlsx_samples.py`](prepare_xlsx_samples.py) permet un échantilonnage aléatoire
+Nous testons les performances d'EMOTYC sur deux corpus. D'une part, [`emotexttokids_gold_flat.xlsx`](golds/emotexttokids_gold_flat.xlsx), qui est le corpus d'entraînement d'EMOTYC, contenant des articles de presse jeunesse et de la littérature pour enfants. Le sous-ensemble TEST est disponible sur [HuggingFace](https://huggingface.co/datasets/TextToKids/EmoTextToKids-sentences).
 
-
-Le dossier [`results`](results) contient l'ensemble des inférences déjà générées par les scripts d'inférence sont organisées par corpus évalué et par configuration testée.
-
-
-Ce dossier gold contient également deux autres corpus qui sont des versions échantillonnées aléatoirement de CyberAggAdo. Le script d'échantillonage aléatoire utilisé est [prepare_xlsx_samples.py](prepare_xlsx_samples.py), dans lequel un `argparse` permet de choisir entre un échantillonage aléatoire ou non.
-
-Ainsi, d'un côté, par un échantillonage non-contigu, nous avons obtenu [randomSample120.xlsx](`golds/random_sample_120.xlsx`), on expose les performances d'EMOTYC sur ce XLSX dans la section 2.2.6. Dans la mesure où, dans ce XLSX, les phrases ne se suivent pas, il n'y aurait pas de sens à utiliser l'option `use-context`.
-C'est la raison pour laquelle nous échantillonnons aussi en "blocs contigus". Cela permet d'avoir pouvoir XLSX séparés, et ainsi d'utiliser le script [`orchestrate_emotyc_folder.py`](orchestrate_emotyc_folder.py). Les résultats sur ce corpus sont exposés dans la section 2.2.5.
+D'autre part, un corpus contenant des messages de Cyber Harcèlement qui est sous-partie du corpus [CyberAgression-Large-v2](https://github.com/aollagnier/CyberAgression-Large) publié par Ollagnier ([2024](https://hal.science/hal-04514689v1/document)). Ce corpus peut être dit "hors-domaine" dans la mesure où le corpus de fine-tuning d'EMOTYC ne contient pas de messages numériques similaires. Nous avons annoté 781 lignes selon le schéma d'Etienne (2023) via Label Studio pour produire [`golds/CyberAdoAgg_gold_global_total.xlsx`](golds/CyberAdoAgg_gold_global_total.xlsx) en utilisant [ce script d'annotation](https://github.com/42009221/AnnotationsCyberAggAdo).
 
 
 
+## 3.1 Échantillons
 
-## 4. Performances du modèle EMOTYC
+Le script [`prepare_xlsx_samples.py`](prepare_xlsx_samples.py) permet un échantillonnage aléatoire.
+
+
+Le dossier [`results`](results) contient l'ensemble des inférences générées par les scripts d'inférence ; elles sont organisées par corpus évalué et par configuration testée.
+
+
+Ce dossier gold contient également deux autres corpus qui sont des versions échantillonnées aléatoirement de CyberAggAdo. Le script d'échantillonnage aléatoire utilisé est [prepare_xlsx_samples.py](prepare_xlsx_samples.py), dans lequel un `argparse` permet de choisir entre un échantillonnage aléatoire ou non.
+
+Ainsi, d'un côté, par un échantillonnage non-contigu, nous avons obtenu [randomSample120.xlsx](golds/random_sample_120.xlsx). Les performances d'EMOTYC sur ce XLSX sont présentées dans la section **4.9**. Dans la mesure où, dans ce XLSX, les phrases ne se suivent pas, il n'y aurait pas de sens à utiliser l'option `use-context`.
+C'est la raison pour laquelle nous échantillonnons aussi en "blocs contigus". Cela permet de pouvoir avoir plusieurs fichiers XLSX séparés, et ainsi d'utiliser le script [`orchestrate_emotyc_folder.py`](orchestrate_emotyc_folder.py). Les résultats sur ce corpus sont exposés dans la section **4.8**.
+
+
+
+
+# 4. Performances du modèle EMOTYC
 
 ### 4.1 Métriques utilisées
 
@@ -194,7 +228,7 @@ Performances détaillées label par label :
 
 ### 4.3 Performance sur CyberAggAdo avec les mêmes paramètres
 
-Le script [`orchestrate_emotyc_folder.py`](orchestrate_emotyc_folder.py) (avec l'option `--groups`) permet de faire une comparaison honnête en utilisant exactement la même configuration que celle ayant donné les résultats exposé dans la section 2.1. ci-dessus. On obtient donc :
+Le script [`orchestrate_emotyc_folder.py`](orchestrate_emotyc_folder.py) (avec l'option `--groups`) permet de faire une comparaison honnête en utilisant exactement la même configuration que celle ayant donné les résultats exposés dans la section **4.2** ci-dessus. On obtient donc :
 
 |  | Rappel (Macro) | Précision (Macro) | Macro F1 |
 | :--- | :---: | :---: | :---: |
@@ -237,7 +271,7 @@ $$\Delta = \text{score}_{TTK} - \text{score}_{CyberAggAdo}$$
 
 
 
-## 5. Remarques relatives à la configuration et aux hyperparamètres
+# 5. Remarques relatives à la configuration et aux hyperparamètres
 
 Le script [`emotyc_predict.py`](emotyc_predict.py) reprend le template "BCA" (_Before, Current, After_) qui est utilisé lors du fine-tuning du modèle :
 
@@ -297,10 +331,26 @@ Si les phrases sont mélangées ou sélectionnées aléatoirement, il faut être
 
 **Exemple d'utilisation :**
 
-Télécharger les poids du modèle (à mettre dans model_onnx) :
+Télécharger les poids du modèle :
 
+Le fichier `model_onnx/model.onnx` pèse environ 442 Mo et n'est pas versionné dans
+ce dépôt. Les fichiers `model_onnx/config.json` et `model_onnx/tokenizer.json`
+restent suivis par Git ; seul le poids ONNX est téléchargé localement.
+
+Depuis le dossier `Eval-EMOTYC`, lancer :
+
+```bash
+python scripts/download_model.py
 ```
-wget https://huggingface.co/GwendalTsang/EMOTYC-ONNX/resolve/main/model.onnx
+
+Le script télécharge `model.onnx` depuis
+`https://huggingface.co/GwendalTsang/EMOTYC-ONNX/resolve/main/model.onnx`, puis
+vérifie sa taille et son SHA-256 (`e0c18514933453452929c9f699d68e1fd253414dd44046cc9ea77c445fcfd642`).
+Il est idempotent : si le modèle local est déjà correct, il ne le retélécharge
+pas. Pour forcer un nouveau téléchargement :
+
+```bash
+python scripts/download_model.py --force
 ```
 
 
@@ -313,7 +363,7 @@ python orchestrate_emotyc_folder.py --groups
 ```
 
 
-## 6. Remarques relatives à l'optimisation des scripts d'inférence
+# 6. Remarques relatives à l'optimisation des scripts d'inférence
 
 Les scripts d'inférence utilisent ONNX Runtime et la bibliothèque Rust `tokenizers` :
 - ONNX Runtime applique des optimisations de graphe (fusions de nœuds, élimination de sous-graphes redondants) grâce à `ORT_ENABLE_ALL`.
@@ -321,14 +371,14 @@ Les scripts d'inférence utilisent ONNX Runtime et la bibliothèque Rust `tokeni
 - Les paramètres de mémoire `enable_cpu_mem_arena` et `enable_mem_pattern` sont activés pour réduire l'allocation dynamique de mémoire lors de l'inférence.
 - Le parallélisme interne est contrôlé via `intra_op_num_threads` (2 par défaut) pour limiter l'utilisation CPU excédentaire.
 
-## 7. Reproductibilité et commandes utilisées
+# 7. Reproductibilité et commandes utilisées
 
 Inférence sur les fichiers XLSX du gold :
 
 Sur TTK :
 
 ```bash
-# Inférence avec contexte
+# Inférence avec contexte (template bca_spaced par défaut)
 python emotyc_predict.py --xlsx ./golds/emotexttokids_gold_flat.xlsx --out_dir ./results/TTK/ContextTemplate --use-context
 ```
 
@@ -336,19 +386,18 @@ Sur CyberAggAdo :
 
 ```bash
 # Inférence avec contexte
-python emotyc_predict.py --xlsx ./golds/CyberAdoAgg_gold_global_total.xlsx --out_dir ./results/TTK/ContextTemplate --use-context
+python emotyc_predict.py --xlsx ./golds/CyberAdoAgg_gold_global_total.xlsx --out_dir ./results/CyberAggAdo/ContextTemplate --use-context
 ```
 
 Pour obtenir un rapport détaillé (divergences et matrices de confusion par dimensions) :
 
 ```bash
-# Rapport détaillé (contexte + bca + seuil modes à 0.06)
+# Rapport détaillé (avec contexte)
 python emotyc_predict_details.py \
     --xlsx ./golds/emotexttokids_gold_flat.xlsx \
-    --out_dir ./results/TTK/ContextTemplateAvecEspaceMode006 \
+    --out_dir ./results/TTK/ContextTemplate \
     --use-context \
-    --template bca \
-    --mode-threshold 0.06
+    --template bca
 ```
 
 Pour orchestrer l'inférence sur tout un dossier de fichiers XLSX :

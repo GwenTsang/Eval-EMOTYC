@@ -30,13 +30,14 @@ from emotyc_common import (
 # ── Chemins par défaut ──────────────────────────────────────────────────────
 RESULTS = Path(__file__).resolve().parent.parent / "results"
 DEFAULT_CYBER = (
-    RESULTS / "CyberAggAdo"
-    / "NoContextTemplateAvecEspace_RerunCurrentOnly_BS260_20260511_111410"
+    RESULTS
+    / "orchestrated_emotyc_CyberAggAdo"
     / "emotyc_predictions_summary.json"
 )
 DEFAULT_TTK = (
-    RESULTS / "TextToKids"
-    / "NoContextTemplateAvecEspaceMode006"
+    RESULTS
+    / "TextToKids"
+    / "ContextTemplateAvecEspaceMode05"
     / "emotyc_predictions_summary.json"
 )
 DEFAULT_OUT = RESULTS / "heatmap_delta.html"
@@ -94,6 +95,27 @@ def gold_support(entry: dict) -> int:
     return (entry.get("tp", 0) or 0) + (entry.get("fn", 0) or 0)
 
 
+def sample_count(summary: dict) -> int:
+    """
+    Nombre d'unités textuelles du résumé.
+
+    Les exports du repo ne sont pas tous identiques :
+    - orchestrate_emotyc_folder.py et emotyc_predict.py l'écrivent à la racine ;
+    - emotyc_predict_details.py l'écrit aussi dans global_metrics.
+    """
+    for section in (summary, summary.get("global_metrics") or {}):
+        value = section.get("n_samples")
+        if value is not None:
+            return int(value)
+
+    for entry in summary.get("per_label", []):
+        counts = [entry.get(k) for k in ("tp", "fp", "fn", "tn")]
+        if all(v is not None for v in counts):
+            return int(sum(counts))
+
+    raise KeyError("Impossible de déterminer n_samples dans le résumé JSON.")
+
+
 def build_heatmap(cyber: dict, ttk: dict, config_name: str) -> str:
     """Construit le HTML de la heatmap de deltas."""
 
@@ -102,6 +124,8 @@ def build_heatmap(cyber: dict, ttk: dict, config_name: str) -> str:
 
     cg = cyber["global_metrics"]
     tg = ttk["global_metrics"]
+    cyber_n_samples = sample_count(cyber)
+    ttk_n_samples = sample_count(ttk)
 
     # ── Trier les labels par support décroissant dans CyberAggAdo ──────
     sorted_labels = sorted(
@@ -166,8 +190,8 @@ def build_heatmap(cyber: dict, ttk: dict, config_name: str) -> str:
         fg = text_color(abs_delta)
         cells = f'<td class="label-cell">{gm_display}</td>'
         # Sample cols: show total corpus sizes for global metrics
-        cells += f'<td class="sample-cell">{tg["n_samples"]:,}</td>'
-        cells += f'<td class="sample-cell">{cg["n_samples"]:,}</td>'
+        cells += f'<td class="sample-cell">{ttk_n_samples:,}</td>'
+        cells += f'<td class="sample-cell">{cyber_n_samples:,}</td>'
         cells += (
             f'<td class="heat-cell" style="background:{bg}; color:{fg};">'
             f'{delta:.4f}'
@@ -370,11 +394,11 @@ def build_heatmap(cyber: dict, ttk: dict, config_name: str) -> str:
   <div class="meta">
     <div class="meta-item">
       <span class="dot dot-ttk"></span>
-      <strong>TextToKids</strong> (étalon) — {tg['n_samples']:,} unités textuelles
+      <strong>TextToKids</strong> (étalon) — {ttk_n_samples:,} unités textuelles
     </div>
     <div class="meta-item">
       <span class="dot dot-cyber"></span>
-      <strong>CyberAggAdo</strong> — {cg['n_samples']:,} unités textuelles
+      <strong>CyberAggAdo</strong> — {cyber_n_samples:,} unités textuelles
     </div>
   </div>
 

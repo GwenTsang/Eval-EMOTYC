@@ -89,8 +89,6 @@ def parse_args():
 
 def main():
     args = parse_args()
-    THRESHOLD = THRESHOLD
-
     # ── 1. Chargement du gold ─────────────────────────────────────────
     xlsx_path = os.path.abspath(args.xlsx)
     try:

@@ -6,9 +6,9 @@ import os
 import json
 import math
 from dataclasses import dataclass
+from typing import Any
 import numpy as np
 import pandas as pd
-import onnxruntime as ort
 from tokenizers import Tokenizer
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -93,10 +93,14 @@ GROUP_DISPLAY_NAMES = {
 # ═══════════════════════════════════════════════════════════════════════════
 
 DEFAULT_MODEL_DIR = os.path.join(os.path.dirname(__file__), "model_onnx")
+MODEL_DOWNLOAD_HINT = (
+    "Téléchargez-le depuis le dossier Eval-EMOTYC avec : "
+    "python scripts/download_model.py"
+)
 
 @dataclass(frozen=True)
 class EmotycPredictor:
-    session: ort.InferenceSession
+    session: Any
     tokenizer: Tokenizer
     labels: list[str]
     input_names: set[str]
@@ -158,6 +162,13 @@ def _encode_batch(
         inputs["token_type_ids"] = np.zeros_like(input_ids, dtype=np.int64)
     return inputs
 
+def _is_git_lfs_pointer(path: str) -> bool:
+    try:
+        with open(path, "rb") as f:
+            return f.read(64).startswith(b"version https://git-lfs.github.com/spec/v1")
+    except OSError:
+        return False
+
 def get_predictor(model_dir: str = DEFAULT_MODEL_DIR, intra_threads: int = 2) -> EmotycPredictor:
     """Charge le modèle ONNX et le tokenizer."""
     onnx_path = os.path.join(model_dir, "model.onnx")
@@ -165,7 +176,14 @@ def get_predictor(model_dir: str = DEFAULT_MODEL_DIR, intra_threads: int = 2) ->
     config_path = os.path.join(model_dir, "config.json")
 
     if not os.path.exists(onnx_path):
-        raise FileNotFoundError(f"Fichier modèle introuvable à {onnx_path}")
+        raise FileNotFoundError(
+            f"Fichier modèle introuvable à {onnx_path}. {MODEL_DOWNLOAD_HINT}"
+        )
+    if _is_git_lfs_pointer(onnx_path):
+        raise RuntimeError(
+            f"{onnx_path} est un pointeur Git LFS, pas le modèle ONNX complet. "
+            f"{MODEL_DOWNLOAD_HINT}"
+        )
     if not os.path.exists(tokenizer_path):
         raise FileNotFoundError(f"Fichier tokenizer introuvable à {tokenizer_path}")
 
@@ -183,6 +201,8 @@ def get_predictor(model_dir: str = DEFAULT_MODEL_DIR, intra_threads: int = 2) ->
     pad_id = tokenizer.token_to_id("<pad>")
     if pad_id is None:
         pad_id = 1
+
+    import onnxruntime as ort
 
     # Configurer la session ONNX Runtime
     options = ort.SessionOptions()

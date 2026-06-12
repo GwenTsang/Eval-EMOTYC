@@ -25,10 +25,13 @@ results_normalized/
 # Modèles HuggingFace en cache
 .cache/
 
+# Poids ONNX lourds téléchargés localement
+model_onnx/*.onnx
+model_onnx/*.onnx.tmp
+
 # Fichiers générés par les inférences
 results/**/emotyc_predictions_output.xlsx
 results/**/emotyc_predictions.jsonl
 results/**/command.txt
 results/**/rerun_metadata.json
 *.html
-

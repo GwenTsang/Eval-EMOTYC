@@ -1,0 +1,837 @@
+{
+  "description": "Baseline classifiers for CyberAggAdo emotion classification (5-fold CV)",
+  "n_samples": 781,
+  "n_labels": 19,
+  "labels": [
+    "Emo",
+    "Comportementale",
+    "Designee",
+    "Montree",
+    "Suggeree",
+    "Base",
+    "Complexe",
+    "Admiration",
+    "Autre",
+    "Colere",
+    "Culpabilite",
+    "Degout",
+    "Embarras",
+    "Fierte",
+    "Jalousie",
+    "Joie",
+    "Peur",
+    "Surprise",
+    "Tristesse"
+  ],
+  "models": {
+    "tfidf_svm": {
+      "per_label": {
+        "Emo": {
+          "gold_positive": 399,
+          "pred_positive": 405,
+          "tp": 274,
+          "fp": 131,
+          "fn": 125,
+          "tn": 251,
+          "precision": 0.6765,
+          "recall": 0.6867,
+          "f1": 0.6816
+        },
+        "Comportementale": {
+          "gold_positive": 36,
+          "pred_positive": 43,
+          "tp": 6,
+          "fp": 37,
+          "fn": 30,
+          "tn": 708,
+          "precision": 0.1395,
+          "recall": 0.1667,
+          "f1": 0.1519
+        },
+        "Designee": {
+          "gold_positive": 55,
+          "pred_positive": 63,
+          "tp": 14,
+          "fp": 49,
+          "fn": 41,
+          "tn": 677,
+          "precision": 0.2222,
+          "recall": 0.2545,
+          "f1": 0.2373
+        },
+        "Montree": {
+          "gold_positive": 301,
+          "pred_positive": 301,
+          "tp": 174,
+          "fp": 127,
+          "fn": 127,
+          "tn": 353,
+          "precision": 0.5781,
+          "recall": 0.5781,
+          "f1": 0.5781
+        },
+        "Suggeree": {
+          "gold_positive": 54,
+          "pred_positive": 72,
+          "tp": 6,
+          "fp": 66,
+          "fn": 48,
+          "tn": 661,
+          "precision": 0.0833,
+          "recall": 0.1111,
+          "f1": 0.0952
+        },
+        "Base": {
+          "gold_positive": 364,
+          "pred_positive": 380,
+          "tp": 246,
+          "fp": 134,
+          "fn": 118,
+          "tn": 283,
+          "precision": 0.6474,
+          "recall": 0.6758,
+          "f1": 0.6613
+        },
+        "Complexe": {
+          "gold_positive": 14,
+          "pred_positive": 11,
+          "tp": 5,
+          "fp": 6,
+          "fn": 9,
+          "tn": 761,
+          "precision": 0.4545,
+          "recall": 0.3571,
+          "f1": 0.4
+        },
+        "Admiration": {
+          "gold_positive": 0,
+          "pred_positive": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 781,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Autre": {
+          "gold_positive": 62,
+          "pred_positive": 77,
+          "tp": 13,
+          "fp": 64,
+          "fn": 49,
+          "tn": 655,
+          "precision": 0.1688,
+          "recall": 0.2097,
+          "f1": 0.1871
+        },
+        "Colere": {
+          "gold_positive": 290,
+          "pred_positive": 307,
+          "tp": 176,
+          "fp": 131,
+          "fn": 114,
+          "tn": 360,
+          "precision": 0.5733,
+          "recall": 0.6069,
+          "f1": 0.5896
+        },
+        "Culpabilite": {
+          "gold_positive": 3,
+          "pred_positive": 25,
+          "tp": 0,
+          "fp": 25,
+          "fn": 3,
+          "tn": 753,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Degout": {
+          "gold_positive": 80,
+          "pred_positive": 86,
+          "tp": 28,
+          "fp": 58,
+          "fn": 52,
+          "tn": 643,
+          "precision": 0.3256,
+          "recall": 0.35,
+          "f1": 0.3373
+        },
+        "Embarras": {
+          "gold_positive": 2,
+          "pred_positive": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "tn": 779,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Fierte": {
+          "gold_positive": 3,
+          "pred_positive": 2,
+          "tp": 0,
+          "fp": 2,
+          "fn": 3,
+          "tn": 776,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Jalousie": {
+          "gold_positive": 6,
+          "pred_positive": 5,
+          "tp": 5,
+          "fp": 0,
+          "fn": 1,
+          "tn": 775,
+          "precision": 1.0,
+          "recall": 0.8333,
+          "f1": 0.9091
+        },
+        "Joie": {
+          "gold_positive": 30,
+          "pred_positive": 37,
+          "tp": 8,
+          "fp": 29,
+          "fn": 22,
+          "tn": 722,
+          "precision": 0.2162,
+          "recall": 0.2667,
+          "f1": 0.2388
+        },
+        "Peur": {
+          "gold_positive": 4,
+          "pred_positive": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "tn": 777,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Surprise": {
+          "gold_positive": 5,
+          "pred_positive": 3,
+          "tp": 0,
+          "fp": 3,
+          "fn": 5,
+          "tn": 773,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Tristesse": {
+          "gold_positive": 14,
+          "pred_positive": 6,
+          "tp": 0,
+          "fp": 6,
+          "fn": 14,
+          "tn": 761,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "macro_f1": 0.2667,
+      "micro_f1": 0.5388,
+      "exact_match": 0.3163,
+      "exact_match_count": 247,
+      "n_samples": 781,
+      "group_f1": {
+        "meta": 0.6816,
+        "modes": 0.2656,
+        "types": 0.5307,
+        "emotions": 0.1885
+      },
+      "model": "TF-IDF + LinearSVC",
+      "method": "5-fold cross-validation",
+      "fold_results": [
+        {
+          "fold": 1,
+          "n_train": 624,
+          "n_test": 157,
+          "macro_f1": 0.2087
+        },
+        {
+          "fold": 2,
+          "n_train": 625,
+          "n_test": 156,
+          "macro_f1": 0.3171
+        },
+        {
+          "fold": 3,
+          "n_train": 625,
+          "n_test": 156,
+          "macro_f1": 0.1576
+        },
+        {
+          "fold": 4,
+          "n_train": 625,
+          "n_test": 156,
+          "macro_f1": 0.2787
+        },
+        {
+          "fold": 5,
+          "n_train": 625,
+          "n_test": 156,
+          "macro_f1": 0.2633
+        }
+      ],
+      "tfidf_params": {
+        "max_features": 10000,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "sublinear_tf": true,
+        "min_df": 2
+      }
+    },
+    "tfidf_rf": {
+      "per_label": {
+        "Emo": {
+          "gold_positive": 399,
+          "pred_positive": 327,
+          "tp": 233,
+          "fp": 94,
+          "fn": 166,
+          "tn": 288,
+          "precision": 0.7125,
+          "recall": 0.584,
+          "f1": 0.6419
+        },
+        "Comportementale": {
+          "gold_positive": 36,
+          "pred_positive": 16,
+          "tp": 4,
+          "fp": 12,
+          "fn": 32,
+          "tn": 733,
+          "precision": 0.25,
+          "recall": 0.1111,
+          "f1": 0.1538
+        },
+        "Designee": {
+          "gold_positive": 55,
+          "pred_positive": 31,
+          "tp": 9,
+          "fp": 22,
+          "fn": 46,
+          "tn": 704,
+          "precision": 0.2903,
+          "recall": 0.1636,
+          "f1": 0.2093
+        },
+        "Montree": {
+          "gold_positive": 301,
+          "pred_positive": 251,
+          "tp": 159,
+          "fp": 92,
+          "fn": 142,
+          "tn": 388,
+          "precision": 0.6335,
+          "recall": 0.5282,
+          "f1": 0.5761
+        },
+        "Suggeree": {
+          "gold_positive": 54,
+          "pred_positive": 17,
+          "tp": 0,
+          "fp": 17,
+          "fn": 54,
+          "tn": 710,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Base": {
+          "gold_positive": 364,
+          "pred_positive": 306,
+          "tp": 204,
+          "fp": 102,
+          "fn": 160,
+          "tn": 315,
+          "precision": 0.6667,
+          "recall": 0.5604,
+          "f1": 0.609
+        },
+        "Complexe": {
+          "gold_positive": 14,
+          "pred_positive": 2,
+          "tp": 0,
+          "fp": 2,
+          "fn": 14,
+          "tn": 765,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Admiration": {
+          "gold_positive": 0,
+          "pred_positive": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 781,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Autre": {
+          "gold_positive": 62,
+          "pred_positive": 29,
+          "tp": 8,
+          "fp": 21,
+          "fn": 54,
+          "tn": 698,
+          "precision": 0.2759,
+          "recall": 0.129,
+          "f1": 0.1758
+        },
+        "Colere": {
+          "gold_positive": 290,
+          "pred_positive": 245,
+          "tp": 155,
+          "fp": 90,
+          "fn": 135,
+          "tn": 401,
+          "precision": 0.6327,
+          "recall": 0.5345,
+          "f1": 0.5794
+        },
+        "Culpabilite": {
+          "gold_positive": 3,
+          "pred_positive": 3,
+          "tp": 0,
+          "fp": 3,
+          "fn": 3,
+          "tn": 775,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Degout": {
+          "gold_positive": 80,
+          "pred_positive": 56,
+          "tp": 23,
+          "fp": 33,
+          "fn": 57,
+          "tn": 668,
+          "precision": 0.4107,
+          "recall": 0.2875,
+          "f1": 0.3382
+        },
+        "Embarras": {
+          "gold_positive": 2,
+          "pred_positive": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "tn": 779,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Fierte": {
+          "gold_positive": 3,
+          "pred_positive": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 3,
+          "tn": 778,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Jalousie": {
+          "gold_positive": 6,
+          "pred_positive": 1,
+          "tp": 0,
+          "fp": 1,
+          "fn": 6,
+          "tn": 774,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Joie": {
+          "gold_positive": 30,
+          "pred_positive": 9,
+          "tp": 0,
+          "fp": 9,
+          "fn": 30,
+          "tn": 742,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Peur": {
+          "gold_positive": 4,
+          "pred_positive": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "tn": 777,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Surprise": {
+          "gold_positive": 5,
+          "pred_positive": 1,
+          "tp": 0,
+          "fp": 1,
+          "fn": 5,
+          "tn": 775,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Tristesse": {
+          "gold_positive": 14,
+          "pred_positive": 1,
+          "tp": 0,
+          "fp": 1,
+          "fn": 14,
+          "tn": 766,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "macro_f1": 0.1728,
+      "micro_f1": 0.527,
+      "exact_match": 0.3995,
+      "exact_match_count": 312,
+      "n_samples": 781,
+      "group_f1": {
+        "meta": 0.6419,
+        "modes": 0.2348,
+        "types": 0.3045,
+        "emotions": 0.0911
+      },
+      "model": "TF-IDF + RandomForest",
+      "method": "5-fold cross-validation",
+      "fold_results": [
+        {
+          "fold": 1,
+          "n_train": 624,
+          "n_test": 157,
+          "macro_f1": 0.1605
+        },
+        {
+          "fold": 2,
+          "n_train": 625,
+          "n_test": 156,
+          "macro_f1": 0.2047
+        },
+        {
+          "fold": 3,
+          "n_train": 625,
+          "n_test": 156,
+          "macro_f1": 0.1534
+        },
+        {
+          "fold": 4,
+          "n_train": 625,
+          "n_test": 156,
+          "macro_f1": 0.1656
+        },
+        {
+          "fold": 5,
+          "n_train": 625,
+          "n_test": 156,
+          "macro_f1": 0.1715
+        }
+      ],
+      "tfidf_params": {
+        "max_features": 10000,
+        "ngram_range": [
+          1,
+          2
+        ],
+        "sublinear_tf": true,
+        "min_df": 2
+      }
+    },
+    "tfidf_char_svm": {
+      "per_label": {
+        "Emo": {
+          "gold_positive": 399,
+          "pred_positive": 414,
+          "tp": 292,
+          "fp": 122,
+          "fn": 107,
+          "tn": 260,
+          "precision": 0.7053,
+          "recall": 0.7318,
+          "f1": 0.7183
+        },
+        "Comportementale": {
+          "gold_positive": 36,
+          "pred_positive": 28,
+          "tp": 7,
+          "fp": 21,
+          "fn": 29,
+          "tn": 724,
+          "precision": 0.25,
+          "recall": 0.1944,
+          "f1": 0.2188
+        },
+        "Designee": {
+          "gold_positive": 55,
+          "pred_positive": 39,
+          "tp": 21,
+          "fp": 18,
+          "fn": 34,
+          "tn": 708,
+          "precision": 0.5385,
+          "recall": 0.3818,
+          "f1": 0.4468
+        },
+        "Montree": {
+          "gold_positive": 301,
+          "pred_positive": 309,
+          "tp": 186,
+          "fp": 123,
+          "fn": 115,
+          "tn": 357,
+          "precision": 0.6019,
+          "recall": 0.6179,
+          "f1": 0.6098
+        },
+        "Suggeree": {
+          "gold_positive": 54,
+          "pred_positive": 51,
+          "tp": 5,
+          "fp": 46,
+          "fn": 49,
+          "tn": 681,
+          "precision": 0.098,
+          "recall": 0.0926,
+          "f1": 0.0952
+        },
+        "Base": {
+          "gold_positive": 364,
+          "pred_positive": 385,
+          "tp": 256,
+          "fp": 129,
+          "fn": 108,
+          "tn": 288,
+          "precision": 0.6649,
+          "recall": 0.7033,
+          "f1": 0.6836
+        },
+        "Complexe": {
+          "gold_positive": 14,
+          "pred_positive": 5,
+          "tp": 5,
+          "fp": 0,
+          "fn": 9,
+          "tn": 767,
+          "precision": 1.0,
+          "recall": 0.3571,
+          "f1": 0.5263
+        },
+        "Admiration": {
+          "gold_positive": 0,
+          "pred_positive": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 781,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Autre": {
+          "gold_positive": 62,
+          "pred_positive": 60,
+          "tp": 13,
+          "fp": 47,
+          "fn": 49,
+          "tn": 672,
+          "precision": 0.2167,
+          "recall": 0.2097,
+          "f1": 0.2131
+        },
+        "Colere": {
+          "gold_positive": 290,
+          "pred_positive": 304,
+          "tp": 184,
+          "fp": 120,
+          "fn": 106,
+          "tn": 371,
+          "precision": 0.6053,
+          "recall": 0.6345,
+          "f1": 0.6195
+        },
+        "Culpabilite": {
+          "gold_positive": 3,
+          "pred_positive": 1,
+          "tp": 0,
+          "fp": 1,
+          "fn": 3,
+          "tn": 777,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Degout": {
+          "gold_positive": 80,
+          "pred_positive": 74,
+          "tp": 38,
+          "fp": 36,
+          "fn": 42,
+          "tn": 665,
+          "precision": 0.5135,
+          "recall": 0.475,
+          "f1": 0.4935
+        },
+        "Embarras": {
+          "gold_positive": 2,
+          "pred_positive": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "tn": 779,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Fierte": {
+          "gold_positive": 3,
+          "pred_positive": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 3,
+          "tn": 778,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Jalousie": {
+          "gold_positive": 6,
+          "pred_positive": 5,
+          "tp": 5,
+          "fp": 0,
+          "fn": 1,
+          "tn": 775,
+          "precision": 1.0,
+          "recall": 0.8333,
+          "f1": 0.9091
+        },
+        "Joie": {
+          "gold_positive": 30,
+          "pred_positive": 18,
+          "tp": 12,
+          "fp": 6,
+          "fn": 18,
+          "tn": 745,
+          "precision": 0.6667,
+          "recall": 0.4,
+          "f1": 0.5
+        },
+        "Peur": {
+          "gold_positive": 4,
+          "pred_positive": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "tn": 777,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Surprise": {
+          "gold_positive": 5,
+          "pred_positive": 0,
+          "tp": 0,
+          "fp": 0,
+          "fn": 5,
+          "tn": 776,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "Tristesse": {
+          "gold_positive": 14,
+          "pred_positive": 4,
+          "tp": 1,
+          "fp": 3,
+          "fn": 13,
+          "tn": 764,
+          "precision": 0.25,
+          "recall": 0.0714,
+          "f1": 0.1111
+        }
+      },
+      "macro_f1": 0.3234,
+      "micro_f1": 0.5996,
+      "exact_match": 0.3688,
+      "exact_match_count": 288,
+      "n_samples": 781,
+      "group_f1": {
+        "meta": 0.7183,
+        "modes": 0.3426,
+        "types": 0.605,
+        "emotions": 0.2372
+      },
+      "model": "TF-IDF (char) + LinearSVC",
+      "method": "5-fold cross-validation",
+      "fold_results": [
+        {
+          "fold": 1,
+          "n_train": 624,
+          "n_test": 157,
+          "macro_f1": 0.2377
+        },
+        {
+          "fold": 2,
+          "n_train": 625,
+          "n_test": 156,
+          "macro_f1": 0.3419
+        },
+        {
+          "fold": 3,
+          "n_train": 625,
+          "n_test": 156,
+          "macro_f1": 0.2076
+        },
+        {
+          "fold": 4,
+          "n_train": 625,
+          "n_test": 156,
+          "macro_f1": 0.3727
+        },
+        {
+          "fold": 5,
+          "n_train": 625,
+          "n_test": 156,
+          "macro_f1": 0.3416
+        }
+      ],
+      "tfidf_params": {
+        "analyzer": "char_wb",
+        "ngram_range": [
+          2,
+          5
+        ],
+        "max_features": 20000,
+        "sublinear_tf": true,
+        "min_df": 2
+      }
+    }
+  },
+  "emotyc_reference": {
+    "macro_f1": 0.291,
+    "micro_f1": 0.472,
+    "exact_match": 0.346,
+    "training_data": "TextToKids (27,911 samples, different domain)",
+    "note": "Zero-shot OOD, no training on CyberAggAdo"
+  }
+}

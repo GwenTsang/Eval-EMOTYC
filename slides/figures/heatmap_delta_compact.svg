@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="536" viewBox="0 0 900 536">
+<defs>
+<linearGradient id="deltaGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" stop-color="#D7EBDD"/>
+<stop offset="35%" stop-color="#B8E19A"/>
+<stop offset="55%" stop-color="#F2B959"/>
+<stop offset="78%" stop-color="#CB673D"/>
+<stop offset="100%" stop-color="#B82020"/>
+</linearGradient>
+</defs>
+<rect width="900" height="536" fill="#F7F7F8"/>
+<text x="36.0" y="34.0" font-size="23" font-weight="700" fill="#1A1A1A" text-anchor="start" dominant-baseline="middle">Transferabilité d&#x27;EMOTYC : TextToKids → CyberAggAdo</text>
+<text x="36.0" y="66.0" font-size="14" font-weight="400" fill="#71717A" text-anchor="start" dominant-baseline="middle">Δ = performance TextToKids - performance CyberAggAdo ; couleur = amplitude absolue du delta</text>
+<text x="36.0" y="101.0" font-size="14" font-weight="600" fill="#4F46E5" text-anchor="start" dominant-baseline="middle">TextToKids : 27 911 unités textuelles</text>
+<text x="366.0" y="101.0" font-size="14" font-weight="600" fill="#B45309" text-anchor="start" dominant-baseline="middle">CyberAggAdo : 781 unités textuelles</text>
+<rect x="36" y="132" width="735" height="312" rx="8" fill="#FFFFFF" stroke="#E2E2E5"/>
+<rect x="36" y="132" width="735" height="56" rx="8" fill="#FAFAFA"/>
+<text x="48.0" y="160.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="start" dominant-baseline="middle">Label</text>
+<text x="253.5" y="160.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">TTK</text>
+<text x="348.5" y="160.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">Cyber</text>
+<text x="458.5" y="160.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">ΔF1</text>
+<text x="583.5" y="160.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">ΔPrécision</text>
+<text x="708.5" y="160.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">ΔRappel</text>
+<line x1="36" y1="188" x2="771" y2="188" stroke="#E2E2E5"/>
+<text x="48.0" y="204.0" font-size="13" font-weight="600" fill="#1A1A1A" text-anchor="start" dominant-baseline="middle">Émo</text>
+<text x="253.5" y="204.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">5 374</text>
+<text x="348.5" y="204.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">399</text>
+<rect x="396" y="188" width="125" height="32" fill="#C7EA97"/>
+<text x="458.5" y="204.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.27</text>
+<rect x="521" y="188" width="125" height="32" fill="#CFEB8F"/>
+<text x="583.5" y="204.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.31</text>
+<rect x="646" y="188" width="125" height="32" fill="#C0EAA1"/>
+<text x="708.5" y="204.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.23</text>
+<line x1="36" y1="220" x2="771" y2="220" stroke="#E2E2E5"/>
+<text x="48.0" y="236.0" font-size="13" font-weight="600" fill="#1A1A1A" text-anchor="start" dominant-baseline="middle">Base</text>
+<text x="253.5" y="236.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">4 133</text>
+<text x="348.5" y="236.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">364</text>
+<rect x="396" y="220" width="125" height="32" fill="#E6EC7E"/>
+<text x="458.5" y="236.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.37</text>
+<rect x="521" y="220" width="125" height="32" fill="#CBEA92"/>
+<text x="583.5" y="236.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.29</text>
+<rect x="646" y="220" width="125" height="32" fill="#EEDA6E"/>
+<text x="708.5" y="236.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.43</text>
+<line x1="36" y1="252" x2="771" y2="252" stroke="#E2E2E5"/>
+<text x="48.0" y="268.0" font-size="13" font-weight="600" fill="#1A1A1A" text-anchor="start" dominant-baseline="middle">Montrée</text>
+<text x="253.5" y="268.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">971</text>
+<text x="348.5" y="268.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">301</text>
+<rect x="396" y="252" width="125" height="32" fill="#EEE172"/>
+<text x="458.5" y="268.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.42</text>
+<rect x="521" y="252" width="125" height="32" fill="#EEDF71"/>
+<text x="583.5" y="268.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.42</text>
+<rect x="646" y="252" width="125" height="32" fill="#EEE373"/>
+<text x="708.5" y="268.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.41</text>
+<line x1="36" y1="284" x2="771" y2="284" stroke="#E2E2E5"/>
+<text x="48.0" y="300.0" font-size="13" font-weight="600" fill="#1A1A1A" text-anchor="start" dominant-baseline="middle">Colère</text>
+<text x="253.5" y="300.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">1 180</text>
+<text x="348.5" y="300.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">290</text>
+<rect x="396" y="284" width="125" height="32" fill="#EFCD67"/>
+<text x="458.5" y="300.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.46</text>
+<rect x="521" y="284" width="125" height="32" fill="#EEDF71"/>
+<text x="583.5" y="300.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.42</text>
+<rect x="646" y="284" width="125" height="32" fill="#F1BB5E"/>
+<text x="708.5" y="300.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.49</text>
+<line x1="36" y1="316" x2="771" y2="316" stroke="#E2E2E5"/>
+<text x="48.0" y="332.0" font-size="13" font-weight="600" fill="#1A1A1A" text-anchor="start" dominant-baseline="middle">Autre</text>
+<text x="253.5" y="332.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">1 270</text>
+<text x="348.5" y="332.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">62</text>
+<rect x="396" y="316" width="125" height="32" fill="#E4602C"/>
+<text x="458.5" y="332.0" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">+0.76</text>
+<rect x="521" y="316" width="125" height="32" fill="#E25727"/>
+<text x="583.5" y="332.0" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">+0.78</text>
+<rect x="646" y="316" width="125" height="32" fill="#E97B39"/>
+<text x="708.5" y="332.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.68</text>
+<rect x="36" y="348" width="735" height="32" fill="#3B3B3F"/>
+<text x="48.0" y="364.0" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="start" dominant-baseline="middle">Métriques globales</text>
+<line x1="36" y1="380" x2="771" y2="380" stroke="#E2E2E5"/>
+<text x="48.0" y="396.0" font-size="13" font-weight="600" fill="#1A1A1A" text-anchor="start" dominant-baseline="middle">Macro F1</text>
+<text x="253.5" y="396.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">27 911</text>
+<text x="348.5" y="396.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">781</text>
+<rect x="396" y="380" width="125" height="32" fill="#EFCC66"/>
+<text x="458.5" y="396.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.4570</text>
+<line x1="36" y1="412" x2="771" y2="412" stroke="#E2E2E5"/>
+<text x="48.0" y="428.0" font-size="13" font-weight="600" fill="#1A1A1A" text-anchor="start" dominant-baseline="middle">Micro F1</text>
+<text x="253.5" y="428.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">27 911</text>
+<text x="348.5" y="428.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="middle" dominant-baseline="middle">781</text>
+<rect x="396" y="412" width="125" height="32" fill="#EEDC6F"/>
+<text x="458.5" y="428.0" font-size="13" font-weight="700" fill="#1A1A1A" text-anchor="middle" dominant-baseline="middle">+0.4246</text>
+<text x="36.0" y="482.0" font-size="13" font-weight="700" fill="#71717A" text-anchor="start" dominant-baseline="middle">Delta</text>
+<text x="98.0" y="482.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="start" dominant-baseline="middle">0.00</text>
+<rect x="141" y="474" width="220" height="16" rx="3" fill="url(#deltaGradient)" stroke="#E2E2E5"/>
+<text x="381.0" y="482.0" font-size="13" font-weight="400" fill="#71717A" text-anchor="start" dominant-baseline="middle">1.00</text>
+<text x="36.0" y="514.0" font-size="12" font-weight="400" fill="#71717A" text-anchor="start" dominant-baseline="middle">Valeur positive : TextToKids meilleur ; valeur négative : CyberAggAdo meilleur.</text>
+</svg>

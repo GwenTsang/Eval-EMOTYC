@@ -11,10 +11,7 @@ import numpy as np
 import pandas as pd
 from tokenizers import Tokenizer
 
-# ═══════════════════════════════════════════════════════════════════════════
 #  LABELS (noms canoniques, sans accents, ordre du modèle)
-# ═══════════════════════════════════════════════════════════════════════════
-
 EMOTYC_LABEL2ID = {
     "Emo": 0, "Comportementale": 1, "Designee": 2, "Montree": 3,
     "Suggeree": 4, "Base": 5, "Complexe": 6, "Admiration": 7,
@@ -25,9 +22,7 @@ EMOTYC_LABEL2ID = {
 
 ALL_LABELS = list(EMOTYC_LABEL2ID.keys())  # 19 labels
 
-# ═══════════════════════════════════════════════════════════════════════════
 #  GROUPES SÉMANTIQUES
-# ═══════════════════════════════════════════════════════════════════════════
 
 META_LABELS = ["Emo"]
 
@@ -49,15 +44,10 @@ LABEL_GROUPS = {
     "type":    TYPE_LABELS,
 }
 
-# ═══════════════════════════════════════════════════════════════════════════
 #  SEUILS PAR DÉFAUT
-# ═══════════════════════════════════════════════════════════════════════════
-
 THRESHOLD = 0.5
 
-# ═══════════════════════════════════════════════════════════════════════════
 #  NOMS D'AFFICHAGE ET NORMALISATION
-# ═══════════════════════════════════════════════════════════════════════════
 
 DISPLAY_NAMES = {
     "Emo": "Émo",
@@ -88,14 +78,11 @@ GROUP_DISPLAY_NAMES = {
     "type":    "Types (Base / Complexe)",
 }
 
-# ═══════════════════════════════════════════════════════════════════════════
 #  INFÉRENCE ONNX RUNTIME
-# ═══════════════════════════════════════════════════════════════════════════
-
 DEFAULT_MODEL_DIR = os.path.join(os.path.dirname(__file__), "model_onnx")
 MODEL_DOWNLOAD_HINT = (
     "Téléchargez-le depuis le dossier Eval-EMOTYC avec : "
-    "python scripts/download_model.py"
+    "bash setup.sh"
 )
 
 @dataclass(frozen=True)

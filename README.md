@@ -304,8 +304,8 @@ Convertit le fichier standardisé `emotyc_predictions_summary.json` (généré p
 **Exemple d'utilisation :**
 ```bash
 python visualizations/json_summary_to_html.py \
-    --json ./results/mon_run/emotyc_predictions_summary.json \
-    --out ./results/mon_run/rapport.html \
+    --json ./results/run/emotyc_predictions_summary.json \
+    --out ./results/run/rapport.html \
     --groups
 ```
 
@@ -340,18 +340,12 @@ restent suivis par Git ; seul le poids ONNX est téléchargé localement.
 Depuis le dossier `Eval-EMOTYC`, lancer :
 
 ```bash
-python scripts/download_model.py
+bash setup.sh
 ```
 
-Le script télécharge `model.onnx` depuis
-`https://huggingface.co/GwendalTsang/EMOTYC-ONNX/resolve/main/model.onnx`, puis
-vérifie sa taille et son SHA-256 (`e0c18514933453452929c9f699d68e1fd253414dd44046cc9ea77c445fcfd642`).
-Il est idempotent : si le modèle local est déjà correct, il ne le retélécharge
-pas. Pour forcer un nouveau téléchargement :
-
-```bash
-python scripts/download_model.py --force
-```
+Le script installe d'abord les dépendances de `requirements.txt`, puis télécharge
+`model.onnx` depuis
+`https://huggingface.co/GwendalTsang/EMOTYC-ONNX/resolve/main/model.onnx`.
 
 
 ```bash

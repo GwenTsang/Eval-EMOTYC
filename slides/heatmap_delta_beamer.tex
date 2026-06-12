@@ -25,10 +25,10 @@
 \setbeamersize{text margin left=8mm,text margin right=8mm}
 
 \newcommand{\InputHeatmapTable}{%
-  \IfFileExists{figures/heatmap_delta_table.tex}{%
-    \input{figures/heatmap_delta_table.tex}%
+  \IfFileExists{figures/heatmap_delta_table_compact.tex}{%
+    \input{figures/heatmap_delta_table_compact.tex}%
   }{%
-    \input{slides/figures/heatmap_delta_table.tex}%
+    \input{slides/figures/heatmap_delta_table_compact.tex}%
   }%
 }
 
@@ -96,18 +96,18 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{Heatmap compl\`ete des deltas}
-  \vspace{-0.7em}
+\begin{frame}{Heatmap compacte des principaux labels}
+  \vspace{-0.1em}
   \begin{center}
-    \scriptsize
-    \setlength{\tabcolsep}{4pt}
-    \renewcommand{\arraystretch}{0.82}
-    \resizebox{0.96\textwidth}{!}{\InputHeatmapTable}
+    \footnotesize
+    \setlength{\tabcolsep}{5pt}
+    \renewcommand{\arraystretch}{0.95}
+    \resizebox{0.72\textwidth}{!}{\InputHeatmapTable}
   \end{center}
 
-  \vspace{-0.4em}
+  \vspace{0.4em}
   \scriptsize
-  \textcolor{emotycMuted}{Lecture : $\Delta>0$ indique une performance sup\'erieure sur TextToKids ; la couleur indique l'amplitude, pas le sens.}
+  \textcolor{emotycMuted}{Lecture : 4 labels les plus repr\'esent\'es dans CyberAggAdo, plus le plus fort d\'ecrochage robuste. $\Delta>0$ indique une performance sup\'erieure sur TextToKids ; la couleur indique l'amplitude, pas le sens.}
 \end{frame}
 
 \begin{frame}{Signal principal : forte perte hors domaine}

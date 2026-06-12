@@ -7,8 +7,8 @@ Ce dossier contient une version Beamer de la visualisation
 
 - `heatmap_delta_beamer.tex` : présentation Beamer principale.
 - `make_heatmap_assets.py` : régénère les assets vectoriels depuis les JSON.
-- `figures/heatmap_delta_table.tex` : tableau LaTeX natif inclus dans Beamer.
-- `figures/heatmap_delta.svg` : version SVG autonome de la heatmap.
+- `figures/heatmap_delta_table_compact.tex` : tableau LaTeX natif inclus dans Beamer.
+- `figures/heatmap_delta_compact.svg` : version SVG compacte.
 
 ## Régénérer les assets
 
@@ -16,6 +16,14 @@ Depuis la racine du dépôt :
 
 ```bash
 python3 slides/make_heatmap_assets.py
+```
+
+Par défaut, la version utilisée dans Beamer garde 5 lignes : les 4 labels les
+plus représentés dans CyberAggAdo, plus le plus fort décrochage parmi les
+labels avec au moins 50 occurrences positives. Pour changer ces paramètres :
+
+```bash
+python3 slides/make_heatmap_assets.py --min-cyber-support 30 --max-compact-labels 6
 ```
 
 ## Compiler la présentation
@@ -32,14 +40,14 @@ Ou depuis `slides/` :
 pdflatex heatmap_delta_beamer.tex
 ```
 
-La slide de heatmap utilise un tableau LaTeX natif : le rendu final dans le
-PDF est vectoriel, sans capture PNG.
+La slide de heatmap utilise un tableau LaTeX natif filtré : le rendu final
+dans le PDF est vectoriel, sans capture PNG.
 
 ## Option SVG vers PDF
 
 Si vous préférez insérer la heatmap comme figure externe, convertissez le SVG :
 
 ```bash
-inkscape slides/figures/heatmap_delta.svg \
-  --export-filename=slides/figures/heatmap_delta.pdf
+inkscape slides/figures/heatmap_delta_compact.svg \
+  --export-filename=slides/figures/heatmap_delta_compact.pdf
 ```

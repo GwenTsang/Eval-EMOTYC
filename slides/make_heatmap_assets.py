@@ -153,6 +153,30 @@ def collect_data(cyber_path: Path, ttk_path: Path) -> dict:
     }
 
 
+def compact_rows(data: dict, min_support: int, max_rows: int) -> dict:
+    """Keep the most supported labels plus the largest robust F1 drop."""
+    eligible = [
+        row for row in data["rows"] if row["cyber_support"] >= min_support
+    ]
+    if max_rows >= len(eligible):
+        selected = eligible
+    else:
+        supported = eligible[: max_rows - 1]
+        supported_ids = {row["label"] for row in supported}
+        candidates = [row for row in eligible if row["label"] not in supported_ids]
+        largest_drop = max(
+            candidates,
+            key=lambda row: row["deltas"]["f1"],
+            default=None,
+        )
+        selected = supported + ([largest_drop] if largest_drop else [])
+
+    return {
+        **data,
+        "rows": selected,
+    }
+
+
 def latex_heat_cell(value: float, decimals: int = 2) -> str:
     color = hex_for_delta(value)
     foreground = text_color(value)
@@ -162,11 +186,11 @@ def latex_heat_cell(value: float, decimals: int = 2) -> str:
     )
 
 
-def write_latex_table(data: dict, out_path: Path) -> None:
+def write_latex_compact_table(data: dict, out_path: Path) -> None:
     lines = [
-        r"\begin{tabular}{lrrccc}",
+        r"\begin{tabular}{lrccc}",
         r"\toprule",
-        r"\textbf{Label} & \textbf{TTK} & \textbf{Cyber} & "
+        r"\textbf{Label} & \textbf{Cyber} & "
         + " & ".join(rf"\textbf{{{METRIC_TEX[metric]}}}" for metric in METRICS)
         + r" \\",
         r"\midrule",
@@ -178,25 +202,8 @@ def write_latex_table(data: dict, out_path: Path) -> None:
         )
         lines.append(
             f"{latex_escape(row['label'])} & "
-            f"{format_int_tex(row['ttk_support'])} & "
             f"{format_int_tex(row['cyber_support'])} & "
             f"{metric_cells} \\\\"
-        )
-
-    lines.extend(
-        [
-            r"\midrule",
-            r"\rowcolor[HTML]{3B3B3F}",
-            r"\multicolumn{6}{l}{\textcolor{white}{\textbf{Métriques globales}}} \\",
-        ]
-    )
-
-    for row in data["global_rows"]:
-        lines.append(
-            f"{latex_escape(row['label'])} & "
-            f"{format_int_tex(row['ttk_support'])} & "
-            f"{format_int_tex(row['cyber_support'])} & "
-            f"{latex_heat_cell(row['delta'], decimals=4)} & & \\\\"
         )
 
     lines.extend([r"\bottomrule", r"\end{tabular}", ""])
@@ -424,15 +431,44 @@ def main() -> None:
         type=Path,
         default=Path(__file__).resolve().parent / "figures",
     )
+    parser.add_argument(
+        "--min-cyber-support",
+        type=int,
+        default=50,
+        help="Minimum CyberAggAdo positive support for the compact Beamer table.",
+    )
+    parser.add_argument(
+        "--max-compact-labels",
+        type=int,
+        default=5,
+        help="Maximum number of rows in the compact Beamer table.",
+    )
     args = parser.parse_args()
 
     data = collect_data(args.cyber, args.ttk)
+    compact_data = compact_rows(
+        data,
+        min_support=args.min_cyber_support,
+        max_rows=args.max_compact_labels,
+    )
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    write_latex_table(data, args.out_dir / "heatmap_delta_table.tex")
-    write_svg(data, args.out_dir / "heatmap_delta.svg")
 
-    print(f"Wrote {args.out_dir / 'heatmap_delta_table.tex'}")
-    print(f"Wrote {args.out_dir / 'heatmap_delta.svg'}")
+    for stale_name in (
+        "heatmap_delta_table.tex",
+        "heatmap_delta_table_focus.tex",
+        "heatmap_delta.svg",
+        "heatmap_delta_focus.svg",
+    ):
+        (args.out_dir / stale_name).unlink(missing_ok=True)
+
+    write_latex_compact_table(
+        compact_data,
+        args.out_dir / "heatmap_delta_table_compact.tex",
+    )
+    write_svg(compact_data, args.out_dir / "heatmap_delta_compact.svg")
+
+    print(f"Wrote {args.out_dir / 'heatmap_delta_table_compact.tex'}")
+    print(f"Wrote {args.out_dir / 'heatmap_delta_compact.svg'}")
 
 
 if __name__ == "__main__":

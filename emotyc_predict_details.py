@@ -20,8 +20,7 @@ from emotyc_common import (
     EMOTION_LABELS,
     MODE_LABELS,
     TYPE_LABELS,
-    DEFAULT_THRESHOLD,
-    DEFAULT_MODE_THRESHOLD,
+    THRESHOLD,
     get_predictor,
     format_input,
     load_gold_xlsx,
@@ -85,14 +84,12 @@ def parse_args():
                         "(espace uniquement après current:)")
     p.add_argument("--batch-size", type=int, default=32,
                    help="Taille du batch pour l'inférence (défaut: 32)")
-    p.add_argument("--mode-threshold", type=float, default=DEFAULT_MODE_THRESHOLD,
-                   help=f"Seuil pour les prédictions des modes d'expression (défaut: {DEFAULT_MODE_THRESHOLD})")
     return p.parse_args()
 
 
 def main():
     args = parse_args()
-    EMOTION_THRESHOLD = DEFAULT_THRESHOLD
+    THRESHOLD = THRESHOLD
 
     # ── 1. Chargement du gold ─────────────────────────────────────────
     xlsx_path = os.path.abspath(args.xlsx)
@@ -146,21 +143,18 @@ def main():
     type_probs = all_probs[:, TYPE_INDICES]
 
     # ── 6. Prédictions binaires ───────────────────────────────────────
-    print(f"▸ Seuil émotions : {EMOTION_THRESHOLD}")
-    print(f"▸ Seuil modes : {args.mode_threshold}")
-    pred_emotion = (emotion_probs >= EMOTION_THRESHOLD).astype(int)
-    pred_mode = (mode_probs >= args.mode_threshold).astype(int)
-    pred_emo = (emo_probs >= 0.5).astype(int)
-    pred_type = (type_probs >= 0.5).astype(int)
+    print(f"Seuil : {THRESHOLD}")
+    pred_emotion = (emotion_probs >= THRESHOLD).astype(int)
+    pred_mode = (mode_probs >= THRESHOLD).astype(int)
+    pred_emo = (emo_probs >= THRESHOLD).astype(int)
+    pred_type = (type_probs >= THRESHOLD).astype(int)
 
     # ── 7. Métriques (affichage terminal par groupe) ──────────────────
     per_emotion, global_emotion = compute_metrics(gold_emotion, pred_emotion, EMOTION_LABELS)
-    _print_metrics_table("MÉTRIQUES PAR ÉMOTION", per_emotion, global_emotion,
-                         threshold_info=f"{EMOTION_THRESHOLD}")
+    _print_metrics_table("MÉTRIQUES PAR ÉMOTION", per_emotion, global_emotion)
 
     per_mode, global_mode = compute_metrics(gold_mode, pred_mode, MODE_LABELS)
-    _print_metrics_table("MÉTRIQUES PAR MODE D'EXPRESSION", per_mode, global_mode,
-                         threshold_info=f"{args.mode_threshold}")
+    _print_metrics_table("MÉTRIQUES PAR MODE D'EXPRESSION", per_mode, global_mode)
 
     per_emo, global_emo = compute_metrics(gold_emo, pred_emo.reshape(-1, 1), [EMO_LABEL])
     _print_metrics_table("MÉTRIQUES — CARACTÈRE ÉMOTIONNEL (Emo)", per_emo, global_emo)
@@ -189,8 +183,8 @@ def main():
             # Divergences émotions + modes
             divergences = []
             for labels, gold_m, pred_m, probs_m, threshold, dim in [
-                (EMOTION_LABELS, gold_emotion, pred_emotion, emotion_probs, EMOTION_THRESHOLD, "emotion"),
-                (MODE_LABELS, gold_mode, pred_mode, mode_probs, args.mode_threshold, "mode"),
+                (EMOTION_LABELS, gold_emotion, pred_emotion, emotion_probs, THRESHOLD, "emotion"),
+                (MODE_LABELS, gold_mode, pred_mode, mode_probs, THRESHOLD, "mode"),
             ]:
                 for j, label in enumerate(labels):
                     g, p = int(gold_m[i, j]), int(pred_m[i, j])
@@ -214,8 +208,7 @@ def main():
                 "text_prev": sentences[i - 1] if i > 0 else None,
                 "text_next": sentences[i + 1] if i < N - 1 else None,
                 "template_used": template_name,
-                "emotion_threshold": EMOTION_THRESHOLD,
-                "mode_threshold": args.mode_threshold,
+                "THRESHOLD": THRESHOLD,
                 # Émotions
                 "probas": {e: round(float(emotion_probs[i, j]), 6) for j, e in enumerate(EMOTION_LABELS)},
                 "preds": {e: int(pred_emotion[i, j]) for j, e in enumerate(EMOTION_LABELS)},
@@ -260,7 +253,7 @@ def main():
         "source_xlsx": os.path.basename(xlsx_path),
         "n_samples": N,
         "template": template_name,
-        "threshold": EMOTION_THRESHOLD,
+        "threshold": THRESHOLD,
         "per_label": per_label,
         "global_metrics": global_all,
     }

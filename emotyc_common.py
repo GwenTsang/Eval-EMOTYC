@@ -53,8 +53,7 @@ LABEL_GROUPS = {
 #  SEUILS PAR DÉFAUT
 # ═══════════════════════════════════════════════════════════════════════════
 
-DEFAULT_THRESHOLD = 0.5
-DEFAULT_MODE_THRESHOLD = 0.06
+THRESHOLD = 0.5
 
 # ═══════════════════════════════════════════════════════════════════════════
 #  NOMS D'AFFICHAGE ET NORMALISATION

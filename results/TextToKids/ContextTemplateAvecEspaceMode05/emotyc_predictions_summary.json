@@ -279,7 +279,7 @@
   },
   "legacy_metadata": {
     "n_divergent_rows": 1617,
-    "emotion_threshold": 0.5,
+    "THRESHOLD": 0.5,
     "mode_threshold": 0.5
   }
 }

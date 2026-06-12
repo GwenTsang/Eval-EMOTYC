@@ -25,9 +25,6 @@ results_normalized/
 # Modèles HuggingFace en cache
 .cache/
 
-# Symlinks et modèles ONNX
-model_onnx/
-
 # Fichiers générés par les inférences
 results/**/emotyc_predictions_output.xlsx
 results/**/emotyc_predictions.jsonl

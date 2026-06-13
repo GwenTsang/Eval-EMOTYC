@@ -1,0 +1,333 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{pgfplots}
+\usepackage{tabularx}
+
+\pgfplotsset{compat=1.18}
+\AtBeginDocument{\shorthandoff{;:!?}}
+
+\usetheme{Madrid}
+\setbeamertemplate{navigation symbols}{}
+
+\definecolor{emotyc}{HTML}{2F5597}
+\definecolor{svmword}{HTML}{6A4C93}
+\definecolor{rf}{HTML}{5A7D3A}
+\definecolor{svmchar}{HTML}{C65D21}
+\definecolor{accent}{HTML}{B03A2E}
+\definecolor{muted}{HTML}{666666}
+
+\setbeamercolor{structure}{fg=emotyc}
+\setbeamercolor{title}{fg=white,bg=emotyc}
+\setbeamercolor{frametitle}{fg=white,bg=emotyc}
+
+\newcommand{\best}[1]{\textbf{\color{accent}#1}}
+\newcommand{\nd}{\textit{n.d.}}
+\newcommand{\smallnote}[1]{\vspace{0.15cm}{\scriptsize\color{muted}#1}}
+
+\title[Baselines vs EMOTYC]{Classifieurs classiques vs EMOTYC}
+\subtitle{Comparaison multi-label sur CyberAggAdo}
+\author{Synthèse expérimentale}
+\date{13 juin 2026}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Question d'évaluation}
+  \begin{block}{Objectif}
+    Comparer les performances de trois classifieurs TF-IDF entraînés sur CyberAggAdo à un modèle transformer nommé \textbf{EMOTYC}.
+  \end{block}
+
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \textbf{Baselines entraînées in-domain}
+      \begin{itemize}
+        \item TF-IDF mots + LinearSVC
+        \item TF-IDF mots + RandomForest
+        \item TF-IDF caractères 2--5 + LinearSVC
+        \item Validation croisée 5 plis sur CyberAggAdo
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \textbf{Référence transformer}
+      \begin{itemize}
+        \item EMOTYC, entraîné sur TextToKids
+        \item Évaluation zéro-shot OOD sur CyberAggAdo
+        \item Template \texttt{bca\_spaced\_context}
+        \item Seuil de décision : 0,5
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \smallnote{Attention : la comparaison favorise les baselines, qui voient CyberAggAdo en apprentissage via la validation croisée.}
+\end{frame}
+
+\begin{frame}{Données et labels}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.46\textwidth}
+      \begin{table}
+      \small
+      \begin{tabular}{lr}
+        \toprule
+        \textbf{Élément} & \textbf{Valeur} \\
+        \midrule
+        Corpus cible & CyberAggAdo \\
+        Exemples & 781 \\
+        Labels évalués & 19 \\
+        Protocole baselines & 5-fold CV \\
+        Métrique principale & Macro-F1 \\
+        \bottomrule
+      \end{tabular}
+      \end{table}
+    \end{column}
+    \begin{column}{0.52\textwidth}
+      \textbf{Familles de labels}
+      \begin{itemize}
+        \item \textbf{Meta} : présence émotionnelle (\texttt{Emo})
+        \item \textbf{Modes} : comportementale, désignée, montrée, suggérée
+        \item \textbf{Types} : émotion de base ou complexe
+        \item \textbf{Catégories} : 12 catégories émotionnelles
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \smallnote{Sources : \texttt{baseline\_classifiers.py}, \texttt{baseline\_results.json}, \texttt{emotyc\_predictions\_summary.json}.}
+\end{frame}
+
+\begin{frame}{Résultats globaux}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.54\textwidth}
+      \begin{tikzpicture}
+      \begin{axis}[
+        ybar,
+        width=\textwidth,
+        height=0.58\textheight,
+        ymin=0,
+        ymax=0.66,
+        ylabel={F1},
+        symbolic x coords={Macro-F1,Micro-F1},
+        xtick=data,
+        enlarge x limits=0.28,
+        bar width=7pt,
+        ymajorgrids=true,
+        grid style={draw=gray!20},
+        legend style={at={(0.5,1.12)},anchor=south,legend columns=2,font=\scriptsize,draw=none},
+        tick label style={font=\scriptsize},
+        label style={font=\scriptsize},
+      ]
+        \addplot+[fill=emotyc,draw=emotyc] coordinates {(Macro-F1,0.282) (Micro-F1,0.473)};
+        \addplot+[fill=svmword,draw=svmword] coordinates {(Macro-F1,0.2671) (Micro-F1,0.5399)};
+        \addplot+[fill=rf,draw=rf] coordinates {(Macro-F1,0.1734) (Micro-F1,0.5297)};
+        \addplot+[fill=svmchar,draw=svmchar] coordinates {(Macro-F1,0.3235) (Micro-F1,0.5996)};
+        \legend{EMOTYC,SVM mots,RF,SVM caractères}
+      \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{table}
+      \scriptsize
+      \begin{tabular}{lrrr}
+        \toprule
+        \textbf{Modèle} & \textbf{Macro} & \textbf{Micro} & \textbf{Exact} \\
+        \midrule
+        EMOTYC & 0,282 & 0,473 & \nd \\
+        SVM mots & 0,267 & 0,540 & 0,318 \\
+        RF & 0,173 & 0,530 & \best{0,400} \\
+        SVM caractères & \best{0,324} & \best{0,600} & 0,368 \\
+        \bottomrule
+      \end{tabular}
+      \end{table}
+
+      \begin{itemize}
+        \item Le SVM caractères est le meilleur compromis global.
+        \item EMOTYC dépasse le SVM mots en macro-F1 malgré le zéro-shot.
+        \item L'exact match favorise les prédictions prudentes sur des labels rares.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Podium des modèles}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.64\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[x=1cm,y=1cm]
+        \node[font=\scriptsize\color{muted}] at (3.3,3.85) {Classement selon la macro-F1 sur les 19 labels};
+
+        \fill[emotyc!20] (0.25,0) rectangle (2.25,2.15);
+        \node[font=\LARGE\bfseries,text=emotyc] at (1.25,1.4) {2};
+        \node[font=\scriptsize\bfseries,text=emotyc,align=center] at (1.25,0.7) {EMOTYC};
+        \node[font=\footnotesize\bfseries,text=emotyc] at (1.25,2.45) {0,282};
+
+        \fill[svmchar!20] (2.45,0) rectangle (4.45,3.05);
+        \node[font=\Huge\bfseries,text=svmchar] at (3.45,2.1) {1};
+        \node[font=\scriptsize\bfseries,text=svmchar,align=center] at (3.45,1.1) {TF-IDF car.\\+ LinearSVC};
+        \node[font=\footnotesize\bfseries,text=svmchar] at (3.45,3.35) {0,324};
+
+        \fill[svmword!20] (4.65,0) rectangle (6.65,1.75);
+        \node[font=\LARGE\bfseries,text=svmword] at (5.65,1.15) {3};
+        \node[font=\scriptsize\bfseries,text=svmword,align=center] at (5.65,0.55) {TF-IDF mots\\+ LinearSVC};
+        \node[font=\footnotesize\bfseries,text=svmword] at (5.65,2.05) {0,267};
+
+        \draw[gray!45,thick] (0.05,0) -- (6.85,0);
+        \node[font=\scriptsize\color{muted}] at (3.45,-0.35) {Macro-F1};
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+    \begin{column}{0.34\textwidth}
+      \begin{block}{Lecture rapide}
+        \small
+        Le SVM caractères prend la tête : il exploite mieux les formes bruitées, abréviations et variantes orthographiques de CyberAggAdo.
+      \end{block}
+
+      \begin{itemize}\small
+        \item EMOTYC finit deuxième malgré l'absence d'entraînement sur CyberAggAdo.
+        \item Le SVM mots est proche d'EMOTYC, mais moins robuste au bruit lexical.
+        \item Le RandomForest sort du podium : macro-F1 0,173.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Lecture par famille de labels}
+  \begin{table}
+  \small
+  \begin{tabularx}{\textwidth}{lrrrrX}
+    \toprule
+    \textbf{Groupe} & \textbf{EMOTYC} & \textbf{SVM mots} & \textbf{RF} & \textbf{SVM car.} & \textbf{Lecture} \\
+    \midrule
+    Meta / Emo & 0,660 & 0,685 & 0,638 & \best{0,715} & Tous captent la présence émotionnelle. \\
+    Modes & 0,278 & 0,267 & 0,234 & \best{0,344} & Les modes restent difficiles ; EMOTYC est proche du SVM mots. \\
+    Types & 0,424 & 0,531 & 0,318 & \best{0,605} & L'apprentissage in-domain aide fortement Base/Complexe. \\
+    Catégories & 0,228 & 0,188 & 0,090 & \best{0,237} & Écart faible entre EMOTYC et SVM caractères. \\
+    \bottomrule
+  \end{tabularx}
+  \end{table}
+
+  \begin{block}{Message principal}
+    Les n-grammes de caractères sont très efficaces sur les textes courts et bruités ; EMOTYC conserve toutefois un signal sémantique utile sur les catégories fines, sans adaptation au domaine.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Labels fréquents : F1 par modèle}
+  \begin{center}
+  \scriptsize
+  \setlength{\tabcolsep}{5pt}
+  \renewcommand{\arraystretch}{0.84}
+  \begin{tabular}{lrrrrr}
+    \toprule
+    \textbf{Label} & \textbf{Support} & \textbf{EMOTYC} & \textbf{SVM mots} & \textbf{RF} & \textbf{SVM car.} \\
+    \midrule
+    Emo & 398 & 0,660 & 0,685 & 0,638 & \best{0,715} \\
+    Base & 363 & 0,549 & 0,662 & 0,636 & \best{0,685} \\
+    Montree & 300 & 0,472 & 0,584 & 0,574 & \best{0,615} \\
+    Colere & 289 & 0,458 & 0,586 & 0,570 & \best{0,618} \\
+    Degout & 80 & 0,000 & 0,337 & 0,338 & \best{0,494} \\
+    Autre & 62 & 0,148 & 0,187 & 0,176 & \best{0,213} \\
+    Designee & 55 & 0,371 & 0,237 & 0,209 & \best{0,447} \\
+    Suggeree & 54 & 0,082 & \best{0,095} & 0,000 & \best{0,095} \\
+    Comportementale & 36 & 0,185 & 0,152 & 0,154 & \best{0,219} \\
+    Joie & 30 & 0,393 & 0,239 & 0,000 & \best{0,500} \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+
+  \vspace{-0.1cm}
+  \begin{itemize}\footnotesize
+    \item Le SVM caractères gagne sur tous les labels avec au moins 30 occurrences positives.
+    \item Le cas le plus net est \textit{Degout} : EMOTYC ne le détecte pas, le SVM caractères atteint 0,494.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Labels rares : prudence d'interprétation}
+  \begin{center}
+  \scriptsize
+  \setlength{\tabcolsep}{5pt}
+  \renewcommand{\arraystretch}{0.84}
+  \begin{tabular}{lrrrrr}
+    \toprule
+    \textbf{Label} & \textbf{Support} & \textbf{EMOTYC} & \textbf{SVM mots} & \textbf{RF} & \textbf{SVM car.} \\
+    \midrule
+    Complexe & 14 & 0,298 & 0,400 & 0,000 & \best{0,526} \\
+    Tristesse & 14 & \best{0,150} & 0,000 & 0,000 & 0,111 \\
+    Jalousie & 6 & 0,000 & \best{0,909} & 0,000 & \best{0,909} \\
+    Surprise & 5 & \best{0,364} & 0,000 & 0,000 & 0,000 \\
+    Peur & 4 & \best{0,235} & 0,000 & 0,000 & 0,000 \\
+    Culpabilite & 3 & 0,000 & 0,000 & 0,000 & 0,000 \\
+    Fierte & 3 & \best{0,857} & 0,000 & 0,000 & 0,000 \\
+    Embarras & 2 & \best{0,133} & 0,000 & 0,000 & 0,000 \\
+    Admiration & 0 & 0,000 & 0,000 & 0,000 & 0,000 \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+
+  \vspace{-0.1cm}
+  \begin{itemize}\footnotesize
+    \item Plusieurs ``victoires'' sur labels rares reposent sur moins de 15 exemples.
+    \item EMOTYC récupère des signaux absents des baselines sur \textit{Peur}, \textit{Surprise}, \textit{Fierte}, \textit{Embarras}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Stabilité des baselines en validation croisée}
+  \begin{table}
+  \small
+  \begin{tabular}{lrrrr}
+    \toprule
+    \textbf{Modèle} & \textbf{Moy. folds} & \textbf{Écart-type} & \textbf{Min--max} & \textbf{Macro globale} \\
+    \midrule
+    SVM mots & 0,245 & 0,062 & 0,158--0,317 & 0,267 \\
+    RF & 0,172 & 0,018 & 0,156--0,202 & 0,173 \\
+    SVM caractères & \best{0,300} & 0,073 & 0,207--0,372 & \best{0,324} \\
+    \bottomrule
+  \end{tabular}
+  \end{table}
+
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+        \item Le RF est stable mais plafonne bas en macro-F1.
+        \item Les SVM varient davantage selon les plis.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item Le SVM caractères reste le meilleur à la fois en moyenne des plis et en prédictions agrégées.
+        \item Les écarts reflètent la rareté et la distribution irrégulière de plusieurs labels.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \smallnote{La macro globale est recalculée sur les prédictions concaténées des 5 plis, d'où l'écart avec la moyenne simple des plis.}
+\end{frame}
+
+\begin{frame}{Interprétation}
+  \begin{enumerate}
+    \item \textbf{Avantage des caractères.} Les n-grammes caractères captent abréviations, variantes orthographiques et insultes mieux que les mots seuls.
+    \item \textbf{Limite du RandomForest.} L'exact match est élevé, mais le modèle échoue sur de nombreux labels rares : la macro-F1 révèle ce déficit.
+    \item \textbf{Transfert partiel d'EMOTYC.} Le transformer reste compétitif sur certaines catégories rares ou sémantiques, mais perd sur les signaux pragmatiques propres au cyberharcèlement.
+    \item \textbf{Domaine cible spécifique.} CyberAggAdo contient des actes de parole, de l'ironie, des formes bruitées et des dynamiques multi-locuteurs absentes ou minoritaires dans TextToKids.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Conclusion opérationnelle}
+  \begin{block}{Résultat central}
+    Le meilleur baseline est \textbf{TF-IDF caractères + LinearSVC} : macro-F1 0,324 et micro-F1 0,600, devant EMOTYC en zéro-shot sur CyberAggAdo.
+  \end{block}
+
+  \begin{itemize}
+    \item EMOTYC ne doit pas être rejeté : il reste supérieur au SVM mots/RF sur plusieurs labels rares et garde une bonne détection globale de l'émotion.
+    \item Pour un système CyberAggAdo, le SVM caractères constitue une baseline forte et difficile à battre sans adaptation de domaine.
+    \item La prochaine étape pertinente est un fine-tuning ou une calibration d'EMOTYC sur CyberAggAdo, puis une comparaison contre le SVM caractères.
+  \end{itemize}
+
+\end{frame}
+
+\end{document}

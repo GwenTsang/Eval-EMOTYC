@@ -1,0 +1,866 @@
+
+\documentclass[aspectratio=169,10pt,xcolor=table]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+\definecolor{onera}{RGB}{0,80,154}
+\setbeamercolor{structure}{fg=onera}
+\setbeamertemplate{frametitle}{
+  \vspace{0.3cm}
+  \centering
+  {\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle\par}
+  \vspace{0.15cm}
+  {\color{onera}\hrule height 0.8pt}
+}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usefonttheme{serif}
+\usepackage[french]{babel}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tikz}
+\graphicspath{{figures/logos/}{figures/schemas/}{figures/plots/}}
+
+\definecolor{emotycText}{HTML}{1A1A1A}
+\definecolor{emotycMuted}{HTML}{71717A}
+\definecolor{emotycAccent}{HTML}{3B3B3F}
+\definecolor{muted}{HTML}{71717A}
+\definecolor{emotyc}{HTML}{0F766E}
+\definecolor{svmchar}{HTML}{4F46E5}
+\definecolor{svmword}{HTML}{B45309}
+\definecolor{ttkBlue}{HTML}{4F46E5}
+\definecolor{cyberOrange}{HTML}{B45309}
+\definecolor{softSurface}{HTML}{F7F7F8}
+
+\newcommand{\InputHeatmapTable}{%
+  \IfFileExists{figures/tables/heatmap_delta_table_compact.tex}{%
+    \input{figures/tables/heatmap_delta_table_compact.tex}%
+  }{%
+    \input{slides/figures/tables/heatmap_delta_table_compact.tex}%
+  }%
+}
+
+\newcommand{\metricbox}[3]{%
+  \begin{minipage}[t]{0.31\textwidth}
+    \setlength{\fboxsep}{0pt}%
+    \colorbox{softSurface}{%
+      \begin{minipage}[t][1.65cm][c]{\linewidth}
+        \centering
+        {\Large\bfseries #1}\par
+        \vspace{0.15em}
+        {\scriptsize\color{emotycMuted}#2}\par
+        \vspace{0.15em}
+        {\scriptsize #3}
+      \end{minipage}%
+    }
+  \end{minipage}%
+}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamersize{text margin left=6mm,text margin right=6mm}
+\definecolor{Positive}{RGB}{21,101,93}
+\definecolor{Negative}{RGB}{150,54,45}
+\newcommand{\pval}[1]{\ensuremath{#1}}
+\newcommand{\pos}[1]{\textcolor{Positive}{#1}}
+\newcommand{\negcorr}[1]{\textcolor{Negative}{#1}}
+\newcommand{\rhoitem}[7]{\item \(\rho(\mathrm{#1}=\text{#2},\,\mathrm{#3}=\text{#4}) = #5\)\\[-0.15em]{\tiny \(p\pval{#6}\), \(n_{\cap}=#7\)}}
+\newcommand{\chiitem}[5]{\item \(\chi^2(\mathrm{#1},\,\mathrm{#2}=\text{#3}) = #4\)\\[-0.15em]{\tiny \(p\pval{#5}\)}}
+\title{Leveraging linguistic annotations to improve automatic detection of online content}
+\author{Gwendal Tsang}
+\institute{\ Valentina Dragos\\Delphine Battistelli}
+\date{}
+\titlegraphic{\includegraphics[height=0.9cm]{ONERA_logo}}
+
+\begin{document}
+
+\begin{frame}
+  \begin{columns}
+    \begin{column}{0.08\textwidth}\end{column}
+    \begin{column}{0.84\textwidth}
+      \titlepage
+    \end{column}
+    \begin{column}{0.08\textwidth}\end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Sommaire}
+\large
+\begin{enumerate}
+  \item Problématique globale
+  \item Le corpus CyberAggAdoLarge
+  \item Tests du modèle EMOTYC
+  \item Tests avec des classifieurs linéaires
+\end{enumerate}
+\end{frame}
+
+\section{Problématique globale}
+
+\begin{frame}{1. Problématique globale}
+\centering
+\Large
+Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou éclairer l'analyse et la détection des conversations de cyberharcèlement ?
+\end{frame}
+
+\section{Le corpus CyberAggAdoLarge}
+
+\begin{frame}
+  \begin{center}
+    {\LARGE\bfseries 2. Le corpus CyberAggAdoLarge}\par
+  \end{center}
+\end{frame}
+
+\subsection{Statistiques descriptives}
+
+\begin{frame}{2.1.1 Annotations du corpus CyberAggAdo utilisées}
+\footnotesize
+\begin{description}
+  \item[EMOTION] émotion repérée dans l'énoncé : colère, dégoût, joie, tristesse, etc.
+  \item[MODE] mode d'expression de l'émotion : suggérée, montrée, comportementale ou désignée.
+  \item[ROLE] de l'autre : victim, bully, bully\_support, victim\_support ou conciliator.
+  \item[TARGET] rôle de la cible du message.
+  \item[HATE] degré d'agressivité du message : ouverte, couverte ou absente.
+  \item[VAB] type de violence verbale : blâme, dénigrement, insulte, menace ou autre.
+  \item[INT] intention du message : attaquer, défendre, apaiser, encourager, etc.
+  \item[CTX] contexte interactionnel dans lequel l'énoncé répond ou s'inscrit.
+\end{description}
+\end{frame}
+
+\begin{frame}{2.1.2 Explication de la signification des étiquettes 1}
+\footnotesize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.52\textwidth}
+{\centering\textbf{ROLE / TARGET}\par}
+\begin{description}
+  \item[bully] personne qui initie le harcèlement.
+  \item[victim] personne harcelée.
+  \item[bully\_support] personnes qui aident le harceleur.
+  \item[victim\_support] personnes qui aident la victime.
+  \item[conciliator] personnes qui cherchent à médiatiser le désaccord.
+\end{description}
+\end{column}
+\begin{column}{0.44\textwidth}
+{\centering\textbf{HATE}\par}
+\begin{description}
+  \item[OAG] agressivité ouverte : hostilité explicite, menace, insulte ou haine directe.
+  \item[CAG] agressivité couverte : agressivité masquée, indirecte ou implicite.
+  \item[NAG] non agressif : absence de menace, insulte ou intimidation.
+\end{description}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.1.3 Explication de la signification des étiquettes 2}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.36\textwidth}
+{\centering\textbf{VAB}\par}
+\begin{description}
+  \item[BLM] blâme : rendre la victime responsable de l'abus.
+  \item[DNG] dénigrement : remarques blessantes et non constructives.
+  \item[NCG] insultes ou name calling.
+  \item[THR] menace visant à effrayer ou contraindre.
+  \item[OTH] autre.
+\end{description}
+\end{column}
+\begin{column}{0.60\textwidth}
+{\centering\textbf{INT / CTX}\par}
+\begin{description}
+  \item[ATK] attaque : agression délibérée, moquerie, exclusion ou discrédit.
+  \item[DFN] défense : réponse protectrice à une attaque.
+  \item[CNS] contre-discours non agressif contre un discours nuisible.
+  \item[AIN] incitation ou validation d'un message négatif.
+  \item[GSL] gaslighting : minimisation ou invalidation du vécu de la victime.
+  \item[EMP] empathie, compassion ou soutien.
+  \item[CR] résolution de conflit, médiation ou désescalade.
+  \item[OTH] intention peu claire, énoncé neutre ou fragmentaire.
+\end{description}
+\end{column}
+\end{columns}
+\end{frame}
+
+\subsection{Corrélations}
+
+\begin{frame}{2.2.1 Lecture de la notation}
+\small
+\begin{itemize}
+  \item \(\rho(X=a,Y=b)\) reprend le coefficient Phi pour une paire de variables binaires.
+  \item \(\chi^2(F, X=a)\) résume le test global entre une famille catégorielle \(F\) et une variable binaire.
+  \item Les p-values très petites sont ramenées à des seuils : \(p<0.05\), \(p<0.01\), \(p<0.005\) ou \(p<0.001\).
+  \item \(n_{\cap}\) indique le nombre de cooccurrences de la paire.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{2.2.2 Plus fortes corrélations pairwise}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Top 1-5}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{EMOTION}{Colère}{MODE}{Montrée}{\pos{0.75}}{<0.001}{249}
+\rhoitem{EMOTION}{Joie}{MODE}{Désignée}{\pos{0.36}}{<0.001}{16}
+\rhoitem{MODE}{Montrée}{HATE}{OAG}{\pos{0.33}}{<0.001}{226}
+\rhoitem{EMOTION}{Dégoût}{MODE}{Montrée}{\pos{0.33}}{<0.001}{69}
+\rhoitem{EMOTION}{Jalousie}{MODE}{Désignée}{\pos{0.32}}{<0.001}{6}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Top 6-10}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{EMOTION}{Dégoût}{VAB}{DNG}{\pos{0.30}}{<0.001}{35}
+\rhoitem{EMOTION}{Dégoût}{VAB}{OTH}{\negcorr{-0.28}}{<0.001}{23}
+\rhoitem{EMOTION}{Tristesse}{MODE}{Suggérée}{\pos{0.27}}{<0.001}{8}
+\rhoitem{EMOTION}{Colère}{TARGET}{victim}{\negcorr{-0.27}}{<0.001}{60}
+\rhoitem{EMOTION}{Colère}{HATE}{OAG}{\pos{0.26}}{<0.001}{207}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.3 Plus fortes associations globales}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Top 1-5}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{HATE}{MODE}{Montrée}{83.92}{<0.001}
+\chiitem{INT}{EMOTION}{Colère}{72.93}{<0.001}
+\chiitem{VAB}{EMOTION}{Dégoût}{71.21}{<0.001}
+\chiitem{INT}{MODE}{Montrée}{68.60}{<0.001}
+\chiitem{HATE}{EMOTION}{Colère}{55.13}{<0.001}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Top 6-10}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{TARGET}{EMOTION}{Colère}{52.89}{<0.001}
+\chiitem{HATE}{EMOTION}{Dégoût}{51.78}{<0.001}
+\chiitem{INT}{EMOTION}{Dégoût}{50.45}{<0.001}
+\chiitem{TARGET}{EMOTION}{Dégoût}{36.91}{<0.001}
+\chiitem{CTX}{EMOTION}{Embarras}{35.50}{<0.001}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.4 Lecture rapide des résultats}
+\small
+\begin{itemize}
+  \item Le signal pairwise maximal devient \(\rho(\mathrm{EMOTION}=\text{Colère},\,\mathrm{MODE}=\text{Montrée})=\pos{0.75}\).
+  \item Les autres liens émotion-mode les plus visibles sont Joie--Désignée, Dégoût--Montrée, Jalousie--Désignée et Tristesse--Suggérée.
+  \item \textbf{Dégoût} concentre aussi des liens marqués avec la violence verbale : DNG positif et OTH négatif.
+  \item \textbf{Colère} reste associée à HATE:OAG et INT:DFN, mais inversement à HATE:NAG et TARGET:victim.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{2.2.5 Émotions × modes d'expression}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.54\textwidth}
+\textbf{Top pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{EMOTION}{Colère}{MODE}{Montrée}{\pos{0.75}}{<0.001}{249}
+\rhoitem{EMOTION}{Joie}{MODE}{Désignée}{\pos{0.36}}{<0.001}{16}
+\rhoitem{EMOTION}{Dégoût}{MODE}{Montrée}{\pos{0.33}}{<0.001}{69}
+\rhoitem{EMOTION}{Jalousie}{MODE}{Désignée}{\pos{0.32}}{<0.001}{6}
+\rhoitem{EMOTION}{Tristesse}{MODE}{Suggérée}{\pos{0.27}}{<0.001}{8}
+\end{itemize}
+\end{column}
+\begin{column}{0.42\textwidth}
+\textbf{Lecture}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+  \item La corrélation Colère--Montrée domine nettement tous les autres résultats.
+  \item Dégoût suit le même axe expressif que Colère, mais avec un effet plus modéré.
+  \item Joie et Jalousie ressortent avec le mode Désignée ; Jalousie reste portée par un petit effectif.
+  \item Tristesse apparaît surtout du côté Suggérée dans ce top.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.6 Émotions × haine / agressivité}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{EMOTION}{Colère}{HATE}{OAG}{\pos{0.26}}{<0.001}{207}
+\rhoitem{EMOTION}{Dégoût}{HATE}{OAG}{\pos{0.26}}{<0.001}{74}
+\rhoitem{EMOTION}{Dégoût}{HATE}{NAG}{\negcorr{-0.21}}{<0.001}{3}
+\rhoitem{EMOTION}{Colère}{HATE}{NAG}{\negcorr{-0.17}}{<0.001}{66}
+\rhoitem{EMOTION}{Colère}{HATE}{CAG}{\negcorr{-0.15}}{<0.001}{16}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Global : \(\chi^2\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{HATE}{EMOTION}{Colère}{55.13}{<0.001}
+\chiitem{HATE}{EMOTION}{Dégoût}{51.78}{<0.001}
+\chiitem{HATE}{EMOTION}{Autre}{7.54}{<0.05}
+\chiitem{HATE}{EMOTION}{Culpabilité}{6.00}{=0.05}
+\chiitem{HATE}{EMOTION}{Fierté}{6.00}{=0.05}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.7 Émotions × violence verbale}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{EMOTION}{Dégoût}{VAB}{DNG}{\pos{0.30}}{<0.001}{35}
+\rhoitem{EMOTION}{Dégoût}{VAB}{OTH}{\negcorr{-0.28}}{<0.001}{23}
+\rhoitem{EMOTION}{Dégoût}{VAB}{NCG}{\pos{0.16}}{<0.001}{19}
+\rhoitem{EMOTION}{Colère}{VAB}{DNG}{\negcorr{-0.14}}{<0.005}{26}
+\rhoitem{EMOTION}{Dégoût}{VAB}{THR}{\negcorr{-0.11}}{<0.05}{0}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Global : \(\chi^2\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{VAB}{EMOTION}{Dégoût}{71.21}{<0.001}
+\chiitem{VAB}{EMOTION}{Colère}{12.35}{<0.05}
+\chiitem{VAB}{EMOTION}{Autre}{6.62}{=0.16}
+\chiitem{VAB}{EMOTION}{Peur}{3.96}{=0.41}
+\chiitem{VAB}{EMOTION}{Joie}{3.66}{=0.45}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.8 Émotions × intention}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{EMOTION}{Colère}{INT}{DFN}{\pos{0.25}}{<0.001}{127}
+\rhoitem{EMOTION}{Colère}{INT}{OTH}{\negcorr{-0.18}}{<0.001}{18}
+\rhoitem{EMOTION}{Fierté}{INT}{CNS}{\pos{0.16}}{<0.001}{2}
+\rhoitem{EMOTION}{Dégoût}{INT}{AIN}{\pos{0.16}}{<0.001}{15}
+\rhoitem{EMOTION}{Culpabilité}{INT}{OTH}{\pos{0.15}}{<0.001}{3}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Global : \(\chi^2\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{INT}{EMOTION}{Colère}{72.93}{<0.001}
+\chiitem{INT}{EMOTION}{Dégoût}{50.45}{<0.001}
+\chiitem{INT}{EMOTION}{Fierté}{22.55}{<0.005}
+\chiitem{INT}{EMOTION}{Culpabilité}{17.99}{<0.05}
+\chiitem{INT}{EMOTION}{Tristesse}{14.26}{=0.05}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.9 Émotions × cible}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{EMOTION}{Colère}{TARGET}{victim}{\negcorr{-0.27}}{<0.001}{60}
+\rhoitem{EMOTION}{Dégoût}{TARGET}{victim}{\pos{0.25}}{<0.001}{55}
+\rhoitem{EMOTION}{Jalousie}{TARGET}{bully\_support}{\pos{0.18}}{<0.001}{4}
+\rhoitem{EMOTION}{Colère}{TARGET}{bully}{\pos{0.17}}{<0.001}{70}
+\rhoitem{EMOTION}{Colère}{TARGET}{bully\_support}{\pos{0.16}}{<0.001}{60}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Global : \(\chi^2\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{TARGET}{EMOTION}{Colère}{52.89}{<0.001}
+\chiitem{TARGET}{EMOTION}{Dégoût}{36.91}{<0.001}
+\chiitem{TARGET}{EMOTION}{Jalousie}{21.17}{<0.05}
+\chiitem{TARGET}{EMOTION}{Embarras}{13.24}{=0.15}
+\chiitem{TARGET}{EMOTION}{Autre}{10.00}{=0.35}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.10 Émotions × rôle}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{EMOTION}{Dégoût}{ROLE}{bully}{\pos{0.14}}{<0.001}{23}
+\rhoitem{EMOTION}{Colère}{ROLE}{bully\_support}{\negcorr{-0.14}}{<0.001}{74}
+\rhoitem{EMOTION}{Tristesse}{ROLE}{victim}{\pos{0.13}}{<0.001}{6}
+\rhoitem{EMOTION}{Colère}{ROLE}{victim}{\pos{0.13}}{<0.001}{48}
+\rhoitem{EMOTION}{Dégoût}{ROLE}{conciliator}{\negcorr{-0.13}}{<0.001}{4}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Global : \(\chi^2\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{ROLE}{EMOTION}{Dégoût}{34.60}{<0.001}
+\chiitem{ROLE}{EMOTION}{Colère}{25.67}{<0.001}
+\chiitem{ROLE}{EMOTION}{Tristesse}{17.71}{<0.005}
+\chiitem{ROLE}{EMOTION}{Autre}{15.47}{<0.005}
+\chiitem{ROLE}{EMOTION}{Joie}{9.70}{=0.05}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.11 Émotions × contexte}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{EMOTION}{Embarras}{CTX}{CR}{\pos{0.23}}{<0.005}{1}
+\rhoitem{EMOTION}{Colère}{CTX}{ATK}{\pos{0.16}}{<0.001}{128}
+\rhoitem{EMOTION}{Culpabilité}{CTX}{CR}{\pos{0.16}}{=0.05}{1}
+\rhoitem{EMOTION}{Surprise}{CTX}{EMP}{\pos{0.13}}{=0.12}{1}
+\rhoitem{EMOTION}{Colère}{CTX}{OTH}{\negcorr{-0.12}}{<0.005}{18}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Global : \(\chi^2\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{CTX}{EMOTION}{Embarras}{35.50}{<0.001}
+\chiitem{CTX}{EMOTION}{Colère}{23.36}{<0.005}
+\chiitem{CTX}{EMOTION}{Culpabilité}{20.44}{<0.005}
+\chiitem{CTX}{EMOTION}{Surprise}{18.15}{<0.05}
+\chiitem{CTX}{EMOTION}{Dégoût}{12.67}{=0.08}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.12 Modes d'expression × haine / agressivité}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{MODE}{Montrée}{HATE}{OAG}{\pos{0.33}}{<0.001}{226}
+\rhoitem{MODE}{Montrée}{HATE}{NAG}{\negcorr{-0.26}}{<0.001}{54}
+\rhoitem{MODE}{Montrée}{HATE}{CAG}{\negcorr{-0.13}}{<0.001}{20}
+\rhoitem{MODE}{Désignée}{HATE}{CAG}{\negcorr{-0.07}}{=0.08}{2}
+\rhoitem{MODE}{Désignée}{HATE}{OAG}{\pos{0.07}}{=0.07}{37}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Global : \(\chi^2\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{HATE}{MODE}{Montrée}{83.92}{<0.001}
+\chiitem{HATE}{MODE}{Désignée}{5.45}{=0.07}
+\chiitem{HATE}{MODE}{Comportementale}{3.07}{=0.22}
+\chiitem{HATE}{MODE}{Suggérée}{2.24}{=0.33}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.13 Modes d'expression × violence verbale}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{MODE}{Comportementale}{VAB}{THR}{\pos{0.17}}{<0.001}{6}
+\rhoitem{MODE}{Montrée}{VAB}{NCG}{\pos{0.13}}{<0.005}{41}
+\rhoitem{MODE}{Désignée}{VAB}{DNG}{\pos{0.09}}{=0.05}{12}
+\rhoitem{MODE}{Désignée}{VAB}{NCG}{\negcorr{-0.08}}{=0.10}{1}
+\rhoitem{MODE}{Comportementale}{VAB}{NCG}{\negcorr{-0.08}}{=0.15}{0}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Global : \(\chi^2\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{VAB}{MODE}{Comportementale}{17.60}{<0.005}
+\chiitem{VAB}{MODE}{Montrée}{12.44}{<0.05}
+\chiitem{VAB}{MODE}{Désignée}{10.04}{<0.05}
+\chiitem{VAB}{MODE}{Suggérée}{4.37}{=0.36}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.14 Modes d'expression × intention}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{MODE}{Montrée}{INT}{OTH}{\negcorr{-0.21}}{<0.001}{15}
+\rhoitem{MODE}{Montrée}{INT}{DFN}{\pos{0.21}}{<0.001}{123}
+\rhoitem{MODE}{Montrée}{INT}{EMP}{\negcorr{-0.11}}{<0.01}{2}
+\rhoitem{MODE}{Suggérée}{INT}{EMP}{\pos{0.07}}{=0.11}{4}
+\rhoitem{MODE}{Désignée}{INT}{DFN}{\negcorr{-0.07}}{=0.09}{10}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Global : \(\chi^2\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{INT}{MODE}{Montrée}{68.60}{<0.001}
+\chiitem{INT}{MODE}{Suggérée}{7.98}{=0.33}
+\chiitem{INT}{MODE}{Désignée}{6.77}{=0.45}
+\chiitem{INT}{MODE}{Comportementale}{5.54}{=0.59}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.15 Modes d'expression × cible}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{MODE}{Montrée}{TARGET}{victim}{\negcorr{-0.17}}{<0.001}{82}
+\rhoitem{MODE}{Désignée}{TARGET}{victim}{\pos{0.13}}{<0.01}{25}
+\rhoitem{MODE}{Montrée}{TARGET}{bully}{\pos{0.11}}{<0.05}{70}
+\rhoitem{MODE}{Montrée}{TARGET}{bully\_support}{\pos{0.11}}{<0.05}{60}
+\rhoitem{MODE}{Désignée}{TARGET}{bully}{\negcorr{-0.09}}{=0.07}{4}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Global : \(\chi^2\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{TARGET}{MODE}{Montrée}{25.56}{<0.005}
+\chiitem{TARGET}{MODE}{Désignée}{13.25}{=0.15}
+\chiitem{TARGET}{MODE}{Suggérée}{6.66}{=0.67}
+\chiitem{TARGET}{MODE}{Comportementale}{4.55}{=0.87}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.16 Modes d'expression × rôle}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{MODE}{Montrée}{ROLE}{victim}{\pos{0.09}}{<0.05}{45}
+\rhoitem{MODE}{Montrée}{ROLE}{conciliator}{\negcorr{-0.08}}{<0.05}{48}
+\rhoitem{MODE}{Montrée}{ROLE}{bully\_support}{\negcorr{-0.07}}{=0.06}{90}
+\rhoitem{MODE}{Désignée}{ROLE}{bully\_support}{\pos{0.07}}{=0.09}{25}
+\rhoitem{MODE}{Montrée}{ROLE}{bully}{\pos{0.06}}{=0.15}{50}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Global : \(\chi^2\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{ROLE}{MODE}{Montrée}{15.37}{<0.005}
+\chiitem{ROLE}{MODE}{Désignée}{4.60}{=0.33}
+\chiitem{ROLE}{MODE}{Comportementale}{3.21}{=0.52}
+\chiitem{ROLE}{MODE}{Suggérée}{0.66}{=0.96}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.17 Modes d'expression × contexte}
+\scriptsize
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.49\textwidth}
+\textbf{Pairwise : \(\rho\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\rhoitem{MODE}{Montrée}{CTX}{OTH}{\negcorr{-0.13}}{<0.005}{18}
+\rhoitem{MODE}{Montrée}{CTX}{ATK}{\pos{0.12}}{<0.005}{127}
+\rhoitem{MODE}{Suggérée}{CTX}{CR}{\pos{0.07}}{=0.17}{3}
+\rhoitem{MODE}{Comportementale}{CTX}{ATK}{\pos{0.07}}{=0.11}{17}
+\rhoitem{MODE}{Désignée}{CTX}{CR}{\pos{0.07}}{=0.20}{3}
+\end{itemize}
+\end{column}
+\begin{column}{0.49\textwidth}
+\textbf{Global : \(\chi^2\)}
+\begin{itemize}
+\setlength\itemsep{0.55em}
+\chiitem{CTX}{MODE}{Montrée}{19.34}{<0.01}
+\chiitem{CTX}{MODE}{Comportementale}{9.08}{=0.25}
+\chiitem{CTX}{MODE}{Désignée}{7.53}{=0.38}
+\chiitem{CTX}{MODE}{Suggérée}{6.77}{=0.45}
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{2.2.18 Points d'attention}
+\small
+\begin{itemize}
+  \item Le maximum identifié est désormais \(|\rho|=0.75\), porté par Colère--Montrée.
+  \item Les formules avec \(n_{\cap}\) très faible doivent être lues comme des signaux exploratoires.
+  \item Les scores \(\chi^2\) indiquent une dépendance globale, sans isoler à eux seuls quel niveau catégoriel porte toute l'association.
+  \item Une lecture inférentielle stricte demanderait une correction des comparaisons multiples.
+\end{itemize}
+\end{frame}
+
+\section{Tests du modèle EMOTYC}
+
+\begin{frame}
+  \begin{center}
+    {\LARGE\bfseries 3. Tests du modèle EMOTYC}\par
+  \end{center}
+\end{frame}
+
+\subsection{Qu'est-ce qu'EMOTYC ?}
+
+\begin{frame}{3.1 Qu'est-ce qu'EMOTYC ?}
+\centering
+\includegraphics[width=0.98\textwidth,height=0.78\textheight,keepaspectratio]{schema.pdf}
+\end{frame}
+
+\subsection{Méthodologie utilisée pour les tests de performance}
+
+\begin{frame}{3.2 Méthodologie utilisée pour les tests de performance}
+\centering
+\includegraphics[width=0.98\textwidth,height=0.78\textheight,keepaspectratio]{schema_xlsx.pdf}
+\end{frame}
+
+\begin{frame}{3.2.1 Métriques utilisées}
+  \vspace{1em}
+
+  \vspace{0.5em}
+  La précision mesure la fiabilité des prédictions positives :\par
+  \vspace{0.5em}
+  \colorbox{softSurface}{%
+    \begin{minipage}{0.4\textwidth}
+      \vspace{-0.2em}
+      \[
+      \text{Precision} = \frac{TP}{TP + FP}
+      \]
+      \vspace{-0.6em}
+    \end{minipage}%
+  }
+
+  \vspace{2em}
+
+  \vspace{0.5em}
+  Le rappel mesure la capacité du modèle à retrouver les instances réellement positives :\par
+  \vspace{0.5em}
+  \colorbox{softSurface}{%
+    \begin{minipage}{0.4\textwidth}
+      \vspace{-0.2em}
+      \[
+      \text{Recall} = \frac{TP}{TP + FN}
+      \]
+      \vspace{-0.6em}
+    \end{minipage}%
+  }
+
+\end{frame}
+
+\begin{frame}{3.2.2 Interpréter les baisses de performance}
+\small
+\begin{itemize}
+  \item Une baisse de précision suggère que certains indices lexicaux ou contextuels valides dans TTK deviennent trompeurs dans CyberAggAdoLarge.
+  \item Une baisse de rappel suggère que l'émotion concernée est exprimée dans CyberAggAdoLarge par des formes lexicales, discursives ou contextuelles différentes de celles apprises sur TTK. EMOTYC n'ayant jamais vu ces formes, il ne les détecte pas ou les associe à tort à un autre label émotionnel.
+\end{itemize}
+\end{frame}
+
+\subsection{Résultats : performances d'EMOTYC}
+
+\begin{frame}{3.3.1 Ce que mesure la heatmap}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.58\textwidth}
+      \[
+        \Delta_m(\ell)=m_{\text{TextToKids}}(\ell)-m_{\text{CyberAggAdo}}(\ell)
+      \]
+
+      \begin{itemize}
+        \item Les colonnes comparent $F_1$, la pr\'ecision et le rappel, label par label.
+        \item La couleur encode $|\Delta|$ : vert clair si les performances sont proches, orange/rouge si l'\'ecart est fort.
+        \item Une valeur positive signifie que le mod\`ele performe mieux sur TextToKids que sur CyberAggAdo.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.36\textwidth}
+      \vspace{0.4em}
+      \begin{tabular}{@{}lr@{}}
+        \toprule
+        Corpus & Unit\'es textuelles \\
+        \midrule
+        \textcolor{ttkBlue}{TextToKids} & 27\,911 \\
+        \textcolor{cyberOrange}{CyberAggAdo} & 781 \\
+        \bottomrule
+      \end{tabular}
+
+      \vspace{1.2em}
+      \small
+      Configuration : template avec contexte, seuil 0.5, comparaison directe des r\'esum\'es JSON.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{3.3.2 Heatmap compacte des principaux labels}
+  \vspace{-0.1em}
+  \small
+  \setlength{\tabcolsep}{3pt}
+  \renewcommand{\arraystretch}{0.82}
+  \InputHeatmapTable
+
+  \vspace{0.4em}
+  \scriptsize
+  \textcolor{emotycMuted}{Lecture : 4 labels les plus repr\'esent\'es dans CyberAggAdoLarge, plus le plus fort d\'ecrochage robuste. $\Delta>0$ indique une performance sup\'erieure sur TextToKids ; la couleur indique l'amplitude, pas le sens.}
+\end{frame}
+
+\begin{frame}{3.3.3 Signal principal : forte perte hors domaine}
+  \metricbox{$+0.4570$}{Macro $F_1$}{\'ecart TextToKids -- CyberAggAdo}
+  \hfill
+  \metricbox{$+0.4236$}{Micro $F_1$}{\'ecart TextToKids -- CyberAggAdo}
+  \hfill
+  \metricbox{781}{unit\'es CyberAggAdo}{contre 27\,911 pour TextToKids}
+
+  \vspace{1.5em}
+  \begin{itemize}
+    \item Le mod\`ele conserve une d\'etection globale de l'\'emotion, mais les performances baissent nettement en transfert.
+    \item Les labels fr\'equents dans CyberAggAdoLarge montrent d\'ej\`a un d\'ecrochage substantiel : \textit{\'Emo} ($\Delta F_1=+0.27$), \textit{Base} ($+0.37$), \textit{Montr\'ee} ($+0.41$), \textit{Col\`ere} ($+0.46$).
+    \item Le d\'ecalage touche \`a la fois la pr\'ecision et le rappel, ce qui sugg\`ere des faux positifs et des faux n\'egatifs hors domaine.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{3.3.4 Labels concentrant le d\'ecrochage}
+  \small
+  \begin{tabular}{@{}lrrrrr@{}}
+    \toprule
+    Label & Cyber & TTK & $\Delta F_1$ & $\Delta P$ & $\Delta R$ \\
+    \midrule
+    Autre & 62 & 1\,270 & \cellcolor[HTML]{E4602C}\textcolor{white}{+0.76} & \cellcolor[HTML]{E25727}\textcolor{white}{+0.78} & \cellcolor[HTML]{E97B39}\textcolor{black}{+0.68} \\
+    Sugg\'er\'ee & 54 & 1\,909 & \cellcolor[HTML]{E5682F}\textcolor{black}{+0.73} & \cellcolor[HTML]{E97C3A}\textcolor{black}{+0.67} & \cellcolor[HTML]{E5642D}\textcolor{black}{+0.74} \\
+    D\'esign\'ee & 55 & 1\,499 & \cellcolor[HTML]{EFA24F}\textcolor{black}{+0.56} & \cellcolor[HTML]{F1B55B}\textcolor{black}{+0.50} & \cellcolor[HTML]{ED9447}\textcolor{black}{+0.60} \\
+    Col\`ere & 289 & 1\,180 & \cellcolor[HTML]{F0CB66}\textcolor{black}{+0.46} & \cellcolor[HTML]{EEDD6F}\textcolor{black}{+0.42} & \cellcolor[HTML]{F1BA5D}\textcolor{black}{+0.49} \\
+    Montr\'ee & 300 & 971 & \cellcolor[HTML]{EEE172}\textcolor{black}{+0.41} & \cellcolor[HTML]{EEDF71}\textcolor{black}{+0.42} & \cellcolor[HTML]{EEE373}\textcolor{black}{+0.41} \\
+    Base & 363 & 4\,133 & \cellcolor[HTML]{E4EC7F}\textcolor{black}{+0.37} & \cellcolor[HTML]{CBEA92}\textcolor{black}{+0.29} & \cellcolor[HTML]{EEDC6F}\textcolor{black}{+0.43} \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{1.1em}
+  \begin{itemize}
+    \item Le mode \textit{Sugg\'er\'ee} d\'ecroche fortement : les indices contextuels appris sur TextToKids transf\`erent mal vers les messages de cyberharc\`element.
+    \item \textit{Autre} est le plus grand \'ecart parmi les labels avec au moins 50 occurrences positives dans CyberAggAdoLarge.
+    \item \textit{Col\`ere} et \textit{Montr\'ee} restent suffisamment repr\'esent\'es pour signaler une vraie difficult\'e, pas seulement un bruit d'effectif.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{3.3.5 Points de vigilance}
+  \begin{itemize}
+    \item Les labels tr\`es rares dans CyberAggAdoLarge doivent \^etre interpr\'et\'es avec prudence : \textit{Admiration} a 0 occurrence positive, \textit{Embarras} 2, \textit{Fiert\'e} 3, \textit{Peur} 4.
+    \item La couleur ne distingue pas le signe : une case claire peut aussi correspondre \`a une absence de cas suffisants pour comparer.
+    \item La heatmap sert surtout \`a localiser les zones de non-transf\'erabilit\'e ; l'analyse qualitative des erreurs reste n\'ecessaire pour expliquer les m\'ecanismes.
+  \end{itemize}
+
+  \vspace{1em}
+  \small
+  Conclusion : EMOTYC apprend bien le domaine TextToKids, mais les formes discursives de CyberAggAdoLarge changent assez pour d\'egrader la g\'en\'eralisation, notamment sur les modes d'expression et certains labels \'emotionnels.
+\end{frame}
+
+\section{Tests avec des classifieurs linéaires}
+
+\begin{frame}
+  \begin{center}
+    {\LARGE\bfseries 4. Tests avec des classifieurs linéaires}\par
+  \end{center}
+\end{frame}
+
+\subsection{Classifieurs linéaires utilisés}
+
+\begin{frame}{4.1 Classifieurs linéaires utilisés}
+  \centering
+  \vspace{-0.15em}
+  \begin{tikzpicture}[
+    x=1cm,y=1cm,>=stealth,
+    input/.style={draw=emotycAccent!45,fill=softSurface,rounded corners=2pt,
+      minimum width=2.65cm,minimum height=0.86cm,align=center,font=\scriptsize},
+    stepbox/.style={draw=emotycAccent!55,fill=white,rounded corners=2pt,
+      minimum height=0.88cm,align=center,font=\scriptsize},
+    vector/.style={draw=emotycAccent!45,fill=softSurface,rounded corners=2pt,
+      minimum width=2.75cm,minimum height=0.78cm,align=center,font=\scriptsize},
+    model/.style={draw=emotycAccent!65,fill=white,rounded corners=2pt,
+      minimum width=2.45cm,minimum height=0.95cm,align=center,font=\scriptsize},
+    arrow/.style={->,thick,draw=emotycAccent!70}
+  ]
+    \node[input] (texts) at (0,1.45) {
+      \includegraphics[height=0.32cm]{excel_logo.pdf}\\[-0.1em]
+      {\tiny CyberAggAdoGlobal.xlsx}
+    };
+
+    \draw[draw=emotycAccent!70,line width=0.6pt,fill=white]
+      (2.15,-0.45) rectangle (11.55,3.35);
+    \node[font=\scriptsize\bfseries,anchor=west] at (2.45,3.05) {
+      \includegraphics[height=0.34cm]{python_logo.pdf}\hspace{0.35em}\texttt{classifiers.py}
+    };
+
+    \node[stepbox,minimum width=2.35cm] (split) at (3.45,1.45) {Split du corpus};
+    \node[vector] (word) at (6.35,2.05) {\textbf{TF-IDF mots}};
+    \node[vector] (char) at (6.35,0.85) {\textbf{TF-IDF caract\`eres}};
+    \node[model] (svc) at (9.95,1.45) {\textbf{LinearSVC}\\classes r\'e\'equilibr\'ees};
+
+    \coordinate (scriptEntry) at (2.15,1.45);
+    \draw[arrow] (texts.east) -- (scriptEntry);
+    \coordinate (branch) at (4.75,1.45);
+    \draw[arrow] (split.east) -- (branch) |- (word.west);
+    \draw[arrow] (split.east) -- (branch) |- (char.west);
+    \coordinate (merge) at (8.35,1.45);
+    \draw[thick,draw=emotycAccent!70] (word.east) -- (8.35,2.05) -- (merge);
+    \draw[thick,draw=emotycAccent!70] (char.east) -- (8.35,0.85) -- (merge);
+    \draw[arrow] (merge) -- (svc.west);
+  \end{tikzpicture}
+\end{frame}
+
+\subsection{Comparaison des performances des classifieurs linéaires aux performances d'EMOTYC}
+
+\begin{frame}{4.2 Comparaison des performances des classifieurs linéaires\\aux performances d'EMOTYC}
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+
+    \fill[emotyc!20] (0.25,0) rectangle (2.25,2.15);
+    \node[font=\LARGE\bfseries,text=emotyc] at (1.25,1.4) {2};
+    \node[font=\scriptsize\bfseries,text=emotyc,align=center] at (1.25,0.7) {EMOTYC};
+    \node[font=\footnotesize\bfseries,text=emotyc] at (1.25,2.45) {0,282};
+
+    \fill[svmchar!20] (2.45,0) rectangle (4.45,3.05);
+    \node[font=\Huge\bfseries,text=svmchar] at (3.45,2.1) {1};
+    \node[font=\scriptsize\bfseries,text=svmchar,align=center] at (3.45,1.1) {TF-IDF car.\\+ LinearSVC};
+    \node[font=\footnotesize\bfseries,text=svmchar] at (3.45,3.35) {0,324};
+
+    \fill[svmword!20] (4.65,0) rectangle (6.65,1.75);
+    \node[font=\LARGE\bfseries,text=svmword] at (5.65,1.15) {3};
+    \node[font=\scriptsize\bfseries,text=svmword,align=center] at (5.65,0.55) {TF-IDF mots\\+ LinearSVC};
+    \node[font=\footnotesize\bfseries,text=svmword] at (5.65,2.05) {0,267};
+
+    \draw[gray!45,thick] (0.05,0) -- (6.85,0);
+    \node[font=\scriptsize\color{muted}] at (3.45,-0.35) {Macro-F1 sur les 19 labels};
+  \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+\end{document}

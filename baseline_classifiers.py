@@ -192,9 +192,7 @@ def main():
     all_results = {}
 
     # ── Baseline 1: TF-IDF + LinearSVC ────────────────────────────────────
-    print(f"\n{'─' * 70}")
     print("  Model 1: TF-IDF + LinearSVC (One-vs-Rest)")
-    print(f"{'─' * 70}")
 
     svm_results = run_cross_validation(
         texts, gold, "TF-IDF + LinearSVC",

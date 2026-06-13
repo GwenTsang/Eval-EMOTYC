@@ -3,36 +3,6 @@
 Ce dépôt a été conçu pour évaluer les performances du modèle **[EMOTYC](https://huggingface.co/TextToKids/CamemBERT-base-EmoTextToKids)** sur le corpus [CyberAgression-Large](https://github.com/aollagnier/CyberAgression-Large), contenant des messages de cyberharcèlement en français rédigés par des jeunes âgés de 11 à 18 ans. EMOTYC a été conçu par Etienne ([2023](https://bdr.parisnanterre.fr/theses/internet/2023/2023PA100047/2023PA100047.pdf)) dans le cadre du projet [ANR TextToKids](https://texttokids.irisa.fr/publications/)
 
 
-# Table des matières
-
-- [1. Cadre théorique et schéma d'annotation utilisé](#1-cadre-théorique-et-schéma-dannotation-utilisé)
-  - [1.1 L'Unité d'annotation](#11-lunité-dannotation)
-  - [1.2 Les catégories émotionnelles](#12-les-catégories-émotionnelles)
-  - [1.3 Les modes d'expression](#13-les-modes-dexpression)
-  - [1.4 Les trois types](#14-les-trois-types)
-  - [1.5 Transposition au niveau phrastique : le vecteur à 19 labels](#15-transposition-au-niveau-phrastique--le-vecteur-à-19-labels)
-- [2. Architecture du modèle EMOTYC](#2-architecture-du-modèle-emotyc)
-  - [2.1 De CamemBERT-base à EMOTYC](#21-de-camembert-base-à-emotyc)
-  - [2.2 Format d'entrée](#22-format-dentrée)
-- [3. Données évaluées](#3-données-évaluées)
-  - [3.1 Échantillons](#31-échantillons)
-- [4. Performances du modèle EMOTYC](#4-performances-du-modèle-emotyc)
-  - [4.1 Métriques utilisées](#41-métriques-utilisées)
-  - [4.2 Répliquer les résultats officiels sur le corpus Test](#42-répliquer-les-résultats-officiels-sur-le-corpus-test)
-  - [4.3 Performance sur CyberAggAdo avec les mêmes paramètres](#43-performance-sur-cyberaggado-avec-les-mêmes-paramètres)
-  - [4.8 Échantillons XLSX aléatoires contigus](#48-échantillons-xlsx-aléatoires-contigus)
-  - [4.9 Échantillon XLSX non contigus](#49-échantillon-xlsx-non-contigus)
-  - [4.10 Écarts TTK vs. CyberAggAdo — avec contexte](#410-écarts-ttk-vs-cyberaggado--avec-contexte)
-  - [4.11 Écarts TTK vs. CyberAggAdo — sans contexte](#411-écarts-ttk-vs-cyberaggado--sans-contexte)
-- [5. Remarques relatives à la configuration et aux hyperparamètres](#5-remarques-relatives-à-la-configuration-et-aux-hyperparamètres)
-  - [5.1 Génération d'un rapport HTML](#51-génération-dun-rapport-html)
-  - [5.2 Génération d'une Heatmap de transferabilité](#52-génération-dune-heatmap-de-transferabilité)
-  - [5.3 Contiguité et non-contiguité](#53-contiguité-et-non-contiguité)
-- [6. Remarques relatives à l'optimisation des scripts d'inférence](#6-remarques-relatives-à-loptimisation-des-scripts-dinférence)
-- [7. Reproductibilité et commandes utilisées](#7-reproductibilité-et-commandes-utilisées)
-
-
-
 # 1. Cadre théorique et schéma d'annotation utilisé
 
 ## 1.1 L'Unité d'annotation
@@ -98,10 +68,10 @@ Pour l'entraînement et l'évaluation d'EMOTYC, les annotations fines (au niveau
 Si au moins un segment de la phrase porte une propriété donnée, le label correspondant est activé (`1`) pour la phrase entière (si une phrase contient deux segments exprimant la colère, elle est associée à un vecteur dont le 10ème indice est 1, tout comme une phrase qui l'exprime sur un seul segment).
 
 
-
 Ainsi, si une instance est étiquetée `Base = 1` dans le gold, cela peut être interprété comme une disjonction entre toutes les émotions appartenant à l'ensemble des « émotions de base » (cette disjonction étant inclusive, car plusieurs émotions peuvent être activées à la fois sur une même unité textuelle). Cette logique de disjonction est la même pour `Complexe = 1` (avec l'ensemble des émotions complexes) et pour `Emo = 1` (avec tous les labels émotionnels).
 
 Il est possible de mesurer la « cohérence » des prédictions du modèle EMOTYC avec ce cadre théorique (p. ex., il ne devrait pas prédire `Base = 1` si aucune émotion de base n'est activée, ni prédire une émotion complexe (p. ex. `Culpabilité = 1`) sans prédire `Complexe = 1`). Cette cohérence n'est pas mesurée ici, mais elle l'est [dans ce script](https://github.com/GwenTsang/EMOTYC/blob/master/scripts/emotyc_sanity_check.py).
+
 
 ## 2. Architecture du modèle EMOTYC
 
@@ -192,7 +162,6 @@ Il porte sur l’ensemble des instances pour lesquelles `y=1`. Une baisse de rap
 
 
 
-
 ### 4.2 Répliquer les résultats officiels sur le corpus Test
 
 Etienne et al. ([2024](https://arxiv.org/abs/2405.14385)) rapportent les performances suivantes, sur le sous ensemble TEST du corpus TTK, avec les phrases adjacentes (contexte) injectées dans le template BCA et des seuils à 0.5 pour tous les labels :
@@ -231,166 +200,193 @@ Le script [`orchestrate_emotyc_folder.py`](orchestrate_emotyc_folder.py) (avec l
 | Type | 0.49 | 0.42 | 0.42 |
 | Catégorie émotionnelle | 0.35 | 0.20 | 0.23 |
 
-Performances détaillées par label :
 
+### Points de vigilance
 
-> **Observation** : dans CyberAggAdo, les erreurs sont légèrement plus élevées sur les domaines Religion et Homophobie que sur Obésité et Racisme. Obésité étant un corpus plus grand, l'agrégation par tirage aléatoire donne des performances très légèrement inférieures.
+- Le contexte BCA n'est valide que si l'ordre des lignes représente de vraies
+  phrases voisines. Il ne faut pas utiliser `--use-context` sur un échantillon
+  non contigu ou mélangé.
+- Les données CyberAggAdo contiennent des messages sensibles et potentiellement
+  offensants. Vérifier les contraintes de diffusion avant tout partage.
 
-*(Les illustrations SVG de cette section ont été retirées)*
-
-### 4.8 Échantillons XLSX aléatoires contigus
-
-**Configuration** : 4 échantillons de 50 unités textuelles contiguës extraites aléatoirement. Template BCA + contexte + seuil 0.5.
-
-*(Les illustrations SVG de cette section ont été retirées)*
-
-### 4.9 Échantillon XLSX  non contigus
-
-**Configuration** : 120 unités non contiguës extraites aléatoirement. Sans contexte.
-
-*(Les illustrations SVG de cette section ont été retirées)*
-
-### 4.10 Écarts TTK vs. CyberAggAdo — avec contexte
-
-Écarts par label : Δ = score(TTK) − score(CyberAggAdo). Un Δ positif indique une performance supérieure sur TTK.
-
-$$\Delta = \text{score}_{TTK} - \text{score}_{CyberAggAdo}$$
-
-*(Les illustrations SVG de cette section ont été retirées)*
-
-### 4.11 Écarts TTK vs. CyberAggAdo — sans contexte
-
-*(Les illustrations SVG de cette section ont été retirées)*
-
-
-
-
-# 5. Remarques relatives à la configuration et aux hyperparamètres
-
-Le script [`emotyc_predict.py`](emotyc_predict.py) reprend le template "BCA" (_Before, Current, After_) qui est utilisé lors du fine-tuning du modèle :
+## Structure
 
 ```txt
-before:{previous_sentence}</s>current: {target_sentence}</s>after:{next_sentence}</s>
+.
+├── common.py                         # labels, inférence ONNX, métriques
+├── emotyc_predict.py                 # inférence sur un XLSX gold
+├── emotyc_predict_parquet.py         # inférence sur le test TextToKids parquet
+├── orchestrate_emotyc_folder.py      # inférence sur un dossier de XLSX
+├── prepare_xlsx_samples.py           # génération de sous-échantillons XLSX
+├── baseline_classifiers.py           # baselines TF-IDF + classifieurs
+├── dataviz_scripts/                  # rapports HTML, SVG, heatmap
+├── golds/                            # fichiers gold XLSX/parquet
+├── model_onnx/                       # config, tokenizer, poids ONNX local
+├── results/                          # résultats JSON/rapports générés
+└── slides/                           # matériel Beamer
 ```
 
-Lorsque l’option `--use-context` est activée, le script injecte dans le template BCA les phrases immédiatement voisines de la phrase cible : la phrase précédente est placée dans le champ `before`, la phrase courante dans le champ `current`, et la phrase suivante dans le champ `after`. Pour la première et la dernière ligne du fichier, lorsqu’il n’existe pas respectivement de phrase précédente ou suivante, le script remplace le contexte manquant par le token de fin de séquence `</s>`.
+## Installation
 
-L'utilisation de ce template est documentée dans Étienne ([2023](https://theses.hal.science/tel-04210908v1/document), p. 141), dans Étienne et al. (2024, p. 5) (voir l'article sur [ArXiv](https://arxiv.org/pdf/2405.14385) ou sur [ACL](https://aclanthology.org/2024.wassa-1.14.pdf)), ainsi que dans le [README](https://huggingface.co/TextToKids/CamemBERT-base-EmoTextToKids) présent sur le dépôt Hugging Face du modèle. Cela est cohérent avec nos tests, dans lesquels ce template donne les meilleures performances sur le corpus TextToKids.
-
-Par ailleurs, comme dans [l'implémentation officielle d'EMOTYC sur TextToKids](https://gitlab.huma-num.fr/texttokids/ttkwp3-2025/-/blob/main/text_complexity/server/src/processor/semantique/emotyc.py), nous désactivons l'ajout de tokens spéciaux :
-
-```python
-add_special_tokens=False
-```
-
-Nos tests montrent que les performances d'EMOTYC diminuent quand `add_special_tokens=True`, ce qui suggère que l'ajout de tokens spéciaux était bien désactivé pendant le fine-tuning. Avec `add_special_tokens=False`, le premier token de la séquence n’est pas le token spécial `<s>`, mais le premier token produit par la tokenisation du template BCA, qui correspond au fragment lexical `_be` (car `CamembertTokenizer` ajoute le préfixe `_` lorsqu’un mot est précédé d’un espace). L’état caché associé à ce token en position 0 à la 12e couche du modèle sert de représentation globale utilisée pour la classification.
-
-D'autres tests montrent également que la configuration avec template BCA et `add_special_tokens=True` reste assez performante, bien qu’inférieure à la configuration sans tokens spéciaux. Cela suggère que, dans les deux cas, l'architecture Transformer parvient à diriger l'information pertinente vers la position 0 (qu'il s'agisse du token `_be` lorsque `add_special_tokens=False`, ou du token spécial `<s>` lorsque `add_special_tokens=True`).
-
-
-
-
-
-### 5.1 Génération d'un rapport HTML
-
-Convertit le fichier standardisé `emotyc_predictions_summary.json` (généré par les scripts d'inférence) en un rapport HTML lisible, avec possibilité de regrouper les métriques par dimension sémantique.
-
-**Exemple d'utilisation :**
-```bash
-python visualizations/json_summary_to_html.py \
-    --json ./results/run/emotyc_predictions_summary.json \
-    --out ./results/run/rapport.html \
-    --groups
-```
-
-### 5.2 Génération d'une Heatmap de transferabilité
-
-Permet de générer une heatmap HTML comparant les performances entre TextToKids et CyberAggAdo.
-
-**Exemple d'utilisation :**
-```bash
-python visualizations/delta_heatmap.py \
-    --ttk ./results/TextToKids/.../emotyc_predictions_summary.json \
-    --cyber ./results/orchestrated_emotyc_CyberAggAdo/.../emotyc_predictions_summary.json \
-    --out ./results/heatmap.html
-```
-
-### 5.3 Contiguité et non-contiguité
-
-Lance l'inférence de manière séquentielle sur plusieurs fichiers Excel, puis fusionne tous les résultats dans un unique dossier `merged`.
-
-L'objectif principal de cet orchestrateur est de préserver l'intégrité du contexte BCA. Si on produit un XLSX qui résulte d'une concaténation, puis qu'on utilise l'option `--use-context`, une phrase située à la fin d'un fichier XLSX se retrouve injectée comme contexte "before" de la première phrase du fichier XLSX suivant. C'est pourquoi il faut lançer le script d'inférence sur chaque bloc ou fichier individuel. L'échantillonnage contigu doit, par défaut, tirer un bloc de taille 50. Si l'indice de départ est `i` (tiré dans l'intervalle `[0 ; len(xlsx) - 50]`), le bloc sélectionné va de `i` jusqu’à `i + 50` exclu.
-
-Si les phrases sont mélangées ou sélectionnées aléatoirement, il faut être très prudent avec `--use-context`. Le contexte `before`/`after` suivrait alors l’ordre du sous-ensemble et non pas les vraies phrases voisines du document source. La recommandation est donc de ne pas utiliser **`--use-context`** pour tout échantillonnage non contigu.
-
-**Exemple d'utilisation :**
-
-Télécharger les poids du modèle :
-
-Le fichier `model_onnx/model.onnx` pèse environ 442 Mo et n'est pas versionné dans
-ce dépôt. Les fichiers `model_onnx/config.json` et `model_onnx/tokenizer.json`
-restent suivis par Git ; seul le poids ONNX est téléchargé localement.
-
-Depuis le dossier `Eval-EMOTYC`, lancer :
+Créer et activer un environnement virtuel est recommandé :
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
 bash setup.sh
 ```
 
-Le script installe d'abord les dépendances de `requirements.txt`, puis télécharge
-`model.onnx` depuis
-`https://huggingface.co/GwendalTsang/EMOTYC-ONNX/resolve/main/model.onnx`.
+`setup.sh` installe `requirements.txt`, puis vérifie ou télécharge :
 
-
-```bash
-# Générer des sous-ensembles (par défaut dans ./results/prepared_xlsx_samples/subsets)
-python prepare_xlsx_samples.py
-
-# Lancer l'inférence (utilise le contexte par défaut sur le dossier généré ci-dessus)
-python orchestrate_emotyc_folder.py --groups
+```txt
+model_onnx/model.onnx
 ```
 
+Par défaut, les poids sont téléchargés depuis :
 
-# 6. Remarques relatives à l'optimisation des scripts d'inférence
-
-Les scripts d'inférence utilisent ONNX Runtime et la bibliothèque Rust `tokenizers` :
-- ONNX Runtime applique des optimisations de graphe (fusions de nœuds, élimination de sous-graphes redondants) grâce à `ORT_ENABLE_ALL`.
-- Le chargement utilise `CUDAExecutionProvider` si un GPU CUDA est détecté, avec un repli automatique et performant sur `CPUExecutionProvider` le cas échéant.
-- Les paramètres de mémoire `enable_cpu_mem_arena` et `enable_mem_pattern` sont activés pour réduire l'allocation dynamique de mémoire lors de l'inférence.
-- Le parallélisme interne est contrôlé via `intra_op_num_threads` (2 par défaut) pour limiter l'utilisation CPU excédentaire.
-
-# 7. Reproductibilité et commandes utilisées
-
-Inférence sur les fichiers XLSX du gold :
-
-Sur TTK :
-
-```bash
-# Inférence avec contexte (template bca_spaced par défaut)
-python emotyc_predict.py --xlsx ./golds/emotexttokids_gold_flat.xlsx --out_dir ./results/TTK/ContextTemplate --use-context
+```txt
+https://huggingface.co/GwendalTsang/EMOTYC-ONNX/resolve/main/model.onnx
 ```
 
-Sur CyberAggAdo :
+## Commandes principales
+
+### Inférence sur un fichier XLSX
+
+Sans contexte :
 
 ```bash
-# Inférence avec contexte
-python emotyc_predict.py --xlsx ./golds/CyberAdoAgg_gold_global_total.xlsx --out_dir ./results/CyberAggAdo/ContextTemplate --use-context
+python emotyc_predict.py \
+  --xlsx ./golds/CyberAdoAgg_gold_global_total.xlsx \
+  --out_dir ./results/CyberAggAdo/no_context
 ```
 
-Pour obtenir un rapport détaillé (divergences et matrices de confusion par dimensions) :
+Avec contexte :
 
 ```bash
-# Rapport détaillé (avec contexte)
-python emotyc_predict_details.py \
-    --xlsx ./golds/emotexttokids_gold_flat.xlsx \
-    --out_dir ./results/TTK/ContextTemplate \
-    --use-context \
-    --template bca
+python emotyc_predict.py \
+  --xlsx ./golds/CyberAdoAgg_gold_global_total.xlsx \
+  --out_dir ./results/CyberAggAdo/context \
+  --use-context
 ```
 
-Pour orchestrer l'inférence sur tout un dossier de fichiers XLSX :
+Le script écrit :
+
+```txt
+emotyc_predictions_summary.json
+```
+
+### Inférence sur le test TextToKids parquet
 
 ```bash
-# Évaluation sur un dossier (charge le modèle ONNX une seule fois)
-python orchestrate_emotyc_folder.py ./results/prepared_xlsx_samples/subsets
+python emotyc_predict_parquet.py
 ```
+
+Ce script lit par défaut :
+
+```txt
+golds/TTK_test.parquet
+```
+
+### Préparer des échantillons XLSX
+
+Échantillons contigus, adaptés à l'usage du contexte :
+
+```bash
+python prepare_xlsx_samples.py \
+  --mode context \
+  --sample-size 50 \
+  --seed 42
+```
+
+Échantillons non contigus, à évaluer sans contexte :
+
+```bash
+python prepare_xlsx_samples.py \
+  --mode nocontext \
+  --sample-size 30 \
+  --seed 42
+```
+
+### Orchestrer un dossier de XLSX
+
+Avec contexte, comportement par défaut :
+
+```bash
+python orchestrate_emotyc_folder.py ./results/prepared_xlsx_samples/subsets --groups
+```
+
+Sans contexte :
+
+```bash
+python orchestrate_emotyc_folder.py ./results/prepared_xlsx_samples/subsets --no-context --groups
+```
+
+### Générer un rapport HTML
+
+```bash
+python dataviz_scripts/json_summary_to_html.py \
+  --json ./results/All_cyberadoagg_context/emotyc_predictions_summary.json \
+  --out ./results/All_cyberadoagg_context/rapport.html \
+  --groups
+```
+
+### Générer une heatmap de transfert
+
+```bash
+python dataviz_scripts/delta_heatmap.py \
+  --ttk ./results/TextToKids/ContextTemplateAvecEspace/emotyc_predictions_summary.json \
+  --cyber ./results/All_cyberadoagg_context/emotyc_predictions_summary.json \
+  --out ./results/heatmap_delta.html
+```
+
+### Lancer les baselines
+
+```bash
+python baseline_classifiers.py
+```
+
+Les résultats sont écrits dans :
+
+```txt
+results/baselines/baseline_results.json
+```
+
+## Résultats disponibles
+
+Les résultats déjà présents dans `results/` donnent la tendance suivante :
+
+| Corpus / configuration | N | Template | Macro-F1 | Micro-F1 |
+|---|---:|---|---:|---:|
+| TextToKids avec contexte | 27 911 | `bca_spaced_context` | 0.739 | 0.897 |
+| TextToKids sans contexte | 27 911 | `bca_spaced_no_context` | 0.684 | 0.850 |
+| CyberAggAdo complet avec contexte | 781 | `bca_spaced_context` | 0.282 | 0.473 |
+| CyberAggAdo orchestré avec contexte | 781 | `bca_spaced_context` | 0.282 | 0.472 |
+| Sous-échantillons contigus | 200 | `bca_spaced_context` | 0.270 | 0.470 |
+| Échantillon 120 lignes | 120 | `bca_spaced_context` | 0.247 | 0.492 |
+
+Lecture principale : EMOTYC conserve une partie de sa capacité à détecter une
+charge émotionnelle globale, mais le transfert vers CyberAggAdo dégrade fortement
+les modes d'expression et les catégories émotionnelles.
+
+Quelques labels critiques sur `results/All_cyberadoagg_context/` :
+
+| Label | Gold + | Pred + | F1 | Précision | Rappel |
+|---|---:|---:|---:|---:|---:|
+| `Emo` | 398 | 453 | 0.660 | 0.620 | 0.706 |
+| `Colere` | 289 | 252 | 0.458 | 0.492 | 0.429 |
+| `Degout` | 80 | 0 | 0.000 | 0.000 | 0.000 |
+| `Autre` | 62 | 141 | 0.148 | 0.106 | 0.242 |
+| `Montree` | 300 | 289 | 0.472 | 0.481 | 0.463 |
+| `Suggeree` | 54 | 19 | 0.082 | 0.158 | 0.056 |
+
+Le cas le plus problématique est `Degout` : il apparaît 80 fois dans le gold
+CyberAggAdo, mais n'est jamais prédit à seuil 0.5.
+
+## Baselines
+
+| Modèle | Macro-F1 | Micro-F1 | Exact match |
+|---|---:|---:|---:|
+| EMOTYC zéro-shot OOD | 0.282 | 0.473 | n.d. |
+| TF-IDF + LinearSVC | 0.267 | 0.540 | 0.318 |
+| TF-IDF + RandomForest | 0.173 | 0.530 | 0.400 |
+| TF-IDF char n-grams + LinearSVC | 0.324 | 0.600 | 0.368 |

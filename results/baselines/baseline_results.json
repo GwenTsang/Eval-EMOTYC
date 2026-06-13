@@ -828,10 +828,38 @@
     }
   },
   "emotyc_reference": {
-    "macro_f1": 0.291,
-    "micro_f1": 0.472,
-    "exact_match": 0.346,
+    "macro_f1": 0.282,
+    "micro_f1": 0.473,
+    "exact_match": null,
+    "per_label_f1": {
+      "Emo": 0.66,
+      "Comportementale": 0.185,
+      "Designee": 0.371,
+      "Montree": 0.472,
+      "Suggeree": 0.082,
+      "Base": 0.549,
+      "Complexe": 0.298,
+      "Admiration": 0.0,
+      "Autre": 0.148,
+      "Colere": 0.458,
+      "Culpabilite": 0.0,
+      "Degout": 0.0,
+      "Embarras": 0.133,
+      "Fierte": 0.857,
+      "Jalousie": 0.0,
+      "Joie": 0.393,
+      "Peur": 0.235,
+      "Surprise": 0.364,
+      "Tristesse": 0.15
+    },
+    "group_f1": {
+      "meta": 0.66,
+      "modes": 0.2775,
+      "types": 0.4235,
+      "emotions": 0.2282
+    },
+    "source": "/workspaces/workspace/Temp/results/All_cyberadoagg_context/emotyc_predictions_summary.json",
     "training_data": "TextToKids (27,911 samples, different domain)",
-    "note": "Zero-shot OOD, no training on CyberAggAdo"
+    "note": "Zero-shot OOD, no training on CyberAggAdo; exact_match is null because the source summary does not include it"
   }
 }

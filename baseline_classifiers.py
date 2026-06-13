@@ -32,8 +32,6 @@ warnings.filterwarnings("ignore")
 # ── Config ────────────────────────────────────────────────────────────────
 
 XLSX_PATH = Path(__file__).parent / "golds" / "CyberAdoAgg_gold_global_total.xlsx"
-if not XLSX_PATH.exists():
-    XLSX_PATH = Path("/workspaces/workspace/EMOTYC/data/CyberAdoAgg_gold_global_total_latest.xlsx")
 
 LABELS_19 = [
     "Emo",
@@ -57,6 +55,13 @@ META_LABELS = ["Emo"]
 OUT_DIR = Path(__file__).parent / "results" / "baselines"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
+EMOTYC_SUMMARY_PATH = (
+    Path(__file__).parent
+    / "results"
+    / "All_cyberadoagg_context"
+    / "emotyc_predictions_summary.json"
+)
+
 N_FOLDS = 5
 RANDOM_STATE = 42
 
@@ -64,6 +69,11 @@ RANDOM_STATE = 42
 def load_data():
     """Load gold data and extract text + labels."""
     df = pd.read_excel(XLSX_PATH)
+    missing_labels = [label for label in LABELS_19 if label not in df.columns]
+    if missing_labels:
+        missing = ", ".join(missing_labels)
+        raise ValueError(f"Gold file is missing expected label column(s): {missing}")
+
     texts = df["TEXT"].fillna("").astype(str).tolist()
     # Replace any remaining "nan" strings
     texts = [t if t != "nan" else "" for t in texts]
@@ -71,10 +81,38 @@ def load_data():
     # Build gold matrix (N, 19)
     gold = np.zeros((len(df), len(LABELS_19)), dtype=int)
     for j, label in enumerate(LABELS_19):
-        if label in df.columns:
-            gold[:, j] = df[label].fillna(0).astype(int).values
+        gold[:, j] = df[label].fillna(0).astype(int).values
 
     return texts, gold, df
+
+
+def load_emotyc_reference():
+    """Load EMOTYC reference metrics from the CyberAggAdo summary JSON."""
+    with open(EMOTYC_SUMMARY_PATH, "r", encoding="utf-8") as f:
+        summary = json.load(f)
+
+    global_metrics = summary.get("global_metrics", {})
+    missing_metrics = [
+        metric for metric in ("macro_f1", "micro_f1") if metric not in global_metrics
+    ]
+    if missing_metrics:
+        missing = ", ".join(missing_metrics)
+        raise ValueError(f"EMOTYC summary is missing global metric(s): {missing}")
+
+    per_label_rows = summary.get("per_label", [])
+    per_label_f1 = {row["label"]: row["f1"] for row in per_label_rows}
+    missing_labels = [label for label in LABELS_19 if label not in per_label_f1]
+    if missing_labels:
+        missing = ", ".join(missing_labels)
+        raise ValueError(f"EMOTYC summary is missing expected label(s): {missing}")
+
+    return {
+        "macro_f1": global_metrics["macro_f1"],
+        "micro_f1": global_metrics["micro_f1"],
+        "exact_match": global_metrics.get("exact_match"),
+        "per_label_f1": {label: per_label_f1[label] for label in LABELS_19},
+        "source": str(EMOTYC_SUMMARY_PATH),
+    }
 
 
 def evaluate_per_label(y_true, y_pred, labels):
@@ -197,11 +235,12 @@ def run_cross_validation(texts, gold, model_name, model_factory, tfidf_params=No
 
 
 def main():
-    print("=" * 70)
+    print("")
     print("  Baseline Classifiers — CyberAggAdo")
-    print("=" * 70)
+    print("")
 
     texts, gold, df = load_data()
+    emotyc_reference = load_emotyc_reference()
     print(f"\nLoaded {len(texts)} samples, {gold.shape[1]} labels")
     print(f"Label prevalences:")
     for j, label in enumerate(LABELS_19):
@@ -240,9 +279,9 @@ def main():
           f"exact match = {rf_results['exact_match']}")
 
     # ── Baseline 3: TF-IDF + LinearSVC with char n-grams ─────────────────
-    print(f"\n{'─' * 70}")
+    print("")
     print("  Model 3: TF-IDF (char 2-5) + LinearSVC")
-    print(f"{'─' * 70}")
+    print("")
 
     svm_char_results = run_cross_validation(
         texts, gold, "TF-IDF (char) + LinearSVC",
@@ -260,43 +299,45 @@ def main():
           f"exact match = {svm_char_results['exact_match']}")
 
     # ── Summary comparison ────────────────────────────────────────────────
-    print(f"\n{'=' * 70}")
+    print("")
     print("  SUMMARY: Baseline Classifiers vs EMOTYC")
-    print(f"{'=' * 70}")
+    print("")
 
-    # EMOTYC results
-    emotyc_macro = 0.291
-    emotyc_micro = 0.472
-    emotyc_exact = 0.346
+    # EMOTYC results from results/All_cyberadoagg_context/emotyc_predictions_summary.json
+    emotyc_macro = emotyc_reference["macro_f1"]
+    emotyc_micro = emotyc_reference["micro_f1"]
+    emotyc_exact = emotyc_reference["exact_match"]
+    emotyc_exact_display = (
+        f"{emotyc_exact:>12.4f}" if emotyc_exact is not None else f"{'n/a':>12s}"
+    )
 
     print(f"\n  {'Model':<35s} {'Macro-F1':>10s} {'Micro-F1':>10s} {'Exact Match':>12s} {'Training':>20s}")
     print(f"  {'─'*35} {'─'*10} {'─'*10} {'─'*12} {'─'*20}")
-    print(f"  {'EMOTYC (zero-shot OOD)':<35s} {emotyc_macro:>10.4f} {emotyc_micro:>10.4f} {emotyc_exact:>12.4f} {'TTK (27k, other domain)':>20s}")
+    print(
+        f"  {'EMOTYC (zero-shot OOD)':<35s} {emotyc_macro:>10.4f} "
+        f"{emotyc_micro:>10.4f} {emotyc_exact_display} "
+        f"{'TTK (27k, other domain)':>20s}"
+    )
 
     for key, label in [("tfidf_svm", "TF-IDF + SVM"),
                        ("tfidf_rf", "TF-IDF + RF"),
                        ("tfidf_char_svm", "TF-IDF (char) + SVM")]:
         r = all_results[key]
-        print(f"  {label:<35s} {r['macro_f1']:>10.4f} {r['micro_f1']:>10.4f} {r['exact_match']:>12.4f} {'CyberAggAdo (5-fold CV)':>20s}")
+        print(
+            f"  {label:<35s} {r['macro_f1']:>10.4f} "
+            f"{r['micro_f1']:>10.4f} {r['exact_match']:>12.4f} "
+            f"{'CyberAggAdo (5-fold CV)':>20s}"
+        )
 
     # ── Per-label comparison table ────────────────────────────────────────
     print(f"\n  Per-label F1 comparison:")
     print(f"  {'Label':<20s} {'EMOTYC':>8s} {'SVM':>8s} {'RF':>8s} {'Char-SVM':>8s}")
     print(f"  {'─'*20} {'─'*8} {'─'*8} {'─'*8} {'─'*8}")
 
-    # EMOTYC per-label F1 from the detailed JSON
-    emotyc_f1 = {
-        "Emo": 0.657, "Comportementale": 0.148, "Designee": 0.371,
-        "Montree": 0.459, "Suggeree": 0.085, "Base": 0.551,
-        "Complexe": 0.286, "Admiration": 0.000, "Autre": 0.130,
-        "Colere": 0.477, "Culpabilite": 0.000, "Degout": 0.000,
-        "Embarras": 0.133, "Fierte": 1.000, "Jalousie": 0.000,
-        "Joie": 0.400, "Peur": 0.308, "Surprise": 0.364,
-        "Tristesse": 0.162,
-    }
+    emotyc_f1 = emotyc_reference["per_label_f1"]
 
     for label in LABELS_19:
-        ef1 = emotyc_f1.get(label, 0.0)
+        ef1 = emotyc_f1[label]
         sf1 = all_results["tfidf_svm"]["per_label"][label]["f1"]
         rf1 = all_results["tfidf_rf"]["per_label"][label]["f1"]
         cf1 = all_results["tfidf_char_svm"]["per_label"][label]["f1"]
@@ -311,9 +352,17 @@ def main():
     print(f"  {'Group':<20s} {'EMOTYC':>8s} {'SVM':>8s} {'RF':>8s} {'Char-SVM':>8s}")
     print(f"  {'─'*20} {'─'*8} {'─'*8} {'─'*8} {'─'*8}")
 
-    emotyc_groups = {"meta": 0.657, "modes": 0.266, "types": 0.418, "emotions": 0.248}
+    emotyc_groups = {
+        name: round(float(np.mean([emotyc_f1[label] for label in group_labels])), 4)
+        for name, group_labels in [
+            ("meta", META_LABELS),
+            ("modes", MODE_LABELS),
+            ("types", TYPE_LABELS),
+            ("emotions", EMOTION_LABELS),
+        ]
+    }
     for group in ["meta", "modes", "types", "emotions"]:
-        eg = emotyc_groups.get(group, 0.0)
+        eg = emotyc_groups[group]
         sg = all_results["tfidf_svm"]["group_f1"].get(group, 0.0)
         rg = all_results["tfidf_rf"]["group_f1"].get(group, 0.0)
         cg = all_results["tfidf_char_svm"]["group_f1"].get(group, 0.0)
@@ -330,8 +379,14 @@ def main():
             "macro_f1": emotyc_macro,
             "micro_f1": emotyc_micro,
             "exact_match": emotyc_exact,
+            "per_label_f1": emotyc_f1,
+            "group_f1": emotyc_groups,
+            "source": emotyc_reference["source"],
             "training_data": "TextToKids (27,911 samples, different domain)",
-            "note": "Zero-shot OOD, no training on CyberAggAdo",
+            "note": (
+                "Zero-shot OOD, no training on CyberAggAdo; exact_match is null "
+                "because the source summary does not include it"
+            ),
         },
     }
 
@@ -340,8 +395,6 @@ def main():
         json.dump(output, f, ensure_ascii=False, indent=2)
 
     print(f"\n  Results saved to: {out_path}")
-    print(f"{'=' * 70}")
-
 
 if __name__ == "__main__":
     main()

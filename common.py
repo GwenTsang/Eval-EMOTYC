@@ -1,6 +1,6 @@
 """
-Module commun EMOTYC centralisant les constantes, la configuration des étiquettes,
-les métriques d'évaluation et l'inférence via ONNX Runtime.
+Module commun centralisant les constantes, la configuration des étiquettes,
+les métriques d'évaluation et l'inférence.
 """
 import os
 import json

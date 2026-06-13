@@ -31,13 +31,18 @@ python3 slides/make_heatmap_assets.py --min-cyber-support 30 --max-compact-label
 Depuis la racine du dépôt :
 
 ```bash
-pdflatex slides/heatmap_delta_beamer.tex
+./slides/compile_beamer.sh
 ```
 
-Ou depuis `slides/` :
+Le script compile dans un dossier temporaire, copie uniquement le PDF final vers
+`slides/heatmap_delta_beamer.pdf`, puis supprime les fichiers auxiliaires
+(`.aux`, `.log`, `.nav`, etc.) si la compilation réussit. En cas d'erreur, le
+dossier temporaire est conservé pour inspecter les logs.
+
+Pour écrire le PDF ailleurs :
 
 ```bash
-pdflatex heatmap_delta_beamer.tex
+OUTPUT_PDF=/tmp/heatmap_delta_beamer.pdf ./slides/compile_beamer.sh
 ```
 
 La slide de heatmap utilise un tableau LaTeX natif filtré : le rendu final

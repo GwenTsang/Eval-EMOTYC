@@ -49,7 +49,7 @@
 }
 
 \title{Transferabilit\'e d'EMOTYC}
-\subtitle{Lecture de la heatmap des deltas TextToKids $\rightarrow$ CyberAggAdo}
+\subtitle{Lecture de la heatmap des deltas TextToKids \texorpdfstring{$\rightarrow$}{->} CyberAggAdo}
 \author{}
 \date{}
 
@@ -99,10 +99,10 @@
 \begin{frame}{Heatmap compacte des principaux labels}
   \vspace{-0.1em}
   \begin{center}
-    \footnotesize
-    \setlength{\tabcolsep}{5pt}
-    \renewcommand{\arraystretch}{0.95}
-    \resizebox{0.72\textwidth}{!}{\InputHeatmapTable}
+    \scriptsize
+    \setlength{\tabcolsep}{3pt}
+    \renewcommand{\arraystretch}{0.82}
+    \resizebox{0.58\textwidth}{!}{\InputHeatmapTable}
   \end{center}
 
   \vspace{0.4em}
@@ -113,14 +113,14 @@
 \begin{frame}{Signal principal : forte perte hors domaine}
   \metricbox{$+0.4570$}{Macro $F_1$}{\'ecart TextToKids -- CyberAggAdo}
   \hfill
-  \metricbox{$+0.4246$}{Micro $F_1$}{\'ecart TextToKids -- CyberAggAdo}
+  \metricbox{$+0.4236$}{Micro $F_1$}{\'ecart TextToKids -- CyberAggAdo}
   \hfill
   \metricbox{781}{unit\'es CyberAggAdo}{contre 27\,911 pour TextToKids}
 
   \vspace{1.5em}
   \begin{itemize}
     \item Le mod\`ele conserve une d\'etection globale de l'\'emotion, mais les performances baissent nettement en transfert.
-    \item Les labels fr\'equents dans CyberAggAdo montrent d\'ej\`a un d\'ecrochage substantiel : \textit{\'Emo} ($\Delta F_1=+0.27$), \textit{Base} ($+0.37$), \textit{Montr\'ee} ($+0.42$), \textit{Col\`ere} ($+0.46$).
+    \item Les labels fr\'equents dans CyberAggAdo montrent d\'ej\`a un d\'ecrochage substantiel : \textit{\'Emo} ($\Delta F_1=+0.27$), \textit{Base} ($+0.37$), \textit{Montr\'ee} ($+0.41$), \textit{Col\`ere} ($+0.46$).
     \item Le d\'ecalage touche \`a la fois la pr\'ecision et le rappel, ce qui sugg\`ere des faux positifs et des faux n\'egatifs hors domaine.
   \end{itemize}
 \end{frame}
@@ -131,12 +131,12 @@
     \toprule
     Label & Cyber & TTK & $\Delta F_1$ & $\Delta P$ & $\Delta R$ \\
     \midrule
-    Autre & 62 & 1\,270 & +0.76 & +0.78 & +0.68 \\
-    Sugg\'er\'ee & 54 & 1\,909 & +0.73 & +0.67 & +0.74 \\
-    D\'esign\'ee & 55 & 1\,499 & +0.56 & +0.50 & +0.60 \\
-    Col\`ere & 290 & 1\,180 & +0.46 & +0.42 & +0.49 \\
-    Montr\'ee & 301 & 971 & +0.42 & +0.42 & +0.41 \\
-    Base & 364 & 4\,133 & +0.37 & +0.29 & +0.43 \\
+    Autre & 62 & 1\,270 & \cellcolor[HTML]{E4602C}\textcolor{white}{+0.76} & \cellcolor[HTML]{E25727}\textcolor{white}{+0.78} & \cellcolor[HTML]{E97B39}\textcolor{black}{+0.68} \\
+    Sugg\'er\'ee & 54 & 1\,909 & \cellcolor[HTML]{E5682F}\textcolor{black}{+0.73} & \cellcolor[HTML]{E97C3A}\textcolor{black}{+0.67} & \cellcolor[HTML]{E5642D}\textcolor{black}{+0.74} \\
+    D\'esign\'ee & 55 & 1\,499 & \cellcolor[HTML]{EFA24F}\textcolor{black}{+0.56} & \cellcolor[HTML]{F1B55B}\textcolor{black}{+0.50} & \cellcolor[HTML]{ED9447}\textcolor{black}{+0.60} \\
+    Col\`ere & 289 & 1\,180 & \cellcolor[HTML]{F0CB66}\textcolor{black}{+0.46} & \cellcolor[HTML]{EEDD6F}\textcolor{black}{+0.42} & \cellcolor[HTML]{F1BA5D}\textcolor{black}{+0.49} \\
+    Montr\'ee & 300 & 971 & \cellcolor[HTML]{EEE172}\textcolor{black}{+0.41} & \cellcolor[HTML]{EEDF71}\textcolor{black}{+0.42} & \cellcolor[HTML]{EEE373}\textcolor{black}{+0.41} \\
+    Base & 363 & 4\,133 & \cellcolor[HTML]{E4EC7F}\textcolor{black}{+0.37} & \cellcolor[HTML]{CBEA92}\textcolor{black}{+0.29} & \cellcolor[HTML]{EEDC6F}\textcolor{black}{+0.43} \\
     \bottomrule
   \end{tabular}
 

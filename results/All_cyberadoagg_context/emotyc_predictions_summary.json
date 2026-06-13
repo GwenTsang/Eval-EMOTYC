@@ -1,27 +1,22 @@
 {
-  "n_files": 4,
+  "source_xlsx": "CyberAdoAgg_gold_global_total.xlsx",
   "n_samples": 781,
   "template": "bca_spaced_context",
   "threshold": 0.5,
-  "use_context": true,
-  "global_metrics": {
-    "micro_f1": 0.472,
-    "macro_f1": 0.282
-  },
   "per_label": [
     {
       "label": "Emo",
-      "tp": 280,
+      "tp": 281,
       "fp": 172,
-      "fn": 118,
+      "fn": 117,
       "tn": 211,
-      "accuracy": 0.629,
-      "kappa": 0.255,
-      "f1": 0.659,
+      "accuracy": 0.63,
+      "kappa": 0.258,
+      "f1": 0.66,
       "precision": 0.62,
-      "recall": 0.704,
+      "recall": 0.706,
       "prevalence_gold": 0.51,
-      "prevalence_pred": 0.579
+      "prevalence_pred": 0.58
     },
     {
       "label": "Comportementale",
@@ -81,17 +76,17 @@
     },
     {
       "label": "Base",
-      "tp": 175,
+      "tp": 176,
       "fp": 102,
-      "fn": 188,
+      "fn": 187,
       "tn": 316,
-      "accuracy": 0.629,
-      "kappa": 0.242,
-      "f1": 0.547,
-      "precision": 0.632,
-      "recall": 0.482,
+      "accuracy": 0.63,
+      "kappa": 0.245,
+      "f1": 0.549,
+      "precision": 0.633,
+      "recall": 0.485,
       "prevalence_gold": 0.465,
-      "prevalence_pred": 0.355
+      "prevalence_pred": 0.356
     },
     {
       "label": "Complexe",
@@ -275,5 +270,9 @@
       "prevalence_gold": 0.018,
       "prevalence_pred": 0.033
     }
-  ]
+  ],
+  "global_metrics": {
+    "micro_f1": 0.473,
+    "macro_f1": 0.282
+  }
 }

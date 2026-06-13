@@ -31,13 +31,13 @@ from emotyc_common import (
 RESULTS = Path(__file__).resolve().parent.parent / "results"
 DEFAULT_CYBER = (
     RESULTS
-    / "orchestrated_emotyc_CyberAggAdo"
+    / "All_cyberadoagg_context"
     / "emotyc_predictions_summary.json"
 )
 DEFAULT_TTK = (
     RESULTS
     / "TextToKids"
-    / "ContextTemplateAvecEspaceMode05"
+    / "ContextTemplateAvecEspace"
     / "emotyc_predictions_summary.json"
 )
 DEFAULT_OUT = RESULTS / "heatmap_delta.html"

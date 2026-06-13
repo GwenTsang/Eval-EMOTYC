@@ -27,15 +27,15 @@
     "tfidf_svm": {
       "per_label": {
         "Emo": {
-          "gold_positive": 399,
-          "pred_positive": 405,
+          "gold_positive": 398,
+          "pred_positive": 402,
           "tp": 274,
-          "fp": 131,
-          "fn": 125,
-          "tn": 251,
-          "precision": 0.6765,
-          "recall": 0.6867,
-          "f1": 0.6816
+          "fp": 128,
+          "fn": 124,
+          "tn": 255,
+          "precision": 0.6816,
+          "recall": 0.6884,
+          "f1": 0.685
         },
         "Comportementale": {
           "gold_positive": 36,
@@ -60,15 +60,15 @@
           "f1": 0.2373
         },
         "Montree": {
-          "gold_positive": 301,
-          "pred_positive": 301,
-          "tp": 174,
-          "fp": 127,
-          "fn": 127,
-          "tn": 353,
-          "precision": 0.5781,
-          "recall": 0.5781,
-          "f1": 0.5781
+          "gold_positive": 300,
+          "pred_positive": 299,
+          "tp": 175,
+          "fp": 124,
+          "fn": 125,
+          "tn": 357,
+          "precision": 0.5853,
+          "recall": 0.5833,
+          "f1": 0.5843
         },
         "Suggeree": {
           "gold_positive": 54,
@@ -82,15 +82,15 @@
           "f1": 0.0952
         },
         "Base": {
-          "gold_positive": 364,
+          "gold_positive": 363,
           "pred_positive": 380,
           "tp": 246,
           "fp": 134,
-          "fn": 118,
-          "tn": 283,
+          "fn": 117,
+          "tn": 284,
           "precision": 0.6474,
-          "recall": 0.6758,
-          "f1": 0.6613
+          "recall": 0.6777,
+          "f1": 0.6622
         },
         "Complexe": {
           "gold_positive": 14,
@@ -126,15 +126,15 @@
           "f1": 0.1871
         },
         "Colere": {
-          "gold_positive": 290,
-          "pred_positive": 307,
-          "tp": 176,
+          "gold_positive": 289,
+          "pred_positive": 305,
+          "tp": 174,
           "fp": 131,
-          "fn": 114,
-          "tn": 360,
-          "precision": 0.5733,
-          "recall": 0.6069,
-          "f1": 0.5896
+          "fn": 115,
+          "tn": 361,
+          "precision": 0.5705,
+          "recall": 0.6021,
+          "f1": 0.5859
         },
         "Culpabilite": {
           "gold_positive": 3,
@@ -236,16 +236,16 @@
           "f1": 0.0
         }
       },
-      "macro_f1": 0.2667,
-      "micro_f1": 0.5388,
-      "exact_match": 0.3163,
-      "exact_match_count": 247,
+      "macro_f1": 0.2671,
+      "micro_f1": 0.5399,
+      "exact_match": 0.3175,
+      "exact_match_count": 248,
       "n_samples": 781,
       "group_f1": {
-        "meta": 0.6816,
-        "modes": 0.2656,
-        "types": 0.5307,
-        "emotions": 0.1885
+        "meta": 0.685,
+        "modes": 0.2672,
+        "types": 0.5311,
+        "emotions": 0.1882
       },
       "model": "TF-IDF + LinearSVC",
       "method": "5-fold cross-validation",
@@ -254,13 +254,13 @@
           "fold": 1,
           "n_train": 624,
           "n_test": 157,
-          "macro_f1": 0.2087
+          "macro_f1": 0.2095
         },
         {
           "fold": 2,
           "n_train": 625,
           "n_test": 156,
-          "macro_f1": 0.3171
+          "macro_f1": 0.3165
         },
         {
           "fold": 3,
@@ -272,13 +272,13 @@
           "fold": 4,
           "n_train": 625,
           "n_test": 156,
-          "macro_f1": 0.2787
+          "macro_f1": 0.2806
         },
         {
           "fold": 5,
           "n_train": 625,
           "n_test": 156,
-          "macro_f1": 0.2633
+          "macro_f1": 0.2626
         }
       ],
       "tfidf_params": {
@@ -294,15 +294,15 @@
     "tfidf_rf": {
       "per_label": {
         "Emo": {
-          "gold_positive": 399,
-          "pred_positive": 327,
-          "tp": 233,
-          "fp": 94,
-          "fn": 166,
-          "tn": 288,
-          "precision": 0.7125,
-          "recall": 0.584,
-          "f1": 0.6419
+          "gold_positive": 398,
+          "pred_positive": 323,
+          "tp": 230,
+          "fp": 93,
+          "fn": 168,
+          "tn": 290,
+          "precision": 0.7121,
+          "recall": 0.5779,
+          "f1": 0.638
         },
         "Comportementale": {
           "gold_positive": 36,
@@ -327,15 +327,15 @@
           "f1": 0.2093
         },
         "Montree": {
-          "gold_positive": 301,
+          "gold_positive": 300,
           "pred_positive": 251,
-          "tp": 159,
-          "fp": 92,
+          "tp": 158,
+          "fp": 93,
           "fn": 142,
           "tn": 388,
-          "precision": 0.6335,
-          "recall": 0.5282,
-          "f1": 0.5761
+          "precision": 0.6295,
+          "recall": 0.5267,
+          "f1": 0.5735
         },
         "Suggeree": {
           "gold_positive": 54,
@@ -349,15 +349,15 @@
           "f1": 0.0
         },
         "Base": {
-          "gold_positive": 364,
-          "pred_positive": 306,
-          "tp": 204,
-          "fp": 102,
-          "fn": 160,
-          "tn": 315,
-          "precision": 0.6667,
-          "recall": 0.5604,
-          "f1": 0.609
+          "gold_positive": 363,
+          "pred_positive": 307,
+          "tp": 213,
+          "fp": 94,
+          "fn": 150,
+          "tn": 324,
+          "precision": 0.6938,
+          "recall": 0.5868,
+          "f1": 0.6358
         },
         "Complexe": {
           "gold_positive": 14,
@@ -393,15 +393,15 @@
           "f1": 0.1758
         },
         "Colere": {
-          "gold_positive": 290,
-          "pred_positive": 245,
-          "tp": 155,
-          "fp": 90,
-          "fn": 135,
-          "tn": 401,
-          "precision": 0.6327,
-          "recall": 0.5345,
-          "f1": 0.5794
+          "gold_positive": 289,
+          "pred_positive": 244,
+          "tp": 152,
+          "fp": 92,
+          "fn": 137,
+          "tn": 400,
+          "precision": 0.623,
+          "recall": 0.526,
+          "f1": 0.5704
         },
         "Culpabilite": {
           "gold_positive": 3,
@@ -503,16 +503,16 @@
           "f1": 0.0
         }
       },
-      "macro_f1": 0.1728,
-      "micro_f1": 0.527,
+      "macro_f1": 0.1734,
+      "micro_f1": 0.5297,
       "exact_match": 0.3995,
       "exact_match_count": 312,
       "n_samples": 781,
       "group_f1": {
-        "meta": 0.6419,
-        "modes": 0.2348,
-        "types": 0.3045,
-        "emotions": 0.0911
+        "meta": 0.638,
+        "modes": 0.2342,
+        "types": 0.3179,
+        "emotions": 0.0904
       },
       "model": "TF-IDF + RandomForest",
       "method": "5-fold cross-validation",
@@ -521,31 +521,31 @@
           "fold": 1,
           "n_train": 624,
           "n_test": 157,
-          "macro_f1": 0.1605
+          "macro_f1": 0.1615
         },
         {
           "fold": 2,
           "n_train": 625,
           "n_test": 156,
-          "macro_f1": 0.2047
+          "macro_f1": 0.2019
         },
         {
           "fold": 3,
           "n_train": 625,
           "n_test": 156,
-          "macro_f1": 0.1534
+          "macro_f1": 0.1563
         },
         {
           "fold": 4,
           "n_train": 625,
           "n_test": 156,
-          "macro_f1": 0.1656
+          "macro_f1": 0.1657
         },
         {
           "fold": 5,
           "n_train": 625,
           "n_test": 156,
-          "macro_f1": 0.1715
+          "macro_f1": 0.1732
         }
       ],
       "tfidf_params": {
@@ -561,15 +561,15 @@
     "tfidf_char_svm": {
       "per_label": {
         "Emo": {
-          "gold_positive": 399,
-          "pred_positive": 414,
-          "tp": 292,
-          "fp": 122,
-          "fn": 107,
+          "gold_positive": 398,
+          "pred_positive": 413,
+          "tp": 290,
+          "fp": 123,
+          "fn": 108,
           "tn": 260,
-          "precision": 0.7053,
-          "recall": 0.7318,
-          "f1": 0.7183
+          "precision": 0.7022,
+          "recall": 0.7286,
+          "f1": 0.7152
         },
         "Comportementale": {
           "gold_positive": 36,
@@ -594,15 +594,15 @@
           "f1": 0.4468
         },
         "Montree": {
-          "gold_positive": 301,
-          "pred_positive": 309,
-          "tp": 186,
+          "gold_positive": 300,
+          "pred_positive": 311,
+          "tp": 188,
           "fp": 123,
-          "fn": 115,
-          "tn": 357,
-          "precision": 0.6019,
-          "recall": 0.6179,
-          "f1": 0.6098
+          "fn": 112,
+          "tn": 358,
+          "precision": 0.6045,
+          "recall": 0.6267,
+          "f1": 0.6154
         },
         "Suggeree": {
           "gold_positive": 54,
@@ -616,15 +616,15 @@
           "f1": 0.0952
         },
         "Base": {
-          "gold_positive": 364,
-          "pred_positive": 385,
-          "tp": 256,
-          "fp": 129,
+          "gold_positive": 363,
+          "pred_positive": 382,
+          "tp": 255,
+          "fp": 127,
           "fn": 108,
-          "tn": 288,
-          "precision": 0.6649,
-          "recall": 0.7033,
-          "f1": 0.6836
+          "tn": 291,
+          "precision": 0.6675,
+          "recall": 0.7025,
+          "f1": 0.6846
         },
         "Complexe": {
           "gold_positive": 14,
@@ -660,15 +660,15 @@
           "f1": 0.2131
         },
         "Colere": {
-          "gold_positive": 290,
-          "pred_positive": 304,
-          "tp": 184,
+          "gold_positive": 289,
+          "pred_positive": 303,
+          "tp": 183,
           "fp": 120,
           "fn": 106,
-          "tn": 371,
-          "precision": 0.6053,
-          "recall": 0.6345,
-          "f1": 0.6195
+          "tn": 372,
+          "precision": 0.604,
+          "recall": 0.6332,
+          "f1": 0.6182
         },
         "Culpabilite": {
           "gold_positive": 3,
@@ -770,16 +770,16 @@
           "f1": 0.1111
         }
       },
-      "macro_f1": 0.3234,
+      "macro_f1": 0.3235,
       "micro_f1": 0.5996,
-      "exact_match": 0.3688,
-      "exact_match_count": 288,
+      "exact_match": 0.3675,
+      "exact_match_count": 287,
       "n_samples": 781,
       "group_f1": {
-        "meta": 0.7183,
-        "modes": 0.3426,
-        "types": 0.605,
-        "emotions": 0.2372
+        "meta": 0.7152,
+        "modes": 0.344,
+        "types": 0.6054,
+        "emotions": 0.2371
       },
       "model": "TF-IDF (char) + LinearSVC",
       "method": "5-fold cross-validation",
@@ -788,31 +788,31 @@
           "fold": 1,
           "n_train": 624,
           "n_test": 157,
-          "macro_f1": 0.2377
+          "macro_f1": 0.2386
         },
         {
           "fold": 2,
           "n_train": 625,
           "n_test": 156,
-          "macro_f1": 0.3419
+          "macro_f1": 0.3438
         },
         {
           "fold": 3,
           "n_train": 625,
           "n_test": 156,
-          "macro_f1": 0.2076
+          "macro_f1": 0.2073
         },
         {
           "fold": 4,
           "n_train": 625,
           "n_test": 156,
-          "macro_f1": 0.3727
+          "macro_f1": 0.3721
         },
         {
           "fold": 5,
           "n_train": 625,
           "n_test": 156,
-          "macro_f1": 0.3416
+          "macro_f1": 0.3399
         }
       ],
       "tfidf_params": {

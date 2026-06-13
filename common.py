@@ -235,19 +235,16 @@ def load_gold_xlsx(xlsx_path: str) -> tuple[pd.DataFrame, list[str], np.ndarray]
     df = pd.read_excel(xlsx_path)
     if "TEXT" not in df.columns:
         raise ValueError("ERREUR : colonne 'TEXT' absente.")
-    missing = [label for label in ALL_LABELS if label not in df.columns]
-    if missing:
-        raise ValueError(f"ERREUR : colonnes EMOTYC manquantes ({len(missing)}/19) : {missing}")
 
     sentences = df["TEXT"].fillna("").astype(str).tolist()
-    gold = df[ALL_LABELS].astype(int).to_numpy()
+    gold = labels_to_gold_matrix(df)
     return df, sentences, gold
 
 def labels_to_gold_matrix(df: pd.DataFrame, label_names: list[str] = ALL_LABELS) -> np.ndarray:
     """Extrait une matrice binaire ordonnée depuis un DataFrame gold."""
     missing = [label for label in label_names if label not in df.columns]
     if missing:
-        raise ValueError(f"Colonnes label manquantes ({len(missing)}): {missing}")
+        raise ValueError(f"ERREUR : colonnes EMOTYC manquantes ({len(missing)}/19) : {missing}")
     return df[label_names].fillna(0).astype(int).to_numpy()
 
 def build_context_texts(

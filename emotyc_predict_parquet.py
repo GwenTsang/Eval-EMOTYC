@@ -12,6 +12,7 @@ import pandas as pd
 from common import (
     ALL_LABELS,
     EMOTYC_LABEL2ID,
+    THRESHOLD,
     compute_group_metrics,
     get_predictor,
     write_json,
@@ -19,7 +20,6 @@ from common import (
 
 PARQUET_PATH = os.path.join(os.path.dirname(__file__), "golds", "TTK_test.parquet")
 OUT_DIR      = os.path.join(os.path.dirname(__file__), "results")
-THRESHOLD    = 0.5
 BATCH_SIZE   = 910
 
 # Mapping colonne parquet → labels EMOTYC qu'elle alimente

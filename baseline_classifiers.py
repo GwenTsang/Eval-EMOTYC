@@ -25,9 +25,9 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import f1_score
 
 from common import (
-    ALL_LABELS as LABELS_19,
     EMOTION_LABELS,
     EVALUATION_LABEL_GROUPS,
+    LABELS_19,
     META_LABELS,
     MODE_LABELS,
     TYPE_LABELS,
@@ -184,7 +184,7 @@ def main():
     texts, gold, df = load_data()
     emotyc_reference = load_emotyc_reference()
     print(f"\nLoaded {len(texts)} samples, {gold.shape[1]} labels")
-    print(f"Label prevalences:")
+    print("Label prevalences:")
     for j, label in enumerate(LABELS_19):
         n_pos = int(gold[:, j].sum())
         print(f"  {label:20s}: {n_pos:4d} ({n_pos/len(texts)*100:5.1f}%)")
@@ -272,7 +272,7 @@ def main():
         )
 
     # ── Per-label comparison table ────────────────────────────────────────
-    print(f"\n  Per-label F1 comparison:")
+    print("\n  Per-label F1 comparison:")
     print(f"  {'Label':<20s} {'EMOTYC':>8s} {'SVM':>8s} {'RF':>8s} {'Char-SVM':>8s}")
     print(f"  {'─'*20} {'─'*8} {'─'*8} {'─'*8} {'─'*8}")
 
@@ -290,7 +290,7 @@ def main():
         print(f"  {label:<20s} {ef1:>8.3f} {sf1:>8.3f} {rf1:>8.3f} {cf1:>8.3f}{markers}")
 
     # ── Group-level comparison ────────────────────────────────────────────
-    print(f"\n  Group macro-F1 comparison:")
+    print("\n  Group macro-F1 comparison:")
     print(f"  {'Group':<20s} {'EMOTYC':>8s} {'SVM':>8s} {'RF':>8s} {'Char-SVM':>8s}")
     print(f"  {'─'*20} {'─'*8} {'─'*8} {'─'*8} {'─'*8}")
 

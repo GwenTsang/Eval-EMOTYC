@@ -103,12 +103,6 @@ Ainsi, si une instance est étiquetée `Base = 1` dans le gold, cela peut être 
 
 Il est possible de mesurer la « cohérence » des prédictions du modèle EMOTYC avec ce cadre théorique (p. ex., il ne devrait pas prédire `Base = 1` si aucune émotion de base n'est activée, ni prédire une émotion complexe (p. ex. `Culpabilité = 1`) sans prédire `Complexe = 1`). Cette cohérence n'est pas mesurée ici, mais elle l'est [dans ce script](https://github.com/GwenTsang/EMOTYC/blob/master/scripts/emotyc_sanity_check.py).
 
-
-
-
-
-## 2. Architecture du modèle EMOTYC
-
 ## 2. Architecture du modèle EMOTYC
 
 EMOTYC est une version fine-tunée de [CamemBERT-base](https://arxiv.org/abs/1911.03894) avec une tête de classification multi-label ajoutée. La sortie est un vecteur de prédictions :

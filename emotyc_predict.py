@@ -8,10 +8,10 @@ et exporte un unique fichier emotyc_predictions_summary.json.
 import argparse
 import os
 import sys
-import numpy as np
 
 from common import (
     ALL_LABELS,
+    THRESHOLD,
     build_context_texts,
     build_prediction_summary,
     get_predictor,
@@ -51,7 +51,7 @@ def main():
     # 4. Inférence
     print(f"\nInférence sur {N} phrases (batch_size={args.batch_size})…")
     probs = predictor.predict_texts(texts, batch_size=args.batch_size)
-    pred = (probs >= 0.5).astype(int)
+    pred = (probs >= THRESHOLD).astype(int)
     print(f"Inférence terminée — shape: {probs.shape}")
 
     # 5. Métriques
@@ -62,7 +62,7 @@ def main():
         source=os.path.basename(xlsx_path),
         n_samples=N,
         template=f"bca_spaced_{ctx_tag}",
-        threshold=0.5,
+        threshold=THRESHOLD,
         per_label=per_label,
         global_metrics=global_metrics,
     )

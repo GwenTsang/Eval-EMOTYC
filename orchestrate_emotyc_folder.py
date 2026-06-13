@@ -13,10 +13,9 @@ import sys
 from pathlib import Path
 import numpy as np
 
-ROOT = Path(__file__).resolve().parent
-
 from common import (
     ALL_LABELS,
+    THRESHOLD,
     build_context_texts,
     build_prediction_summary,
     compute_group_metrics,
@@ -26,6 +25,7 @@ from common import (
     write_json,
 )
 
+ROOT = Path(__file__).resolve().parent
 DEFAULT_GOLD_DIR = ROOT / "results" / "prepared_xlsx_samples" / "subsets"
 
 def parse_args():
@@ -48,8 +48,8 @@ def parse_args():
         help="Taille du batch pour l'inférence (défaut: 128)",
     )
     parser.add_argument(
-        "--threshold", type=float, default=0.5,
-        help="Seuil de binarisation des probabilités (défaut: 0.5)",
+        "--threshold", type=float, default=THRESHOLD,
+        help=f"Seuil de binarisation des probabilités (défaut: {THRESHOLD})",
     )
     parser.add_argument(
         "--groups", action="store_true",

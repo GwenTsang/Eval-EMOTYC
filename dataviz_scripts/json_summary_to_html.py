@@ -73,13 +73,8 @@ def html_kv_table(pairs, caption=None):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-#  RECONSTRUCTION DES GROUPES
+#  RECONSTRUCTION DES MÉTRIQUES DE GROUPE
 # ═══════════════════════════════════════════════════════════════════════════
-
-def _labels_in_group(group_key):
-    """Retourne l'ensemble des labels appartenant à un groupe."""
-    return set(LABEL_GROUPS.get(group_key, []))
-
 
 def _compute_group_metrics(rows):
     """Calcule macro-F1 et micro-F1 à partir d'un sous-ensemble de per_label."""
@@ -187,7 +182,6 @@ def build_html(summary, use_groups=False):
         matched_labels = set()
 
         for group_key, group_name in GROUP_DISPLAY_NAMES.items():
-            group_label_names = _labels_in_group(group_key)
             group_rows = [
                 label_index[name]
                 for name in LABEL_GROUPS.get(group_key, [])

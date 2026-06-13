@@ -4,30 +4,23 @@ Inférence EMOTYC sur fichier Parquet avec ONNX.
 Charge le modèle EMOTYC au format ONNX, applique les prédictions
 sur le corpus de test TTK au format Parquet, et exporte un résumé JSON.
 """
-import json
 import os
 import sys
 import numpy as np
 import pandas as pd
-from sklearn.metrics import f1_score, precision_score, recall_score
 
-from emotyc_common import (
+from common import (
+    ALL_LABELS,
     EMOTYC_LABEL2ID,
-    LABEL_GROUPS,
-    GROUP_DISPLAY_NAMES,
+    compute_group_metrics,
     get_predictor,
+    write_json,
 )
 
 PARQUET_PATH = os.path.join(os.path.dirname(__file__), "golds", "TTK_test.parquet")
 OUT_DIR      = os.path.join(os.path.dirname(__file__), "results")
 THRESHOLD    = 0.5
 BATCH_SIZE   = 910
-
-# Indices dans le vecteur 19-d pour chaque groupe
-GROUP_INDICES = {
-    group: [EMOTYC_LABEL2ID[l] for l in labels]
-    for group, labels in LABEL_GROUPS.items()
-}
 
 # Mapping colonne parquet → labels EMOTYC qu'elle alimente
 _PARQUET_COL_TO_LABELS = {
@@ -73,22 +66,6 @@ def build_gold(df):
     return gold
 
 
-# ── Métriques par groupe sémantique ─────────────────────────────────────
-def compute_group_metrics(gold, pred):
-    results = {}
-    for group, indices in GROUP_INDICES.items():
-        g = gold[:, indices]
-        p = pred[:, indices]
-        results[group] = {
-            "display_name": GROUP_DISPLAY_NAMES[group],
-            "labels": LABEL_GROUPS[group],
-            "macro_f1":   round(f1_score(g, p, average="macro", zero_division=0), 3),
-            "precision":  round(precision_score(g, p, average="macro", zero_division=0), 3),
-            "recall":     round(recall_score(g, p, average="macro", zero_division=0), 3),
-        }
-    return results
-
-
 # ── Main ────────────────────────────────────────────────────────────────
 def main():
     if not os.path.exists(PARQUET_PATH):
@@ -117,7 +94,7 @@ def main():
     print(f"Inférence terminée — shape: {probs.shape}")
 
     # 5. Métriques par groupe
-    group_metrics = compute_group_metrics(gold, pred)
+    group_metrics = compute_group_metrics(gold, pred, ALL_LABELS)
 
     for group, m in group_metrics.items():
         print(f"\n── {m['display_name']} ({', '.join(m['labels'])}) ──")
@@ -134,8 +111,7 @@ def main():
         "group_metrics": group_metrics,
     }
     out = os.path.join(OUT_DIR, "emotyc_parquet_summary.json")
-    with open(out, "w", encoding="utf-8") as f:
-        json.dump(summary, f, ensure_ascii=False, indent=2)
+    write_json(out, summary)
     print(f"Résumé exporté : {out}")
 
 

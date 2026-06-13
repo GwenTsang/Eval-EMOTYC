@@ -4,22 +4,27 @@
 from __future__ import annotations
 
 import argparse
-import colorsys
 import html
-import json
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT))
 
-from emotyc_common import ALL_LABELS, DISPLAY_NAMES  # noqa: E402
-from visualizations.delta_heatmap import (  # noqa: E402
+from common import (  # noqa: E402
+    ALL_LABELS,
+    DISPLAY_NAMES,
+    delta_text_color,
+    format_delta,
+    gold_support,
+    hex_for_delta,
+    load_summary,
+    sample_count,
+)
+from dataviz_scripts.delta_heatmap import (  # noqa: E402
     DEFAULT_CYBER,
     DEFAULT_TTK,
     METRICS,
-    gold_support,
-    sample_count,
 )
 
 METRIC_TEX = {
@@ -32,45 +37,6 @@ METRIC_SVG = {
     "precision": "ΔPrécision",
     "recall": "ΔRappel",
 }
-
-
-def load_summary(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
-def hsl_for_delta(delta: float) -> tuple[float, float, float]:
-    """Same sequential palette as visualizations/delta_heatmap.py."""
-    d = max(0.0, min(1.0, abs(delta)))
-    r = 1.0 - d
-
-    if r >= 0.5:
-        t = 2.0 * (1.0 - r)
-        h = 145 + t * (35 - 145)
-        s = 45 + t * (85 - 45)
-        light = 88 + t * (65 - 88)
-    else:
-        t = 2.0 * (0.5 - r)
-        h = 35 + t * (0 - 35)
-        s = 85 + t * (70 - 85)
-        light = 65 + t * (42 - 65)
-
-    return h, s, light
-
-
-def hex_for_delta(delta: float) -> str:
-    h, s, light = hsl_for_delta(delta)
-    red, green, blue = colorsys.hls_to_rgb(h / 360.0, light / 100.0, s / 100.0)
-    return f"{round(red * 255):02X}{round(green * 255):02X}{round(blue * 255):02X}"
-
-
-def text_color(delta: float) -> str:
-    return "white" if abs(delta) > 0.75 else "black"
-
-
-def format_delta(value: float, decimals: int = 2) -> str:
-    if abs(value) < 0.5 * 10 ** (-decimals):
-        return f"{0:.{decimals}f}"
-    return f"{value:+.{decimals}f}"
 
 
 def format_int_tex(value: int) -> str:
@@ -179,7 +145,7 @@ def compact_rows(data: dict, min_support: int, max_rows: int) -> dict:
 
 def latex_heat_cell(value: float, decimals: int = 2) -> str:
     color = hex_for_delta(value)
-    foreground = text_color(value)
+    foreground = delta_text_color(value, light="white", dark="black")
     return (
         rf"\cellcolor[HTML]{{{color}}}"
         rf"\textcolor{{{foreground}}}{{{format_delta(value, decimals)}}}"
@@ -331,7 +297,7 @@ def write_svg(data: dict, out_path: Path) -> None:
         for offset, metric in enumerate(METRICS, start=3):
             value = row["deltas"][metric]
             fill = f"#{hex_for_delta(value)}"
-            fg = "#FFFFFF" if text_color(value) == "white" else "#1A1A1A"
+            fg = delta_text_color(value, light="#FFFFFF", dark="#1A1A1A")
             lines.append(
                 f'<rect x="{col_x[offset]}" y="{y}" width="{col_widths[offset]}" '
                 f'height="{row_h}" fill="{fill}"/>'
@@ -383,7 +349,7 @@ def write_svg(data: dict, out_path: Path) -> None:
         )
         value = row["delta"]
         fill = f"#{hex_for_delta(value)}"
-        fg = "#FFFFFF" if text_color(value) == "white" else "#1A1A1A"
+        fg = delta_text_color(value, light="#FFFFFF", dark="#1A1A1A")
         lines.append(
             f'<rect x="{col_x[3]}" y="{y}" width="{col_widths[3]}" '
             f'height="{row_h}" fill="{fill}"/>'

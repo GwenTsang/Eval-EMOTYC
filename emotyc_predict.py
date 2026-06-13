@@ -6,17 +6,18 @@ sur chaque ligne du gold label, calcule des métriques globales agrégées,
 et exporte un unique fichier emotyc_predictions_summary.json.
 """
 import argparse
-import json
 import os
 import sys
 import numpy as np
 
-from emotyc_common import (
+from common import (
     ALL_LABELS,
+    build_context_texts,
+    build_prediction_summary,
     get_predictor,
-    format_input,
     load_gold_xlsx,
     compute_metrics,
+    write_json,
 )
 
 def main():
@@ -45,16 +46,7 @@ def main():
 
     # 3. Inputs formatés (bca_spaced)
     use_ctx = args.use_context
-    texts = [
-        format_input(
-            sentences[i],
-            sentences[i - 1] if (i > 0 and use_ctx) else None,
-            sentences[i + 1] if (i < N - 1 and use_ctx) else None,
-            use_ctx,
-            template="bca_spaced"
-        )
-        for i in range(N)
-    ]
+    texts = build_context_texts(sentences, use_context=use_ctx, template="bca_spaced")
     ctx_tag = "context" if use_ctx else "no_context"
 
     # 4. Inférence
@@ -66,34 +58,17 @@ def main():
     # 5. Métriques
     per_label, global_metrics = compute_metrics(gold, pred, ALL_LABELS)
 
-    # Pour des raisons de compatibilité avec les anciens rapports, on ajoute micro/macro F1 arrondis à 3 décimales
-    global_metrics_3dec = {
-        "micro_f1": round(global_metrics["micro_f1"], 3),
-        "macro_f1": round(global_metrics["macro_f1"], 3),
-    }
-
-    # On formate aussi per_label pour garder 3 décimales
-    per_label_3dec = []
-    for r in per_label:
-        r_3 = dict(r)
-        for k in ["accuracy", "kappa", "f1", "precision", "recall", "prevalence_gold", "prevalence_pred"]:
-            if r_3.get(k) is not None:
-                r_3[k] = round(r_3[k], 3)
-        per_label_3dec.append(r_3)
-
     # 6. Export résumé JSON uniquement
-    os.makedirs(args.out_dir, exist_ok=True)
-    summary = {
-        "source_xlsx": os.path.basename(xlsx_path),
-        "n_samples": N,
-        "template": f"bca_spaced_{ctx_tag}",
-        "threshold": 0.5,
-        "per_label": per_label_3dec,
-        "global_metrics": global_metrics_3dec,
-    }
+    summary = build_prediction_summary(
+        source=os.path.basename(xlsx_path),
+        n_samples=N,
+        template=f"bca_spaced_{ctx_tag}",
+        threshold=0.5,
+        per_label=per_label,
+        global_metrics=global_metrics,
+    )
     out = os.path.join(args.out_dir, "emotyc_predictions_summary.json")
-    with open(out, "w", encoding="utf-8") as f:
-        json.dump(summary, f, ensure_ascii=False, indent=2)
+    write_json(out, summary)
     print(f"\nRésumé exporté : {out}")
 
 if __name__ == "__main__":

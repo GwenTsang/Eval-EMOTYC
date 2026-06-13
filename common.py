@@ -2,14 +2,20 @@
 Module commun centralisant les constantes, la configuration des étiquettes,
 les métriques d'évaluation et l'inférence.
 """
+from __future__ import annotations
+
 import os
 import json
 import math
+import warnings
 from dataclasses import dataclass
-from typing import Any
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 import numpy as np
 import pandas as pd
-from tokenizers import Tokenizer
+
+if TYPE_CHECKING:
+    from tokenizers import Tokenizer
 
 #  LABELS (noms canoniques, sans accents, ordre du modèle)
 EMOTYC_LABEL2ID = {
@@ -21,6 +27,7 @@ EMOTYC_LABEL2ID = {
 }
 
 ALL_LABELS = list(EMOTYC_LABEL2ID.keys())  # 19 labels
+LABELS_19 = ALL_LABELS
 
 #  GROUPES SÉMANTIQUES
 
@@ -42,6 +49,13 @@ LABEL_GROUPS = {
     "emotion": EMOTION_LABELS,
     "mode":    MODE_LABELS,
     "type":    TYPE_LABELS,
+}
+
+EVALUATION_LABEL_GROUPS = {
+    "meta": META_LABELS,
+    "modes": MODE_LABELS,
+    "types": TYPE_LABELS,
+    "emotions": EMOTION_LABELS,
 }
 
 #  SEUILS PAR DÉFAUT
@@ -88,7 +102,7 @@ MODEL_DOWNLOAD_HINT = (
 @dataclass(frozen=True)
 class EmotycPredictor:
     session: Any
-    tokenizer: Tokenizer
+    tokenizer: "Tokenizer"
     labels: list[str]
     input_names: set[str]
     pad_id: int
@@ -158,6 +172,8 @@ def _is_git_lfs_pointer(path: str) -> bool:
 
 def get_predictor(model_dir: str = DEFAULT_MODEL_DIR, intra_threads: int = 2) -> EmotycPredictor:
     """Charge le modèle ONNX et le tokenizer."""
+    from tokenizers import Tokenizer
+
     onnx_path = os.path.join(model_dir, "model.onnx")
     tokenizer_path = os.path.join(model_dir, "tokenizer.json")
     config_path = os.path.join(model_dir, "config.json")
@@ -251,6 +267,31 @@ def load_gold_xlsx(xlsx_path: str) -> tuple[pd.DataFrame, list[str], np.ndarray]
     gold = df[ALL_LABELS].astype(int).to_numpy()
     return df, sentences, gold
 
+def labels_to_gold_matrix(df: pd.DataFrame, label_names: list[str] = ALL_LABELS) -> np.ndarray:
+    """Extrait une matrice binaire ordonnée depuis un DataFrame gold."""
+    missing = [label for label in label_names if label not in df.columns]
+    if missing:
+        raise ValueError(f"Colonnes label manquantes ({len(missing)}): {missing}")
+    return df[label_names].fillna(0).astype(int).to_numpy()
+
+def build_context_texts(
+    sentences: list[str],
+    use_context: bool,
+    template: str = "bca_spaced",
+) -> list[str]:
+    """Construit les inputs BCA avec ou sans phrases voisines."""
+    n = len(sentences)
+    return [
+        format_input(
+            sentences[i],
+            sentences[i - 1] if i > 0 and use_context else None,
+            sentences[i + 1] if i < n - 1 and use_context else None,
+            use_context,
+            template=template,
+        )
+        for i in range(n)
+    ]
+
 # ═══════════════════════════════════════════════════════════════════════════
 #  CALCUL DE MÉTRIQUES
 # ═══════════════════════════════════════════════════════════════════════════
@@ -272,7 +313,9 @@ def compute_metrics(gold: np.ndarray, pred: np.ndarray, label_names: list[str]) 
 
         acc = accuracy_score(g, p)
         try:
-            kappa = cohen_kappa_score(g, p, labels=[0, 1])
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", RuntimeWarning)
+                kappa = cohen_kappa_score(g, p, labels=[0, 1])
         except Exception:
             kappa = float("nan")
         f1 = f1_score(g, p, zero_division=0)
@@ -293,12 +336,189 @@ def compute_metrics(gold: np.ndarray, pred: np.ndarray, label_names: list[str]) 
 
     macro_f1 = np.mean([r["f1"] for r in results]) if results else 0.0
     micro_f1 = f1_score(gold.ravel(), pred.ravel(), zero_division=0) if gold.size > 0 else 0.0
-    exact_match = np.all(gold == pred, axis=1).mean() if gold.size > 0 else 0.0
+    exact_match_count = int(np.all(gold == pred, axis=1).sum()) if gold.size > 0 else 0
+    exact_match = exact_match_count / len(gold) if len(gold) > 0 else 0.0
 
     return results, {
         "macro_f1": round(float(macro_f1), 4),
         "micro_f1": round(float(micro_f1), 4),
         "exact_match": round(float(exact_match), 4),
+        "exact_match_count": exact_match_count,
         "n_samples": len(gold),
         "n_labels": len(label_names),
     }
+
+def compute_group_metrics(
+    gold: np.ndarray,
+    pred: np.ndarray,
+    label_names: list[str] = ALL_LABELS,
+    groups: dict[str, list[str]] = LABEL_GROUPS,
+    display_names: dict[str, str] | None = GROUP_DISPLAY_NAMES,
+    decimals: int = 3,
+) -> dict[str, dict]:
+    """Calcule précision, rappel et macro-F1 par groupe sémantique."""
+    from sklearn.metrics import f1_score, precision_score, recall_score
+
+    results: dict[str, dict] = {}
+    for group, labels in groups.items():
+        indices = [label_names.index(label) for label in labels if label in label_names]
+        if not indices:
+            continue
+
+        g = gold[:, indices]
+        p = pred[:, indices]
+        row = {
+            "labels": [label_names[index] for index in indices],
+            "macro_f1": round(float(f1_score(g, p, average="macro", zero_division=0)), decimals),
+            "precision": round(float(precision_score(g, p, average="macro", zero_division=0)), decimals),
+            "recall": round(float(recall_score(g, p, average="macro", zero_division=0)), decimals),
+        }
+        if display_names and group in display_names:
+            row["display_name"] = display_names[group]
+        results[group] = row
+    return results
+
+def compute_group_f1_from_per_label(
+    per_label: list[dict] | dict[str, dict],
+    groups: dict[str, list[str]] = EVALUATION_LABEL_GROUPS,
+    decimals: int = 4,
+) -> dict[str, float]:
+    """Agrège les F1 par label en macro-F1 par groupe."""
+    if isinstance(per_label, dict):
+        by_label = per_label
+    else:
+        by_label = {row["label"]: row for row in per_label}
+
+    grouped: dict[str, float] = {}
+    for group, labels in groups.items():
+        values = [
+            float(by_label[label]["f1"])
+            for label in labels
+            if label in by_label and by_label[label].get("f1") is not None
+        ]
+        if values:
+            grouped[group] = round(float(np.mean(values)), decimals)
+    return grouped
+
+def per_label_list_to_dict(rows: list[dict]) -> dict[str, dict]:
+    """Indexe une liste de métriques per-label par nom de label."""
+    return {row["label"]: {k: v for k, v in row.items() if k != "label"} for row in rows}
+
+def round_metric_rows(rows: list[dict], decimals: int = 3) -> list[dict]:
+    """Arrondit les champs numériques de métriques pour les exports lisibles."""
+    rounded_rows = []
+    for row in rows:
+        rounded = dict(row)
+        for key, value in rounded.items():
+            if isinstance(value, float):
+                rounded[key] = round(value, decimals)
+        rounded_rows.append(rounded)
+    return rounded_rows
+
+def compact_global_metrics(
+    global_metrics: dict,
+    decimals: int = 3,
+    keys: tuple[str, ...] = ("micro_f1", "macro_f1"),
+) -> dict:
+    """Garde les métriques globales publiées dans les résumés historiques."""
+    return {
+        key: round(global_metrics[key], decimals)
+        for key in keys
+        if key in global_metrics and global_metrics[key] is not None
+    }
+
+def build_prediction_summary(
+    *,
+    source: str,
+    n_samples: int,
+    threshold: float,
+    per_label: list[dict] | None = None,
+    global_metrics: dict | None = None,
+    template: str | None = None,
+    extra: dict | None = None,
+    source_key: str = "source_xlsx",
+    decimals: int = 3,
+) -> dict:
+    """Construit le JSON résumé commun aux scripts d'inférence."""
+    summary = {
+        source_key: source,
+        "n_samples": n_samples,
+        "threshold": threshold,
+    }
+    if template is not None:
+        summary["template"] = template
+    if per_label is not None:
+        summary["per_label"] = round_metric_rows(per_label, decimals=decimals)
+    if global_metrics is not None:
+        summary["global_metrics"] = compact_global_metrics(global_metrics, decimals=decimals)
+    if extra:
+        summary.update(extra)
+    return summary
+
+def write_json(path: str | Path, payload: dict) -> None:
+    """Écrit un JSON UTF-8 indenté après création du dossier parent."""
+    out_path = Path(path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+# ═══════════════════════════════════════════════════════════════════════════
+#  UTILITAIRES HEATMAP / SUPPORT
+# ═══════════════════════════════════════════════════════════════════════════
+
+def load_summary(path: str | Path) -> dict:
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+def gold_support(entry: dict) -> int:
+    """Nombre d'instances positives dans le gold (TP + FN)."""
+    return int((entry.get("tp", 0) or 0) + (entry.get("fn", 0) or 0))
+
+def sample_count(summary: dict) -> int:
+    """Retourne n_samples malgré les variations historiques des exports."""
+    for section in (summary, summary.get("global_metrics") or {}):
+        value = section.get("n_samples")
+        if value is not None:
+            return int(value)
+
+    for entry in summary.get("per_label", []):
+        counts = [entry.get(key) for key in ("tp", "fp", "fn", "tn")]
+        if all(value is not None for value in counts):
+            return int(sum(counts))
+
+    raise KeyError("Impossible de déterminer n_samples dans le résumé JSON.")
+
+def hsl_for_delta(delta: float) -> tuple[float, float, float]:
+    """Palette séquentielle commune pour l'amplitude absolue d'un delta."""
+    d = max(0.0, min(1.0, abs(delta)))
+    retention = 1.0 - d
+
+    if retention >= 0.5:
+        t = 2.0 * (1.0 - retention)
+        h = 145 + t * (35 - 145)
+        s = 45 + t * (85 - 45)
+        light = 88 + t * (65 - 88)
+    else:
+        t = 2.0 * (0.5 - retention)
+        h = 35 + t * (0 - 35)
+        s = 85 + t * (70 - 85)
+        light = 65 + t * (42 - 65)
+
+    return h, s, light
+
+def css_delta_color(delta: float) -> str:
+    h, s, light = hsl_for_delta(delta)
+    return f"hsl({h:.0f}, {s:.0f}%, {light:.0f}%)"
+
+def hex_for_delta(delta: float) -> str:
+    import colorsys
+
+    h, s, light = hsl_for_delta(delta)
+    red, green, blue = colorsys.hls_to_rgb(h / 360.0, light / 100.0, s / 100.0)
+    return f"{round(red * 255):02X}{round(green * 255):02X}{round(blue * 255):02X}"
+
+def delta_text_color(delta: float, *, light: str = "#fff", dark: str = "#1a1a1a") -> str:
+    return light if abs(delta) > 0.75 else dark
+
+def format_delta(value: float, decimals: int = 2) -> str:
+    if abs(value) < 0.5 * 10 ** (-decimals):
+        return f"{0:.{decimals}f}"
+    return f"{value:+.{decimals}f}"

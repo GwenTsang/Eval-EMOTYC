@@ -18,39 +18,31 @@ import warnings
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.multiclass import OneVsRestClassifier
-from sklearn.model_selection import StratifiedKFold, KFold
-from sklearn.metrics import f1_score, precision_score, recall_score
-from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.model_selection import KFold
+from sklearn.metrics import f1_score
+
+from common import (
+    ALL_LABELS as LABELS_19,
+    EMOTION_LABELS,
+    EVALUATION_LABEL_GROUPS,
+    META_LABELS,
+    MODE_LABELS,
+    TYPE_LABELS,
+    compute_group_f1_from_per_label,
+    compute_metrics,
+    load_gold_xlsx,
+    per_label_list_to_dict,
+    write_json,
+)
 
 warnings.filterwarnings("ignore")
 
 # ── Config ────────────────────────────────────────────────────────────────
 
 XLSX_PATH = Path(__file__).parent / "golds" / "CyberAdoAgg_gold_global_total.xlsx"
-
-LABELS_19 = [
-    "Emo",
-    "Comportementale", "Designee", "Montree", "Suggeree",
-    "Base", "Complexe",
-    "Admiration", "Autre", "Colere", "Culpabilite",
-    "Degout", "Embarras", "Fierte", "Jalousie",
-    "Joie", "Peur", "Surprise", "Tristesse",
-]
-
-EMOTION_LABELS = [
-    "Admiration", "Autre", "Colere", "Culpabilite",
-    "Degout", "Embarras", "Fierte", "Jalousie",
-    "Joie", "Peur", "Surprise", "Tristesse",
-]
-
-MODE_LABELS = ["Comportementale", "Designee", "Montree", "Suggeree"]
-TYPE_LABELS = ["Base", "Complexe"]
-META_LABELS = ["Emo"]
 
 OUT_DIR = Path(__file__).parent / "results" / "baselines"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -68,21 +60,8 @@ RANDOM_STATE = 42
 
 def load_data():
     """Load gold data and extract text + labels."""
-    df = pd.read_excel(XLSX_PATH)
-    missing_labels = [label for label in LABELS_19 if label not in df.columns]
-    if missing_labels:
-        missing = ", ".join(missing_labels)
-        raise ValueError(f"Gold file is missing expected label column(s): {missing}")
-
-    texts = df["TEXT"].fillna("").astype(str).tolist()
-    # Replace any remaining "nan" strings
-    texts = [t if t != "nan" else "" for t in texts]
-
-    # Build gold matrix (N, 19)
-    gold = np.zeros((len(df), len(LABELS_19)), dtype=int)
-    for j, label in enumerate(LABELS_19):
-        gold[:, j] = df[label].fillna(0).astype(int).values
-
+    df, texts, gold = load_gold_xlsx(str(XLSX_PATH))
+    texts = [text if text != "nan" else "" for text in texts]
     return texts, gold, df
 
 
@@ -117,55 +96,18 @@ def load_emotyc_reference():
 
 def evaluate_per_label(y_true, y_pred, labels):
     """Compute per-label and group metrics."""
-    results = {}
-    for j, label in enumerate(labels):
-        tp = int(np.sum((y_true[:, j] == 1) & (y_pred[:, j] == 1)))
-        fp = int(np.sum((y_true[:, j] == 0) & (y_pred[:, j] == 1)))
-        fn = int(np.sum((y_true[:, j] == 1) & (y_pred[:, j] == 0)))
-        tn = int(np.sum((y_true[:, j] == 0) & (y_pred[:, j] == 0)))
-
-        p = tp / (tp + fp) if (tp + fp) > 0 else 0.0
-        r = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-        f1 = 2 * p * r / (p + r) if (p + r) > 0 else 0.0
-
-        results[label] = {
-            "gold_positive": int(np.sum(y_true[:, j])),
-            "pred_positive": int(np.sum(y_pred[:, j])),
-            "tp": tp, "fp": fp, "fn": fn, "tn": tn,
-            "precision": round(p, 4),
-            "recall": round(r, 4),
-            "f1": round(f1, 4),
-        }
-
-    # Global metrics
-    macro_f1 = np.mean([results[l]["f1"] for l in labels])
-    micro_tp = sum(results[l]["tp"] for l in labels)
-    micro_fp = sum(results[l]["fp"] for l in labels)
-    micro_fn = sum(results[l]["fn"] for l in labels)
-    micro_p = micro_tp / (micro_tp + micro_fp) if (micro_tp + micro_fp) > 0 else 0.0
-    micro_r = micro_tp / (micro_tp + micro_fn) if (micro_tp + micro_fn) > 0 else 0.0
-    micro_f1 = 2 * micro_p * micro_r / (micro_p + micro_r) if (micro_p + micro_r) > 0 else 0.0
-
-    # Exact match
-    exact = int(np.all(y_true == y_pred, axis=1).sum())
-    exact_ratio = exact / len(y_true)
-
-    # Group F1s
-    group_f1 = {}
-    for name, group_labels in [("meta", META_LABELS), ("modes", MODE_LABELS),
-                                ("types", TYPE_LABELS), ("emotions", EMOTION_LABELS)]:
-        idxs = [labels.index(l) for l in group_labels if l in labels]
-        if idxs:
-            group_f1[name] = round(np.mean([results[labels[i]]["f1"] for i in idxs]), 4)
-
+    per_label_rows, global_metrics = compute_metrics(y_true, y_pred, labels)
+    results = per_label_list_to_dict(per_label_rows)
+    for label, row in results.items():
+        row["gold_positive"] = int(row["tp"] + row["fn"])
+        row["pred_positive"] = int(row["tp"] + row["fp"])
     return {
         "per_label": results,
-        "macro_f1": round(macro_f1, 4),
-        "micro_f1": round(micro_f1, 4),
-        "exact_match": round(exact_ratio, 4),
-        "exact_match_count": exact,
-        "n_samples": len(y_true),
-        "group_f1": group_f1,
+        **global_metrics,
+        "group_f1": compute_group_f1_from_per_label(
+            results,
+            groups=EVALUATION_LABEL_GROUPS,
+        ),
     }
 
 
@@ -391,8 +333,7 @@ def main():
     }
 
     out_path = OUT_DIR / "baseline_results.json"
-    with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
+    write_json(out_path, output)
 
     print(f"\n  Results saved to: {out_path}")
 

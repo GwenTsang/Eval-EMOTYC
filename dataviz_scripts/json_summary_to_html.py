@@ -26,7 +26,7 @@ import sys
 from html import escape
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from emotyc_common import LABEL_GROUPS, GROUP_DISPLAY_NAMES
+from common import LABEL_GROUPS, GROUP_DISPLAY_NAMES
 
 
 # ═══════════════════════════════════════════════════════════════════════════

@@ -9,33 +9,25 @@ Usage équivalent :
 """
 
 import argparse
-import json
 import os
 import sys
 from pathlib import Path
 import numpy as np
-from sklearn.metrics import f1_score, precision_score, recall_score
 
 ROOT = Path(__file__).resolve().parent
 
-from emotyc_common import (
+from common import (
     ALL_LABELS,
-    EMOTYC_LABEL2ID,
-    LABEL_GROUPS,
-    GROUP_DISPLAY_NAMES,
+    build_context_texts,
+    build_prediction_summary,
+    compute_group_metrics,
     get_predictor,
-    format_input,
     load_gold_xlsx,
     compute_metrics,
+    write_json,
 )
 
 DEFAULT_GOLD_DIR = ROOT / "results" / "prepared_xlsx_samples" / "subsets"
-
-GROUP_INDICES = {
-    g: [EMOTYC_LABEL2ID[l] for l in labels]
-    for g, labels in LABEL_GROUPS.items()
-}
-
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -73,17 +65,7 @@ def parse_args():
 
 def build_texts(sentences, use_context, template):
     """Construit les inputs BCA pour un fichier."""
-    n = len(sentences)
-    return [
-        format_input(
-            sentences[i],
-            sentences[i - 1] if i > 0 and use_context else None,
-            sentences[i + 1] if i < n - 1 and use_context else None,
-            use_context,
-            template=template,
-        )
-        for i in range(n)
-    ]
+    return build_context_texts(sentences, use_context=use_context, template=template)
 
 
 def print_group_metrics(gold, pred, threshold):
@@ -91,13 +73,12 @@ def print_group_metrics(gold, pred, threshold):
     print(f"\n{'═' * 65}")
     print(f"  MÉTRIQUES PAR GROUPE SÉMANTIQUE  (seuil: {threshold})")
     print(f"{'═' * 65}")
-    for group, indices in GROUP_INDICES.items():
-        g, p = gold[:, indices], pred[:, indices]
-        labels = ", ".join(LABEL_GROUPS[group])
-        print(f"\n── {GROUP_DISPLAY_NAMES[group]} ({labels}) ──")
-        print(f"   Macro Rappel    : {recall_score(g, p, average='macro', zero_division=0):.3f}")
-        print(f"   Macro Précision : {precision_score(g, p, average='macro', zero_division=0):.3f}")
-        print(f"   Macro F1        : {f1_score(g, p, average='macro', zero_division=0):.3f}")
+    for metrics in compute_group_metrics(gold, pred, ALL_LABELS).values():
+        labels = ", ".join(metrics["labels"])
+        print(f"\n── {metrics['display_name']} ({labels}) ──")
+        print(f"   Macro Rappel    : {metrics['recall']:.3f}")
+        print(f"   Macro Précision : {metrics['precision']:.3f}")
+        print(f"   Macro F1        : {metrics['macro_f1']:.3f}")
     print(f"\n{'═' * 65}")
 
 
@@ -154,32 +135,22 @@ def main() -> None:
     # Métriques per-label (toujours calculées et exportées)
     per_label, global_metrics = compute_metrics(gold_cat, pred_cat, ALL_LABELS)
 
-    global_metrics_3dec = {
-        "micro_f1": round(global_metrics["micro_f1"], 3),
-        "macro_f1": round(global_metrics["macro_f1"], 3),
-    }
-
-    per_label_3dec = []
-    for r in per_label:
-        r_3 = dict(r)
-        for k in ["accuracy", "kappa", "f1", "precision", "recall", "prevalence_gold", "prevalence_pred"]:
-            if r_3.get(k) is not None:
-                r_3[k] = round(r_3[k], 3)
-        per_label_3dec.append(r_3)
-
     ctx_tag = "context" if use_context else "no_context"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    summary = {
-        "n_files": len(files),
-        "n_samples": len(gold_cat),
-        "template": f"{args.template}_{ctx_tag}",
-        "threshold": args.threshold,
-        "use_context": use_context,
-        "global_metrics": global_metrics_3dec,
-        "per_label": per_label_3dec,
-    }
+    summary = build_prediction_summary(
+        source=gold_dir.name,
+        n_samples=len(gold_cat),
+        template=f"{args.template}_{ctx_tag}",
+        threshold=args.threshold,
+        per_label=per_label,
+        global_metrics=global_metrics,
+        source_key="source",
+        extra={
+            "n_files": len(files),
+            "use_context": use_context,
+        },
+    )
     out_path = out_dir / "emotyc_predictions_summary.json"
-    out_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    write_json(out_path, summary)
     print(f"\nMétriques globales exportées : {out_path}")
 
 

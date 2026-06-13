@@ -13,7 +13,6 @@ Usage :
 
 from __future__ import annotations
 
-import json
 import argparse
 import webbrowser
 from pathlib import Path
@@ -22,9 +21,14 @@ from pathlib import Path
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from emotyc_common import (
+from common import (
     ALL_LABELS,
     DISPLAY_NAMES,
+    css_delta_color as delta_color,
+    delta_text_color as text_color,
+    gold_support,
+    load_summary,
+    sample_count,
 )
 
 # ── Chemins par défaut ──────────────────────────────────────────────────────
@@ -47,73 +51,9 @@ METRICS = ["f1", "precision", "recall"]
 METRIC_DISPLAY = {"f1": "Δ_F1", "precision": "Δ_Précision", "recall": "Δ_Rappel"}
 
 
-def load_summary(path: Path) -> dict:
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-
 def display(label: str) -> str:
     """Nom d'affichage avec accents."""
     return DISPLAY_NAMES.get(label, label)
-
-
-def delta_color(delta: float) -> str:
-    """
-    Retourne une couleur CSS pour un delta absolu [0, 1].
-
-    Palette séquentielle (même palette que proportion_heatmap) :
-      0.0 (aucune différence)   → vert doux  hsl(145, 45%, 88%)
-      0.5 (grosse différence)   → ambre      hsl(35,  85%, 65%)
-      1.0 (différence maximale) → rouge prof hsl(0,   70%, 42%)
-
-    Interpolation linéaire par morceaux en HSL.
-    """
-    d = max(0.0, min(1.0, delta))
-    # Réutilise la même interpolation : retention = 1 - delta
-    r = 1.0 - d
-
-    if r >= 0.5:
-        t = 2.0 * (1.0 - r)
-        h = 145 + t * (35 - 145)
-        s = 45  + t * (85 - 45)
-        l = 88  + t * (65 - 88)
-    else:
-        t = 2.0 * (0.5 - r)
-        h = 35 + t * (0 - 35)
-        s = 85 + t * (70 - 85)
-        l = 65 + t * (42 - 65)
-    return f"hsl({h:.0f}, {s:.0f}%, {l:.0f}%)"
-
-
-def text_color(delta: float) -> str:
-    """Texte sombre sauf pour les deltas très élevés (fond foncé)."""
-    return "#fff" if delta > 0.75 else "#1a1a1a"
-
-
-def gold_support(entry: dict) -> int:
-    """Nombre d'instances positives dans le gold (TP + FN)."""
-    return (entry.get("tp", 0) or 0) + (entry.get("fn", 0) or 0)
-
-
-def sample_count(summary: dict) -> int:
-    """
-    Nombre d'unités textuelles du résumé.
-
-    Les exports du repo ne sont pas tous identiques :
-    - orchestrate_emotyc_folder.py et emotyc_predict.py l'écrivent à la racine ;
-    - emotyc_predict_details.py l'écrit aussi dans global_metrics.
-    """
-    for section in (summary, summary.get("global_metrics") or {}):
-        value = section.get("n_samples")
-        if value is not None:
-            return int(value)
-
-    for entry in summary.get("per_label", []):
-        counts = [entry.get(k) for k in ("tp", "fp", "fn", "tn")]
-        if all(v is not None for v in counts):
-            return int(sum(counts))
-
-    raise KeyError("Impossible de déterminer n_samples dans le résumé JSON.")
 
 
 def build_heatmap(cyber: dict, ttk: dict, config_name: str) -> str:

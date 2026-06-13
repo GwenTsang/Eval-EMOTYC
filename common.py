@@ -94,10 +94,6 @@ GROUP_DISPLAY_NAMES = {
 
 #  INFÉRENCE ONNX RUNTIME
 DEFAULT_MODEL_DIR = os.path.join(os.path.dirname(__file__), "model_onnx")
-MODEL_DOWNLOAD_HINT = (
-    "Téléchargez-le depuis le dossier Eval-EMOTYC avec : "
-    "bash setup.sh"
-)
 
 @dataclass(frozen=True)
 class EmotycPredictor:
@@ -163,13 +159,6 @@ def _encode_batch(
         inputs["token_type_ids"] = np.zeros_like(input_ids, dtype=np.int64)
     return inputs
 
-def _is_git_lfs_pointer(path: str) -> bool:
-    try:
-        with open(path, "rb") as f:
-            return f.read(64).startswith(b"version https://git-lfs.github.com/spec/v1")
-    except OSError:
-        return False
-
 def get_predictor(model_dir: str = DEFAULT_MODEL_DIR, intra_threads: int = 2) -> EmotycPredictor:
     """Charge le modèle ONNX et le tokenizer."""
     from tokenizers import Tokenizer
@@ -177,18 +166,6 @@ def get_predictor(model_dir: str = DEFAULT_MODEL_DIR, intra_threads: int = 2) ->
     onnx_path = os.path.join(model_dir, "model.onnx")
     tokenizer_path = os.path.join(model_dir, "tokenizer.json")
     config_path = os.path.join(model_dir, "config.json")
-
-    if not os.path.exists(onnx_path):
-        raise FileNotFoundError(
-            f"Fichier modèle introuvable à {onnx_path}. {MODEL_DOWNLOAD_HINT}"
-        )
-    if _is_git_lfs_pointer(onnx_path):
-        raise RuntimeError(
-            f"{onnx_path} est un pointeur Git LFS, pas le modèle ONNX complet. "
-            f"{MODEL_DOWNLOAD_HINT}"
-        )
-    if not os.path.exists(tokenizer_path):
-        raise FileNotFoundError(f"Fichier tokenizer introuvable à {tokenizer_path}")
 
     # Charger la config
     with open(config_path, "r", encoding="utf-8") as f:
@@ -238,20 +215,19 @@ def get_predictor(model_dir: str = DEFAULT_MODEL_DIR, intra_threads: int = 2) ->
 #  FORMATTAGE DE L'ENTRÉE & CHARGEMENT
 # ═══════════════════════════════════════════════════════════════════════════
 
-def format_input(sentence: str, prev_sentence: str = None, next_sentence: str = None,
-                 use_context: bool = False, template: str = "bca") -> str:
-    """
-    Formate l'input selon le template BCA.
-    template='bca'        : before:{prev}</s>current:{s}</s>after:{next}</s>
-    template='bca_spaced' : before:{prev}</s>current: {s}</s>after:{next}</s>
-    """
+def format_input(
+    sentence: str,
+    prev_sentence: str = None,
+    next_sentence: str = None,
+    use_context: bool = False,
+) -> str:
+    """Formate l'input au format BCA espacé."""
     eos = "</s>"
-    current_sep = " " if template == "bca_spaced" else ""
     if use_context:
         prev = prev_sentence or eos
         nxt = next_sentence or eos
-        return f"before:{prev}{eos}current:{current_sep}{sentence}{eos}after:{nxt}{eos}"
-    return f"before:{eos}current:{current_sep}{sentence}{eos}after:{eos}"
+        return f"before:{prev}{eos}current: {sentence}{eos}after:{nxt}{eos}"
+    return f"before:{eos}current: {sentence}{eos}after:{eos}"
 
 def load_gold_xlsx(xlsx_path: str) -> tuple[pd.DataFrame, list[str], np.ndarray]:
     """Charge le fichier XLSX du gold.
@@ -259,7 +235,7 @@ def load_gold_xlsx(xlsx_path: str) -> tuple[pd.DataFrame, list[str], np.ndarray]
     df = pd.read_excel(xlsx_path)
     if "TEXT" not in df.columns:
         raise ValueError("ERREUR : colonne 'TEXT' absente.")
-    missing = [l for l in ALL_LABELS if l not in df.columns]
+    missing = [label for label in ALL_LABELS if label not in df.columns]
     if missing:
         raise ValueError(f"ERREUR : colonnes EMOTYC manquantes ({len(missing)}/19) : {missing}")
 
@@ -287,7 +263,6 @@ def build_context_texts(
             sentences[i - 1] if i > 0 and use_context else None,
             sentences[i + 1] if i < n - 1 and use_context else None,
             use_context,
-            template=template,
         )
         for i in range(n)
     ]
@@ -434,7 +409,7 @@ def build_prediction_summary(
     threshold: float,
     per_label: list[dict] | None = None,
     global_metrics: dict | None = None,
-    template: str | None = None,
+    template: str = "bca_spaced",
     extra: dict | None = None,
     source_key: str = "source_xlsx",
     decimals: int = 3,
@@ -444,9 +419,8 @@ def build_prediction_summary(
         source_key: source,
         "n_samples": n_samples,
         "threshold": threshold,
+        "template": template,
     }
-    if template is not None:
-        summary["template"] = template
     if per_label is not None:
         summary["per_label"] = round_metric_rows(per_label, decimals=decimals)
     if global_metrics is not None:

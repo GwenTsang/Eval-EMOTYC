@@ -9,7 +9,6 @@ Usage équivalent :
 """
 
 import argparse
-import os
 import sys
 from pathlib import Path
 import numpy as np
@@ -45,10 +44,6 @@ def parse_args():
         help="Désactiver l'utilisation des phrases voisines (i-1, i+1) comme contexte BCA",
     )
     parser.add_argument(
-        "--template", choices=["bca", "bca_spaced"], default="bca_spaced",
-        help="Format du template d'input (défaut: bca_spaced)",
-    )
-    parser.add_argument(
         "--batch-size", type=int, default=128,
         help="Taille du batch pour l'inférence (défaut: 128)",
     )
@@ -63,9 +58,9 @@ def parse_args():
     return parser.parse_args()
 
 
-def build_texts(sentences, use_context, template):
+def build_texts(sentences, use_context):
     """Construit les inputs BCA pour un fichier."""
-    return build_context_texts(sentences, use_context=use_context, template=template)
+    return build_context_texts(sentences, use_context=use_context)
 
 
 def print_group_metrics(gold, pred, threshold):
@@ -97,12 +92,11 @@ def main() -> None:
 
     print(f"{len(files)} fichiers sélectionnés dans {gold_dir}")
     use_context = not args.no_context
-    print(f"Contexte: {'oui' if use_context else 'non'}, template: {args.template}")
+    print(f"Contexte: {'oui' if use_context else 'non'}")
 
     # Charger le modèle ONNX
-    model_dir = os.path.join(os.path.dirname(__file__), "model_onnx")
     try:
-        predictor = get_predictor(model_dir=model_dir)
+        predictor = get_predictor()
     except Exception as e:
         sys.exit(f"ERREUR lors du chargement du modèle : {e}")
 
@@ -115,7 +109,7 @@ def main() -> None:
             print(f"  ✗ {xlsx.name} — Erreur lors du chargement: {e}")
             continue
 
-        texts = build_texts(sentences, use_context, args.template)
+        texts = build_texts(sentences, use_context)
         probs = predictor.predict_texts(texts, batch_size=args.batch_size)
         all_gold.append(gold)
         all_probs.append(probs)
@@ -135,11 +129,9 @@ def main() -> None:
     # Métriques per-label (toujours calculées et exportées)
     per_label, global_metrics = compute_metrics(gold_cat, pred_cat, ALL_LABELS)
 
-    ctx_tag = "context" if use_context else "no_context"
     summary = build_prediction_summary(
         source=gold_dir.name,
         n_samples=len(gold_cat),
-        template=f"{args.template}_{ctx_tag}",
         threshold=args.threshold,
         per_label=per_label,
         global_metrics=global_metrics,

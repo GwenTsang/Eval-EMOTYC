@@ -38,9 +38,8 @@ def main():
     N = len(sentences)
 
     # 2. Modèle
-    model_dir = os.path.join(os.path.dirname(__file__), "model_onnx")
     try:
-        predictor = get_predictor(model_dir=model_dir)
+        predictor = get_predictor()
     except Exception as e:
         sys.exit(f"ERREUR lors du chargement du modèle : {e}")
 

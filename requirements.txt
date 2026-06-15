@@ -36,3 +36,4 @@ tqdm
 urllib3
 onnxruntime
 pyarrow
+matplotlib

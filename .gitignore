@@ -22,6 +22,14 @@ Thumbs.db
 results_normalized/
 *.html
 
+# Artefacts LaTeX temporaires
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
+
 # Modèles HuggingFace en cache
 .cache/
 

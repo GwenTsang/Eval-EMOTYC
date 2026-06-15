@@ -1,0 +1,162 @@
+\documentclass[aspectratio=169,10pt,xcolor=table]{beamer}
+\usetheme{Madrid}
+\usecolortheme{dolphin}
+
+\definecolor{onera}{RGB}{0,80,154}
+\definecolor{softSurface}{HTML}{F7F7F8}
+\definecolor{emotycMuted}{HTML}{71717A}
+\setbeamercolor{structure}{fg=onera}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamersize{text margin left=7mm,text margin right=7mm}
+
+\setbeamertemplate{frametitle}{
+  \vspace{0.25cm}
+  \centering
+  {\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle\par}
+  \vspace{0.12cm}
+  {\color{onera}\hrule height 0.8pt}
+}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usefonttheme{serif}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+\graphicspath{{figures/plots/}{figures/tables/}{figures/logos/}}
+
+\definecolor{emotionAdmiration}{HTML}{1ABC9C}
+\definecolor{emotionAutre}{HTML}{95A5A6}
+\definecolor{emotionColere}{HTML}{E74C3C}
+\definecolor{emotionCulpabilite}{HTML}{8E44AD}
+\definecolor{emotionDegout}{HTML}{2ECC71}
+\definecolor{emotionEmbarras}{HTML}{E84393}
+\definecolor{emotionFierte}{HTML}{E67E22}
+\definecolor{emotionJalousie}{HTML}{7F8C1F}
+\definecolor{emotionJoie}{HTML}{F1C40F}
+\definecolor{emotionPeur}{HTML}{9B59B6}
+\definecolor{emotionSurprise}{HTML}{00A8CC}
+\definecolor{emotionTristesse}{HTML}{3498DB}
+\newcommand{\legenditem}[2]{\raisebox{0.2ex}{\textcolor{#1}{\rule{1.1ex}{1.1ex}}}\,#2}
+\newcommand{\corpusseparator}{%
+  \begin{column}{0.014\textwidth}
+    \centering
+    \vspace{0.15em}
+    \textcolor{emotycMuted!55}{\rule{0.35pt}{0.19\textheight}}
+  \end{column}
+}
+
+\title{Distribution des labels émotionnels}
+\subtitle{Corpus annotés avec le schéma EMOTYC}
+\author{Gwendal Tsang}
+\institute{ONERA}
+\date{}
+\titlegraphic{\includegraphics[height=0.85cm]{ONERA_logo}}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Schéma d'annotation}
+\small
+\begin{itemize}
+  \item Les corpus sont représentés au niveau phrastique par un vecteur multi-label.
+  \item Les 12 colonnes émotionnelles sont : Admiration, Autre, Colère, Culpabilité, Dégoût, Embarras, Fierté, Jalousie, Joie, Peur, Surprise et Tristesse.
+  \item Les proportions ci-dessous sont calculées sur les activations positives de ces 12 colonnes.
+  \item Une phrase pouvant porter plusieurs émotions, le dénominateur est le nombre total d'activations émotionnelles, et non le nombre de phrases.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Distributions des émotions dans les corpus}
+\centering
+\vspace{1.35em}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.285\textwidth}
+\centering
+\makebox[\linewidth][c]{\scriptsize\bfseries Corpus EmoTextToKids}\par
+\vspace{0.2em}
+\includegraphics[height=0.255\textheight]{emotions_emotexttokids.pdf}\par
+\end{column}
+\corpusseparator
+\begin{column}{0.388\textwidth}
+\centering
+\setlength{\tabcolsep}{7pt}
+\renewcommand{\arraystretch}{0.62}
+\makebox[\linewidth][c]{\scriptsize\bfseries Corpus de tweets}\par
+\vspace{0.2em}
+\begin{tabular}{cc}
+\includegraphics[height=0.255\textheight]{emotions_extremiste.pdf} &
+\includegraphics[height=0.255\textheight]{emotions_non_extremiste.pdf} \\
+\shortstack{{\scriptsize}\\[-0.1em]{\scriptsize extrémiste}} &
+\shortstack{{\scriptsize}\\[-0.1em]{\scriptsize non extrémiste}}
+\end{tabular}
+\end{column}
+\corpusseparator
+\begin{column}{0.285\textwidth}
+\centering
+\makebox[\linewidth][c]{\scriptsize\bfseries Corpus de cyberharcèlement}\par
+\vspace{0.2em}
+\includegraphics[height=0.255\textheight]{emotions_cyberadoagg.pdf}\par
+\end{column}
+\end{columns}
+
+\vspace{1.65em}
+{\scriptsize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{llllll}
+\legenditem{emotionColere}{Colère} &
+\legenditem{emotionDegout}{Dégoût} &
+\legenditem{emotionPeur}{Peur} &
+\legenditem{emotionJoie}{Joie} &
+\legenditem{emotionTristesse}{Tristesse} &
+\legenditem{emotionSurprise}{Surprise} \\[0.15em]
+\legenditem{emotionAutre}{Autre} &
+\legenditem{emotionAdmiration}{Admiration} &
+\legenditem{emotionFierte}{Fierté} &
+\legenditem{emotionEmbarras}{Embarras} &
+\legenditem{emotionCulpabilite}{Culpabilité} &
+\legenditem{emotionJalousie}{Jalousie}
+\end{tabular}
+}
+
+\vspace{2.2em}
+{\tiny\color{emotycMuted}
+Références : EmoTextToKids, Etienne (2023) ; tweets, Dragos et al. (2022) ; cyberharcèlement, Ollagnier et al. (2024).
+}
+\end{frame}
+
+\begin{frame}{Taille des corpus}
+\centering
+\vspace{1.0em}
+\small
+\input{figures/tables/corpus_sizes_table.tex}
+\end{frame}
+
+\begin{frame}{Performances EMOTYC}
+\centering
+\vspace{1.0em}
+\small
+\input{figures/tables/emotyc_performance_table.tex}
+
+\vspace{0.6em}
+{\footnotesize\color{emotycMuted}Pour EmoTextToKids et CyberAggAdo, les métriques sont micro-moyennées sur les 19 labels EMOTYC à partir des JSON de résultats.}
+\end{frame}
+
+\begin{frame}{Proportions extraites des XLSX}
+\centering
+\scriptsize
+\input{figures/tables/emotion_proportions_table.tex}
+
+\vspace{0.6em}
+{\footnotesize\color{emotycMuted}EmoTextToKids : 27\,911 phrases, 6\,535 activations émotionnelles. CyberAggAdo : 781 messages, 498 activations émotionnelles.}
+\end{frame}
+
+
+
+\end{document}

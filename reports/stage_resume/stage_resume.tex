@@ -1,0 +1,302 @@
+\begin{filecontents*}{references.bib}
+@inproceedings{dragos2022angry,
+  title={Angry or sad? emotion annotation for extremist content characterisation},
+  author={Dragos, Valentina and Battistelli, Delphine and Etienne, Aline and Constable, Yol{\`e}ne},
+  booktitle={Proceedings of the Thirteenth Language Resources and Evaluation Conference},
+  pages={193--201},
+  year={2022}
+}
+
+@phdthesis{etienne2023analyse,
+  title={Analyse automatique des {\'e}motions dans les textes: contributions th{\'e}oriques et applicatives dans le cadre de l'{\'e}tude de la complexit{\'e} des textes pour enfants},
+  author={Etienne, Aline},
+  year={2023},
+  school={Universit{\'e} de Nanterre-Paris X}
+}
+
+@inproceedings{dragos2023comparison,
+  title={Comparison of Classification Techniques for Extremism Detection in French Social Media},
+  author={Dragos, Valentina and Constable, Yol{\`e}ne},
+  booktitle={2023 26th International Conference on Information Fusion (FUSION)},
+  pages={1--6},
+  year={2023},
+  organization={IEEE}
+}
+
+@inproceedings{dragos2024exploring,
+  title={Exploring the Emotional Dimension of French Online Toxic Content},
+  author={Dragos, Valentina and Battistelli, Delphine and Sow, Fatou and Etienne, Aline},
+  booktitle={Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024)},
+  pages={6945--6954},
+  year={2024}
+}
+
+@misc{etienne2024emotionidentificationfrenchwritten,
+  title={Emotion Identification for French in Written Texts: Considering their Modes of Expression as a Step Towards Text Complexity Analysis},
+  author={Aline {\'E}tienne and Delphine Battistelli and Gw{\'e}nol{\'e} Lecorv{\'e}},
+  year={2024},
+  eprint={2405.14385},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2405.14385}
+}
+
+@article{battistelli2025introduction,
+  title={Introduction to the Special Issue of the TAL Journal on Abusive Language: Linguistic Resources, Methods and Applications},
+  author={Battistelli, Delphine and Benamara, Farah and Patti, Viviana},
+  journal={Traitement Automatique des Langues},
+  volume={65},
+  number={3},
+  pages={7--20},
+  year={2025}
+}
+
+@book{micheli2014,
+  author    = {Micheli, Rapha{\"e}l},
+  title     = {Les {\'e}motions dans les discours. Mod{\`e}le d'analyse, perspectives empiriques},
+  publisher = {De Boeck Sup{\'e}rieur},
+  address   = {Louvain-la-Neuve},
+  series    = {Champs linguistiques},
+  year      = {2014},
+  doi       = {10.3917/dbu.mchel.2014.01}
+}
+
+@inproceedings{etienne2022,
+  author    = {Etienne, Aline and Battistelli, Delphine and Lecorv{\'e}, Gw{\'e}nol{\'e}},
+  title     = {A ({P}sycho-){L}inguistically Motivated Scheme for Annotating and Exploring Emotions in a Genre-Diverse Corpus},
+  booktitle = {Proceedings of the Thirteenth Language Resources and Evaluation Conference},
+  publisher = {European Language Resources Association},
+  address   = {Marseille, France},
+  month     = jun,
+  year      = {2022},
+  pages     = {603--612},
+  url       = {https://aclanthology.org/2022.lrec-1.64/}
+}
+
+@article{battistelli2025,
+  author  = {Battistelli, Delphine and {\'E}tienne, Aline},
+  title   = {{ModalE}, une ressource lexicale de la modalit{\'e} au prisme des {\'e}motions},
+  journal = {Les Carnets du Cediscor},
+  number  = {35},
+  year    = {2025},
+  note    = {Num{\'e}ro : Marqueurs modaux, {\'e}nonciation et argumentation},
+  url     = {https://hal.science/hal-05002259/document}
+}
+\end{filecontents*}
+
+\documentclass{stageOnera}
+%%
+% Paquets
+%
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{csquotes}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage[numbers]{natbib}
+\usepackage[french]{babel}
+\usepackage{booktabs}
+\usepackage{placeins}
+
+
+%%
+% Éléments du cartouche de titre
+%
+
+%%% Informations sur le stagiaire
+
+%%%% Nom, prénom
+\nom{Tsang}
+\prenom{Gwendal}
+
+
+%%%% Centre, département et unité
+\departement{Palaiseau -- DTIS MTIS}
+
+
+%%% Informations sur le stage
+
+%%%% Titre complet
+% (utilier \par pour forcer le retour à la ligne)
+\titre{Analyse automatique des émotions \par dans les contenus toxiques en ligne}
+
+%%%% thématique (ICS, ISL, 3S, RA, ICIHS, PTI,MACS, IAD, COS)
+\thematique{ICS}
+
+
+%%%% Encadrant(s) (nom, prénom, département/unité)
+% (utilier \par pour forcer le retour à la ligne)
+\encadrantOnera{À compléter}
+\formation{Master 2 Traitement Automatique des Langues}
+
+%%%% Mots clés (séparés par des virgules)
+\motsCles{émotions, toxicité en ligne, TAL, CamemBERT, EMOTYC}
+
+
+\begin{document}
+
+%% Création du cartouche de titre
+\maketitle
+
+
+%% Contenu
+\section*{Objectifs}
+
+L'objectif de ce stage est d'étudier dans quelle mesure les signaux émotionnels peuvent compléter ou apporter un nouvel éclairage sur la détection du cyberharcèlement.
+
+
+
+\section*{Contexte}
+
+L'analyse automatique des émotions et de la toxicité en ligne (\textit{Abusive Language Detection}) se heurte à plusieurs limites et difficultés. Les approches reposant uniquement sur une classification binaire échouent souvent à capturer la complexité linguistique et pragmatique des contenus, notamment lorsque la violence discursive s'exprime de manière implicite ou indirecte \citep{battistelli2025introduction}.
+
+Cette limite est illustrée par Dragos et Constable~\citep{dragos2023comparison}, qui comparent différentes techniques de classification pour la détection de contenus extrémistes en français à partir d'un corpus de 1 728 textes. Leur étude confronte des modèles classiques, tels que les SVM associés à des représentations TF-IDF, Bag-of-Words ou à des traits linguistiques, à un modèle de langue pré-entraîné de type CamemBERT. Après rééquilibrage des données par SMOTE, CamemBERT obtient de bonnes performances, avec une exactitude de 0,78, une précision de 0,80, un rappel de 0,86 et une F-mesure de 0,79. Toutefois, un modèle plus classique, combinant SVM et TF-IDF, atteint des résultats comparables, voire supérieurs en rappel, avec une F-mesure de 0,83.
+
+Ces résultats montrent que l'ajout de traits linguistiques de surface ne garantit pas une amélioration des performances : dans l'étude de Dragos et Constable~\citep{dragos2023comparison}, leur intégration au SVM entraîne au contraire une dégradation notable, la F-mesure chutant à 0,54. Les auteurs soulignent ainsi la difficulté à détecter l'extrémisme à partir de marqueurs génériques, en raison du caractère fuyant, contextuel et fortement subjectif de ce type de contenu. Cette limite justifie le recours à des marqueurs sémantiques plus profonds, parmi lesquels les émotions occupent une place centrale.
+
+
+\section*{Objectifs scientifiques}
+
+La modélisation automatique des émotions ne peut toutefois se réduire à l'identification de lexiques émotionnels explicites. Étienne~\citep{etienne2023analyse} montre les limites des approches fondées sur des ressources lexicales classiques et propose un schéma d'annotation distinguant quatre modes d'expression de l'émotion : le mode \textit{désigné}, lorsque l'émotion est exprimée par un lexique explicite ; le mode \textit{comportemental}, lorsqu'elle est associée à des manifestations physiques ou observables ; le mode \textit{montré}, lorsqu'elle apparaît à travers des indices syntaxiques, typographiques ou discursifs ; et le mode \textit{suggéré}, lorsqu'elle doit être inférée à partir du contexte socioculturel ou situationnel.
+
+Les travaux de Dragos et al.~\citep{dragos2022angry} confirment la complexité d'un tel schéma lorsqu'il est appliqué à des contenus extrémistes. Dans leur étude consacrée à l'annotation émotionnelle de contenus extrémistes, les auteurs observent un accord satisfaisant pour l'identification des catégories émotionnelles, avec un rappel de 0,86, mais des performances beaucoup plus faibles pour la délimitation précise des déclencheurs linguistiques de l'émotion, avec une F-mesure de 0,54. Ce résultat met en évidence la difficulté à localiser précisément les indices émotionnels dans des discours où l'affect peut être diffus, implicite ou fortement dépendant du contexte.
+
+Les objectifs scientifiques du stage consistent donc à dépasser une lecture strictement lexicale ou binaire des contenus toxiques, à examiner la robustesse des modèles d'analyse émotionnelle existants et à déterminer comment leurs sorties peuvent être interprétées pour caractériser plus finement des corpus issus des réseaux sociaux.
+
+
+\section*{Démarche, déroulement et principaux résultats obtenus}
+
+\subsection{Annotations linguistiques fines}
+
+\subsection{Tests du modèle EMOTYC}
+
+Le modèle [EMOTYC](https://huggingface.co/TextToKids/CamemBERT-base-EmoTextToKids) a été développé par \citep{etienne2023analyse} dans le cadre du projet [ANR TextToKids](https://texttokids.irisa.fr/publications/) .
+Il s'agit d'un modèle transformers qui permet de faire une classification multi-tâches : le modèle a été entraîné à prédire à la fois la présence d'une émotion, son mode d'expression et sa catégorie émotionnelle.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth,height=0.25\textheight,keepaspectratio]{figures/schema.pdf}
+  \caption{Schéma du modèle EMOTYC.}
+  \label{fig:schema-emotyc}
+\end{figure}
+
+Les évaluations réalisées pendant le stage ont repris cette configuration contextuelle : la phrase cible est fournie avec son contexte immédiat, c'est-à-dire les phrases précédente et suivante. Les scripts d'évaluation, les données intermédiaires et les exports de résultats sont disponibles dans le dépôt \href{https://github.com/GwenTsang/Eval-EMOTYC}{Eval-EMOTYC}. Les tableaux suivants synthétisent les performances obtenues à partir des fichiers \texttt{emotyc\_predictions\_summary.json}, avec un seuil de décision fixé à 0,5.
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \begin{tabular}{lrrrr}
+    \toprule
+    Corpus & Exemples & Étiquettes & Macro-F1 & Micro-F1 \\
+    \midrule
+    \textit{TextToKids} & 27\,911 & 19 & 0,739 & 0,897 \\
+    \textit{CyberAggAdo} global & 781 & 19 & 0,282 & 0,473 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Performances globales d'EMOTYC sur les deux corpus évalués.}
+  \label{tab:perf-globales}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{lrrrrr}
+    \toprule
+    Étiquette & Support & Précision & Rappel & F1 & Kappa \\
+    \midrule
+    \multicolumn{6}{l}{\textit{Présence et niveau de complexité}} \\
+    Émotion présente & 5\,374 & 0,927 & 0,933 & 0,930 & 0,914 \\
+    Base & 4\,133 & 0,923 & 0,910 & 0,916 & 0,902 \\
+    Complexe & 568 & 0,904 & 0,798 & 0,848 & 0,845 \\
+    \addlinespace
+    \multicolumn{6}{l}{\textit{Modes d'expression}} \\
+    Comportementale & 1\,242 & 0,893 & 0,895 & 0,894 & 0,889 \\
+    Désignée & 1\,499 & 0,925 & 0,929 & 0,927 & 0,923 \\
+    Montrée & 971 & 0,900 & 0,872 & 0,886 & 0,882 \\
+    Suggérée & 1\,909 & 0,833 & 0,800 & 0,816 & 0,803 \\
+    \addlinespace
+    \multicolumn{6}{l}{\textit{Catégories émotionnelles}} \\
+    Admiration & 211 & 0,854 & 0,664 & 0,747 & 0,745 \\
+    Autre & 1\,270 & 0,886 & 0,921 & 0,903 & 0,898 \\
+    Colère & 1\,180 & 0,915 & 0,917 & 0,916 & 0,913 \\
+    Culpabilité & 19 & 0,000 & 0,000 & 0,000 & 0,000 \\
+    Dégoût & 52 & 1,000 & 0,077 & 0,143 & 0,143 \\
+    Embarras & 162 & 0,818 & 0,778 & 0,798 & 0,796 \\
+    Fierté & 202 & 0,840 & 0,777 & 0,807 & 0,806 \\
+    Jalousie & 7 & 0,000 & 0,000 & 0,000 & 0,000 \\
+    Joie & 888 & 0,912 & 0,853 & 0,881 & 0,878 \\
+    Peur & 1\,047 & 0,894 & 0,886 & 0,890 & 0,886 \\
+    Surprise & 824 & 0,913 & 0,886 & 0,899 & 0,896 \\
+    Tristesse & 673 & 0,865 & 0,817 & 0,840 & 0,837 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Performances détaillées d'EMOTYC sur \textit{TextToKids} avec contexte. Le support correspond au nombre d'occurrences positives dans l'annotation de référence.}
+  \label{tab:perf-texttokids}
+\end{table}
+
+\FloatBarrier
+
+Sur \textit{TextToKids}, les performances sont élevées pour la présence d'une émotion, les modes d'expression et les catégories les plus représentées, avec une F1 supérieure à 0,88 pour la colère, la joie, la peur, la surprise, le mode \textit{désigné} et le mode \textit{comportemental}. Les résultats restent en revanche fragiles pour les classes très rares, comme la culpabilité, la jalousie ou le dégoût, où le support faible rend les scores instables malgré une exactitude globale élevée.
+
+\FloatBarrier
+
+\subsection*{Transposition aux réseaux sociaux}
+
+La transposition d'un modèle tel qu'EMOTYC à des données issues des réseaux sociaux met en évidence des limites importantes de généralisation. Dragos et al.~\citep{dragos2024exploring} utilisent EMOTYC comme outil d'analyse automatique afin d'étudier la densité émotionnelle de corpus extrémistes, sexistes et haineux issus de Twitter et de forums. L'évaluation menée sur le corpus \textit{CyberAggAdo} global confirme cette baisse de robustesse dans des contextes discursifs plus bruités, plus courts et souvent plus implicites que ceux de son corpus d'entraînement.
+
+\begin{table}[htbp]
+  \centering
+  \scriptsize
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{lrrrrr}
+    \toprule
+    Étiquette & Support & Précision & Rappel & F1 & Kappa \\
+    \midrule
+    \multicolumn{6}{l}{\textit{Présence et niveau de complexité}} \\
+    Émotion présente & 398 & 0,620 & 0,706 & 0,660 & 0,258 \\
+    Base & 363 & 0,633 & 0,485 & 0,549 & 0,245 \\
+    Complexe & 14 & 0,212 & 0,500 & 0,298 & 0,280 \\
+    \addlinespace
+    \multicolumn{6}{l}{\textit{Modes d'expression}} \\
+    Comportementale & 36 & 0,278 & 0,139 & 0,185 & 0,159 \\
+    Désignée & 55 & 0,429 & 0,327 & 0,371 & 0,330 \\
+    Montrée & 300 & 0,481 & 0,463 & 0,472 & 0,152 \\
+    Suggérée & 54 & 0,158 & 0,056 & 0,082 & 0,048 \\
+    \addlinespace
+    \multicolumn{6}{l}{\textit{Catégories émotionnelles}} \\
+    Admiration & 0 & 0,000 & 0,000 & 0,000 & -- \\
+    Autre & 62 & 0,106 & 0,242 & 0,148 & 0,042 \\
+    Colère & 289 & 0,492 & 0,429 & 0,458 & 0,173 \\
+    Culpabilité & 3 & 0,000 & 0,000 & 0,000 & 0,000 \\
+    Dégoût & 80 & 0,000 & 0,000 & 0,000 & 0,000 \\
+    Embarras & 2 & 0,071 & 1,000 & 0,133 & 0,129 \\
+    Fierté & 3 & 0,750 & 1,000 & 0,857 & 0,857 \\
+    Jalousie & 6 & 0,000 & 0,000 & 0,000 & 0,000 \\
+    Joie & 30 & 0,423 & 0,367 & 0,393 & 0,370 \\
+    Peur & 4 & 0,154 & 0,500 & 0,235 & 0,229 \\
+    Surprise & 5 & 0,333 & 0,400 & 0,364 & 0,359 \\
+    Tristesse & 14 & 0,115 & 0,214 & 0,150 & 0,130 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Performances détaillées d'EMOTYC sur le corpus \textit{CyberAggAdo} global avec contexte. Le support correspond au nombre d'occurrences positives dans l'annotation de référence.}
+  \label{tab:perf-cyberaggado}
+\end{table}
+
+\FloatBarrier
+
+Les performances observées sur \textit{CyberAggAdo} sont nettement inférieures à celles obtenues sur \textit{TextToKids}. La présence d'une émotion reste la tâche la plus robuste, avec une F1 de 0,660, mais l'identification des modes d'expression et des catégories émotionnelles chute fortement : le mode \textit{suggéré} atteint seulement 0,082 de F1 et la colère, pourtant très présente dans le corpus, atteint 0,458 de F1. Ces écarts confirment la sensibilité du modèle à son domaine d'entraînement et la difficulté à transférer directement un modèle appris sur des textes plus normés vers des productions adolescentes en ligne.
+
+Malgré ces limites, l'extraction automatique des signaux émotionnels offre un apport analytique important. Dragos et al.~\citep{dragos2024exploring} montrent que la colère domine les corpus étudiés, mais que sa densité varie fortement selon les types de contenus : elle représente 61,5~\% des émotions dans les textes haineux, contre 15,6~\% dans les contenus non haineux. À l'inverse, l'admiration apparaît davantage dans les contenus non haineux. Ces résultats confirment que le profil émotionnel, même imparfaitement extrait, constitue une signature pertinente pour caractériser les contenus toxiques et dépasser les approches strictement binaires de la toxicité en ligne \citep{dragos2024exploring,battistelli2025introduction}.
+
+
+\section*{Perspectives}
+
+
+%% Bibliographie
+\bibliographystyle{onera}
+\selectlanguage{french}
+\bibliography{references}
+
+\end{document}

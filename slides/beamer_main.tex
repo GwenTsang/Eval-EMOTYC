@@ -21,7 +21,7 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{tikz}
-\graphicspath{{figures/logos/}{figures/schemas/}{figures/plots/}}
+\graphicspath{{figures/logos/}{figures/schemas/}{figures/plots/}{figures/tables/}}
 
 \definecolor{emotycText}{HTML}{1A1A1A}
 \definecolor{emotycMuted}{HTML}{71717A}
@@ -33,6 +33,27 @@
 \definecolor{ttkBlue}{HTML}{4F46E5}
 \definecolor{cyberOrange}{HTML}{B45309}
 \definecolor{softSurface}{HTML}{F7F7F8}
+\definecolor{emotionAdmiration}{HTML}{1ABC9C}
+\definecolor{emotionAutre}{HTML}{95A5A6}
+\definecolor{emotionColere}{HTML}{E74C3C}
+\definecolor{emotionCulpabilite}{HTML}{8E44AD}
+\definecolor{emotionDegout}{HTML}{2ECC71}
+\definecolor{emotionEmbarras}{HTML}{E84393}
+\definecolor{emotionFierte}{HTML}{E67E22}
+\definecolor{emotionJalousie}{HTML}{7F8C1F}
+\definecolor{emotionJoie}{HTML}{F1C40F}
+\definecolor{emotionPeur}{HTML}{9B59B6}
+\definecolor{emotionSurprise}{HTML}{00A8CC}
+\definecolor{emotionTristesse}{HTML}{3498DB}
+
+\newcommand{\legenditem}[2]{\raisebox{0.2ex}{\textcolor{#1}{\rule{1.1ex}{1.1ex}}}\,#2}
+\newcommand{\corpusseparator}{%
+  \begin{column}{0.014\textwidth}
+    \centering
+    \vspace{0.15em}
+    \textcolor{emotycMuted!55}{\rule{0.35pt}{0.19\textheight}}
+  \end{column}
+}
 
 \newcommand{\InputHeatmapTable}{%
   \IfFileExists{figures/tables/heatmap_delta_table_compact.tex}{%
@@ -67,6 +88,12 @@
 \newcommand{\negcorr}[1]{\textcolor{Negative}{#1}}
 \newcommand{\rhoitem}[7]{\item \(\rho(\mathrm{#1}=\text{#2},\,\mathrm{#3}=\text{#4}) = #5\)\\[-0.15em]{\tiny \(p\pval{#6}\), \(n_{\cap}=#7\)}}
 \newcommand{\chiitem}[5]{\item \(\chi^2(\mathrm{#1},\,\mathrm{#2}=\text{#3}) = #4\)\\[-0.15em]{\tiny \(p\pval{#5}\)}}
+\newcommand{\referenceitem}[4]{%
+  \par\noindent\hangindent=1.55em\hangafter=1
+  {\color{emotycMuted}\makebox[1.35em][l]{[#1]}}%
+  #2 \emph{#3}. {\color{emotycMuted}#4}\par
+  \vspace{0.38em}%
+}
 \title{Leveraging linguistic annotations to improve automatic detection of online content}
 \author{Gwendal Tsang}
 \institute{\ Valentina Dragos\\Delphine Battistelli}
@@ -313,35 +340,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 \end{columns}
 \end{frame}
 
-\begin{frame}{2.2.7 Émotions × violence verbale}
-\scriptsize
-\begin{columns}[T,onlytextwidth]
-\begin{column}{0.49\textwidth}
-\textbf{Pairwise : \(\rho\)}
-\begin{itemize}
-\setlength\itemsep{0.55em}
-\rhoitem{EMOTION}{Dégoût}{VAB}{DNG}{\pos{0.30}}{<0.001}{35}
-\rhoitem{EMOTION}{Dégoût}{VAB}{OTH}{\negcorr{-0.28}}{<0.001}{23}
-\rhoitem{EMOTION}{Dégoût}{VAB}{NCG}{\pos{0.16}}{<0.001}{19}
-\rhoitem{EMOTION}{Colère}{VAB}{DNG}{\negcorr{-0.14}}{<0.005}{26}
-\rhoitem{EMOTION}{Dégoût}{VAB}{THR}{\negcorr{-0.11}}{<0.05}{0}
-\end{itemize}
-\end{column}
-\begin{column}{0.49\textwidth}
-\textbf{Global : \(\chi^2\)}
-\begin{itemize}
-\setlength\itemsep{0.55em}
-\chiitem{VAB}{EMOTION}{Dégoût}{71.21}{<0.001}
-\chiitem{VAB}{EMOTION}{Colère}{12.35}{<0.05}
-\chiitem{VAB}{EMOTION}{Autre}{6.62}{=0.16}
-\chiitem{VAB}{EMOTION}{Peur}{3.96}{=0.41}
-\chiitem{VAB}{EMOTION}{Joie}{3.66}{=0.45}
-\end{itemize}
-\end{column}
-\end{columns}
-\end{frame}
-
-\begin{frame}{2.2.8 Émotions × intention}
+\begin{frame}{2.2.7 Émotions × intention}
 \scriptsize
 \begin{columns}[T,onlytextwidth]
 \begin{column}{0.49\textwidth}
@@ -369,7 +368,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 \end{columns}
 \end{frame}
 
-\begin{frame}{2.2.9 Émotions × cible}
+\begin{frame}{2.2.8 Émotions × cible}
 \scriptsize
 \begin{columns}[T,onlytextwidth]
 \begin{column}{0.49\textwidth}
@@ -397,7 +396,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 \end{columns}
 \end{frame}
 
-\begin{frame}{2.2.10 Émotions × rôle}
+\begin{frame}{2.2.9 Émotions × rôle}
 \scriptsize
 \begin{columns}[T,onlytextwidth]
 \begin{column}{0.49\textwidth}
@@ -425,7 +424,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 \end{columns}
 \end{frame}
 
-\begin{frame}{2.2.11 Émotions × contexte}
+\begin{frame}{2.2.10 Émotions × contexte}
 \scriptsize
 \begin{columns}[T,onlytextwidth]
 \begin{column}{0.49\textwidth}
@@ -453,7 +452,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 \end{columns}
 \end{frame}
 
-\begin{frame}{2.2.12 Modes d'expression × haine / agressivité}
+\begin{frame}{2.2.11 Modes d'expression × haine / agressivité}
 \scriptsize
 \begin{columns}[T,onlytextwidth]
 \begin{column}{0.49\textwidth}
@@ -480,7 +479,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 \end{columns}
 \end{frame}
 
-\begin{frame}{2.2.13 Modes d'expression × violence verbale}
+\begin{frame}{2.2.12 Modes d'expression × violence verbale}
 \scriptsize
 \begin{columns}[T,onlytextwidth]
 \begin{column}{0.49\textwidth}
@@ -507,7 +506,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 \end{columns}
 \end{frame}
 
-\begin{frame}{2.2.14 Modes d'expression × intention}
+\begin{frame}{2.2.13 Modes d'expression × intention}
 \scriptsize
 \begin{columns}[T,onlytextwidth]
 \begin{column}{0.49\textwidth}
@@ -534,7 +533,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 \end{columns}
 \end{frame}
 
-\begin{frame}{2.2.15 Modes d'expression × cible}
+\begin{frame}{2.2.14 Modes d'expression × cible}
 \scriptsize
 \begin{columns}[T,onlytextwidth]
 \begin{column}{0.49\textwidth}
@@ -561,7 +560,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 \end{columns}
 \end{frame}
 
-\begin{frame}{2.2.16 Modes d'expression × rôle}
+\begin{frame}{2.2.15 Modes d'expression × rôle}
 \scriptsize
 \begin{columns}[T,onlytextwidth]
 \begin{column}{0.49\textwidth}
@@ -618,10 +617,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 \begin{frame}{2.2.18 Points d'attention}
 \small
 \begin{itemize}
-  \item Le maximum identifié est désormais \(|\rho|=0.75\), porté par Colère--Montrée.
-  \item Les formules avec \(n_{\cap}\) très faible doivent être lues comme des signaux exploratoires.
-  \item Les scores \(\chi^2\) indiquent une dépendance globale, sans isoler à eux seuls quel niveau catégoriel porte toute l'association.
-  \item Une lecture inférentielle stricte demanderait une correction des comparaisons multiples.
+  \item Le maximum identifié est \(|\rho|=0.75\), porté par Colère--Montrée.
 \end{itemize}
 \end{frame}
 
@@ -640,14 +636,110 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 \includegraphics[width=0.98\textwidth,height=0.78\textheight,keepaspectratio]{schema.pdf}
 \end{frame}
 
+\subsection{Corpus et labels émotionnels}
+
+\begin{frame}{3.2.1 Schéma d'annotation émotionnelle}
+\small
+\begin{itemize}
+  \item Les corpus sont représentés au niveau phrastique par un vecteur multi-label.
+  \item Les 12 colonnes émotionnelles sont : Admiration, Autre, Colère, Culpabilité, Dégoût, Embarras, Fierté, Jalousie, Joie, Peur, Surprise et Tristesse.
+  \item Les proportions ci-dessous sont calculées sur les activations positives de ces 12 colonnes.
+  \item Une phrase pouvant porter plusieurs émotions, le dénominateur est le nombre total d'activations émotionnelles, et non le nombre de phrases.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{3.2.2 Distributions des émotions dans les corpus}
+\centering
+\vspace{1.35em}
+\begin{columns}[T,onlytextwidth]
+\begin{column}{0.285\textwidth}
+\centering
+\makebox[\linewidth][c]{\scriptsize\bfseries Corpus EmoTextToKids}\par
+\vspace{0.2em}
+\includegraphics[height=0.255\textheight]{emotions_emotexttokids.pdf}\par
+\end{column}
+\corpusseparator
+\begin{column}{0.388\textwidth}
+\centering
+\setlength{\tabcolsep}{7pt}
+\renewcommand{\arraystretch}{0.62}
+\makebox[\linewidth][c]{\scriptsize\bfseries Corpus de tweets}\par
+\vspace{0.2em}
+\begin{tabular}{cc}
+\includegraphics[height=0.255\textheight]{emotions_extremiste.pdf} &
+\includegraphics[height=0.255\textheight]{emotions_non_extremiste.pdf} \\
+\shortstack{{\scriptsize}\\[-0.1em]{\scriptsize extrémiste}} &
+\shortstack{{\scriptsize}\\[-0.1em]{\scriptsize non extrémiste}}
+\end{tabular}
+\end{column}
+\corpusseparator
+\begin{column}{0.285\textwidth}
+\centering
+\makebox[\linewidth][c]{\scriptsize\bfseries Corpus de cyberharcèlement}\par
+\vspace{0.2em}
+\includegraphics[height=0.255\textheight]{emotions_cyberadoagg.pdf}\par
+\end{column}
+\end{columns}
+
+\vspace{1.65em}
+{\scriptsize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{llllll}
+\legenditem{emotionColere}{Colère} &
+\legenditem{emotionDegout}{Dégoût} &
+\legenditem{emotionPeur}{Peur} &
+\legenditem{emotionJoie}{Joie} &
+\legenditem{emotionTristesse}{Tristesse} &
+\legenditem{emotionSurprise}{Surprise} \\[0.15em]
+\legenditem{emotionAutre}{Autre} &
+\legenditem{emotionAdmiration}{Admiration} &
+\legenditem{emotionFierte}{Fierté} &
+\legenditem{emotionEmbarras}{Embarras} &
+\legenditem{emotionCulpabilite}{Culpabilité} &
+\legenditem{emotionJalousie}{Jalousie}
+\end{tabular}
+}
+
+\vspace{2.2em}
+{\tiny\color{emotycMuted}
+Références : EmoTextToKids, Etienne (2023) ; tweets, Dragos et al. (2022) ; cyberharcèlement, Ollagnier et al. (2024).
+}
+\end{frame}
+
+\begin{frame}{3.2.3 Taille des corpus}
+\centering
+\vspace{1.0em}
+\small
+\input{figures/tables/corpus_sizes_table.tex}
+\end{frame}
+
+\begin{frame}{3.2.4 Performances EMOTYC}
+\centering
+\vspace{1.0em}
+\small
+\input{figures/tables/emotyc_performance_table.tex}
+
+\vspace{0.6em}
+{\footnotesize\color{emotycMuted}Pour EmoTextToKids et CyberAggAdo, les métriques sont micro-moyennées sur les 19 labels EMOTYC à partir des JSON de résultats.}
+\end{frame}
+
+\begin{frame}{3.2.5 Proportions extraites des XLSX}
+\centering
+\scriptsize
+\input{figures/tables/emotion_proportions_table.tex}
+
+\vspace{0.6em}
+{\footnotesize\color{emotycMuted}EmoTextToKids : 27\,911 phrases, 6\,535 activations émotionnelles. CyberAggAdo : 781 messages, 498 activations émotionnelles.}
+\end{frame}
+
 \subsection{Méthodologie utilisée pour les tests de performance}
 
-\begin{frame}{3.2 Méthodologie utilisée pour les tests de performance}
+\begin{frame}{3.3 Méthodologie utilisée pour les tests de performance}
 \centering
 \includegraphics[width=0.98\textwidth,height=0.78\textheight,keepaspectratio]{schema_xlsx.pdf}
 \end{frame}
 
-\begin{frame}{3.2.1 Métriques utilisées}
+\begin{frame}{3.3.1 Métriques utilisées}
   \vspace{1em}
 
   \vspace{0.5em}
@@ -680,7 +772,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 
 \end{frame}
 
-\begin{frame}{3.2.2 Interpréter les baisses de performance}
+\begin{frame}{3.3.2 Interpréter les baisses de performance}
 \small
 \begin{itemize}
   \item Une baisse de précision suggère que certains indices lexicaux ou contextuels valides dans TTK deviennent trompeurs dans CyberAggAdoLarge.
@@ -690,7 +782,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
 
 \subsection{Résultats : performances d'EMOTYC}
 
-\begin{frame}{3.3.1 Ce que mesure la heatmap}
+\begin{frame}{3.4.1 Ce que mesure la heatmap}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.58\textwidth}
       \[
@@ -721,7 +813,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
   \end{columns}
 \end{frame}
 
-\begin{frame}{3.3.2 Heatmap compacte des principaux labels}
+\begin{frame}{3.4.2 Heatmap compacte des principaux labels}
   \vspace{-0.1em}
   \small
   \setlength{\tabcolsep}{3pt}
@@ -733,7 +825,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
   \textcolor{emotycMuted}{Lecture : 4 labels les plus repr\'esent\'es dans CyberAggAdoLarge, plus le plus fort d\'ecrochage robuste. $\Delta>0$ indique une performance sup\'erieure sur TextToKids ; la couleur indique l'amplitude, pas le sens.}
 \end{frame}
 
-\begin{frame}{3.3.3 Signal principal : forte perte hors domaine}
+\begin{frame}{3.4.3 Signal principal : forte perte hors domaine}
   \metricbox{$+0.4570$}{Macro $F_1$}{\'ecart TextToKids -- CyberAggAdo}
   \hfill
   \metricbox{$+0.4236$}{Micro $F_1$}{\'ecart TextToKids -- CyberAggAdo}
@@ -748,7 +840,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
   \end{itemize}
 \end{frame}
 
-\begin{frame}{3.3.4 Labels concentrant le d\'ecrochage}
+\begin{frame}{3.4.4 Labels concentrant le d\'ecrochage}
   \small
   \begin{tabular}{@{}lrrrrr@{}}
     \toprule
@@ -771,7 +863,7 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
   \end{itemize}
 \end{frame}
 
-\begin{frame}{3.3.5 Points de vigilance}
+\begin{frame}{3.4.5 Points de vigilance}
   \begin{itemize}
     \item Les labels tr\`es rares dans CyberAggAdoLarge doivent \^etre interpr\'et\'es avec prudence : \textit{Admiration} a 0 occurrence positive, \textit{Embarras} 2, \textit{Fiert\'e} 3, \textit{Peur} 4.
     \item La couleur ne distingue pas le signe : une case claire peut aussi correspondre \`a une absence de cas suffisants pour comparer.
@@ -861,6 +953,50 @@ Les annotations linguistiques et émotionnelles peuvent-elles améliorer ou écl
     \node[font=\scriptsize\color{muted}] at (3.45,-0.35) {Macro-F1 sur les 19 labels};
   \end{tikzpicture}
   \end{center}
+\end{frame}
+
+\section*{Références}
+
+\begin{frame}[t]
+\vspace{0.15cm}
+{\large\color{emotycAccent}Références}\par
+\vspace{0.08cm}
+{\color{emotycMuted}\rule{\textwidth}{0.35pt}}\par
+\vspace{0.22cm}
+
+\fontsize{6.8}{7.8}\selectfont
+\color{emotycText}
+\raggedright
+
+\referenceitem{1}
+{Dragos, V., Battistelli, D., Etienne, A., and Constable, Y. (2022).}
+{Angry or sad? emotion annotation for extremist content characterisation}
+{Proceedings of the Thirteenth Language Resources and Evaluation Conference, 193--201.}
+
+\referenceitem{2}
+{Etienne, A. (2023).}
+{Analyse automatique des émotions dans les textes: contributions théoriques et applicatives dans le cadre de l'étude de la complexité des textes pour enfants}
+{PhD thesis, Université de Nanterre-Paris X.}
+
+\referenceitem{3}
+{Dragos, V., and Constable, Y. (2023).}
+{Comparison of Classification Techniques for Extremism Detection in French Social Media}
+{2023 26th International Conference on Information Fusion (FUSION), 1--6. IEEE.}
+
+\referenceitem{4}
+{Dragos, V., Battistelli, D., Sow, F., and Etienne, A. (2024).}
+{Exploring the Emotional Dimension of French Online Toxic Content}
+{Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024), 6945--6954.}
+
+\referenceitem{5}
+{Étienne, A., Battistelli, D., and Lecorvé, G. (2024).}
+{Emotion Identification for French in Written Texts: Considering their Modes of Expression as a Step Towards Text Complexity Analysis}
+{arXiv:2405.14385.}
+
+\referenceitem{6}
+{Battistelli, D., Benamara, F., and Patti, V. (2025).}
+{Introduction to the Special Issue of the TAL Journal on Abusive Language: Linguistic Resources, Methods and Applications}
+{Traitement Automatique des Langues, 65(3), 7--20.}
 \end{frame}
 
 \end{document}

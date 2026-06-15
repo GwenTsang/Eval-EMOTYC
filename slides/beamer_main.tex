@@ -119,6 +119,7 @@
   \item Le corpus CyberAggAdoLarge
   \item Tests du modèle EMOTYC
   \item Tests avec des classifieurs linéaires
+  \item Perspectives
 \end{enumerate}
 \end{frame}
 
@@ -729,7 +730,7 @@ Références : EmoTextToKids, Etienne (2023) ; tweets, Dragos et al. (2022) ; cy
 \input{figures/tables/emotion_proportions_table.tex}
 
 \vspace{0.6em}
-{\footnotesize\color{emotycMuted}EmoTextToKids : 27\,911 phrases, 6\,535 activations émotionnelles. CyberAggAdo : 781 messages, 498 activations émotionnelles.}
+{\footnotesize\color{emotycMuted}EmoTextToKids : 27\,911 unités textuelles, 6\,535 émotionnels. CyberAggAdo : 781 unités textuelles, 498 activations émotionnels.}
 \end{frame}
 
 \subsection{Méthodologie utilisée pour les tests de performance}
@@ -813,7 +814,7 @@ Références : EmoTextToKids, Etienne (2023) ; tweets, Dragos et al. (2022) ; cy
   \end{columns}
 \end{frame}
 
-\begin{frame}{3.4.2 Heatmap compacte des principaux labels}
+\begin{frame}{3.4.2 Heatmaps}
   \vspace{-0.1em}
   \small
   \setlength{\tabcolsep}{3pt}
@@ -825,7 +826,7 @@ Références : EmoTextToKids, Etienne (2023) ; tweets, Dragos et al. (2022) ; cy
   \textcolor{emotycMuted}{Lecture : 4 labels les plus repr\'esent\'es dans CyberAggAdoLarge, plus le plus fort d\'ecrochage robuste. $\Delta>0$ indique une performance sup\'erieure sur TextToKids ; la couleur indique l'amplitude, pas le sens.}
 \end{frame}
 
-\begin{frame}{3.4.3 Signal principal : forte perte hors domaine}
+\begin{frame}{3.4.3}
   \metricbox{$+0.4570$}{Macro $F_1$}{\'ecart TextToKids -- CyberAggAdo}
   \hfill
   \metricbox{$+0.4236$}{Micro $F_1$}{\'ecart TextToKids -- CyberAggAdo}
@@ -955,6 +956,56 @@ Références : EmoTextToKids, Etienne (2023) ; tweets, Dragos et al. (2022) ; cy
   \end{center}
 \end{frame}
 
+\section{Perspectives}
+
+\begin{frame}
+  \begin{center}
+    {\LARGE\bfseries 5. Perspectives}\par
+  \end{center}
+\end{frame}
+
+\begin{frame}{5.1 Adaptation d'EMOTYC au domaine des messages numériques}
+\small
+\begin{itemize}
+  \item \textbf{Constat.} Les résultats montrent un décrochage important lors du transfert d'EMOTYC (entraîné sur TextToKids) vers CyberAggAdoLarge. Les formes d'expression émotionnelle dans les messages numériques (SMS, réseaux sociaux, messageries) diffèrent fortement du registre littéraire jeunesse.
+  \item \textbf{Spécificités à intégrer :}
+  \begin{itemize}
+    \item Abréviations et langage SMS (\textit{tkt}, \textit{ptdr}, \textit{mdr}, \textit{jsp}, etc.) ;
+    \item Argot adolescent et néologismes (\textit{frr}, \textit{wsh}, \textit{bg}, \textit{tmtc}) ;
+    \item Emojis et émoticônes comme marqueurs émotionnels ;
+    \item Ponctuation expressive (majuscules, répétitions : \textit{!!!}, \textit{???}).
+  \end{itemize}
+  \item \textbf{Piste.} Fine-tuning ou ré-entraînement du classifieur sous-jacent à EMOTYC sur un corpus mixte intégrant des données de messages numériques annotées en émotions, afin d'améliorer la couverture des modes d'expression propres à ce registre.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{5.2 Exploiter les annotations \textit{mépris / haine} dans TextToKids}
+\small
+\begin{itemize}
+  \item \textbf{Constat.} Le corpus TextToKids (XLSX et Glozz) contient des annotations hors schéma correspondant à \textit{mépris / haine}, actuellement regroupées sous le label \textit{Autre}~:
+  \begin{itemize}
+    \item 344 lignes XLSX marquées \textit{mépris / haine} ;
+    \item 147 unités Glozz dont la remarque contient \textit{Haine} ou \textit{Mépris}.
+  \end{itemize}
+  \item \textbf{Intérêt.} Ces données, directement accessibles, permettraient d'entraîner un nouveau label émotionnel \textit{MéprisHaine} sans annotation supplémentaire. Cela réduirait l'hétérogénéité du label \textit{Autre} et affinerait la détection dans les contextes de cyberharcèlement, où mépris et haine sont des affects centraux.
+  \item \textbf{Piste.} Extraire ces cas via les règles d'inférence (XLSX : colonne de ligne ; Glozz : champ remarque), puis évaluer l'apport d'un label dédié sur les performances d'EMOTYC et des classifieurs linéaires.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{5.3 Transitions émotionnelles dans CyberAggAdo}
+\small
+\begin{itemize}
+  \item \textbf{Constat.} Le corpus CyberAggAdo dispose d'annotations de \textbf{rôles} (bully, victim, etc.) et de \textbf{cibles} (TARGET) pour chaque message, en plus des étiquettes émotionnelles. Ces annotations permettent de reconstruire les \textit{chaînes d'interaction} au sein des conversations.
+  \item \textbf{Référence.} Ide \& Kawahara (2022) distinguent \textit{émotion exprimée} (par le locuteur) et \textit{émotion ressentie} (par l'interlocuteur), montrant que les transitions émotionnelles entre tours de parole sont un signal exploitable.
+  \item \textbf{Piste.} Exploiter les couples (ROLE, TARGET) pour modéliser les transitions émotionnelles entre participants~:
+  \begin{itemize}
+    \item Construire des matrices de transition émotion$_{t}$ $\rightarrow$ émotion$_{t+1}$ conditionnées par le rôle de l'émetteur et la cible ;
+    \item Identifier des régularités (\textit{e.g.} colère du bully $\rightarrow$ tristesse de la victime) ;
+    \item Évaluer si ces patterns de transition sont prédictifs de l'escalade ou de la désescalade du harcèlement.
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
 \section*{Références}
 
 \begin{frame}[t]
@@ -997,6 +1048,11 @@ Références : EmoTextToKids, Etienne (2023) ; tweets, Dragos et al. (2022) ; cy
 {Battistelli, D., Benamara, F., and Patti, V. (2025).}
 {Introduction to the Special Issue of the TAL Journal on Abusive Language: Linguistic Resources, Methods and Applications}
 {Traitement Automatique des Langues, 65(3), 7--20.}
+
+\referenceitem{7}
+{Ide, T., and Kawahara, D. (2022).}
+{Building a Dialogue Corpus Annotated with Expressed and Experienced Emotions}
+{Proceedings of the Thirteenth Language Resources and Evaluation Conference (LREC 2022), 6474--6481.}
 \end{frame}
 
 \end{document}

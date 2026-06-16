@@ -23,39 +23,6 @@ FUNCTION {version} {
 %% Cette feuille de style a ete obtenue par l'utilitaire makebst, et completee
 %% manuellement: francisation/englicisation, format onera, cesure nom propres,
 %%               utilitaires (version, comptage des refs), ponctuations
-%%
-%% HISTORIQUE : 
-%%  1.2 (21/02/96) : premiere version diffusee ONERA apres tests internes OPc
-%%  1.3 : compteur de refs bib et affichage (comptage latex dans onera.sty)
-%%  1.4 (19/03/96) : ref des tech. reports : rapport ONERA numero XX
-%%  1.5 (13/05/96) : compactage des messages run-time sur 1 ligne
-%%  1.6 (10/09/96) : suppression italique 'et al' et nom revue (fct emphasize)
-%%  1.8 (25/11/96) : correction abrev edition
-%%  1.9 (03/04/97) : suppression du passage en min des techreport si num absent
-%%  2.0 (23/06/98) : format ouvert="openbib" ds .tex ou .cls et non \\ ds .bst
-%%  3.0 (05/01/00) : ordre P. Nom ; noms propres et pp.~XX-YY insecables
-%%                   Anglicisation possible par redefinition ds latex (1! bst)
-%%                   "editor" -> "sous la direction de " dans incollection
-%%                   "editor" -> "responsable scientifique" dans book
-%%  3.1 (12/01/00) : version francaise ET anglaise compatible avec onera.cls
-%%                   Changement dans la francisation: editor->redacteur en chef
-%%                   \onerabstbox: 2 -> 1! arg optionel, hbox->mbox +robuste
-%%                   et \hbadness=9000 ds preamble reduit les underful boxes
-%%  3.2 (30/08/00) : test "others"-> "onerabstbox[others]" pour "et al" correct
-%%  3.3 (09/11/00) : onerabstbox en providecommand (si multibib ds rapport)
-%%  3.4 (23/09/02) : test interne (non diffusé) commutation Francais/Anglais
-%%  3.5 (15/01/04) : august ->August, edition->\'edition, adresse auteur a jour
-%%  3.6 (20/12/04) : ajout newblock dans le crossref des incollection
-%%  3.7 (21/09/06) : Ordre [pp, (année)] pour article, au lieu de [(année), pp.]
-%%
-%% RESTES DU FICHIER INITIAL (bien modifié, donc ref auteur initial enlevées)
-%%-------------------------------------------------------------------
-%% NOTICE:
-%% This file may be used for non-profit purposes. It may not be distributed
-%% in exchange for money, other than distribution costs.
-%% The author provides it `as is' and does not guarantee it in any way.
-%%
-%%---------------------------------------------------------------------
 
 % Ajout (par rapport au format bibtex standard) d'une fonction pour declarer le
 % preamble en debut de doc. But: francisation CHANGEABLE depuis doc principal, 

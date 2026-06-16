@@ -1,13 +1,3 @@
-%%
-%% KESAKO ?
-%% Classe pour le résumé long des JDD, conforme avec le modèle
-%% MS Word, référence GEN-F177, selon la procédure des JDD,
-%% référence GEN-SCI-029.
-%%
-%% HISTORIQUE
-%% 1.0 (18/11/2015) première version, Paul Zehner
-%%
-
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{stageOnera}[2015/11/18 Classe ONERA JDD]
 

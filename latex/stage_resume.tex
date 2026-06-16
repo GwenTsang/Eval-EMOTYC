@@ -164,7 +164,7 @@ L'objectif de ce stage est d'étudier dans quelle mesure les signaux émotionnel
 
 \section*{Contexte}
 
-Le stage s'inscrit dans les travaux du service MIDL du DTIS sur l'analyse des émotions dans les contenus toxiques en ligne. Le sujet est interdisciplinaire : il croise linguistique de corpus, psycholinguistique des émotions et apprentissage automatique appliqué à la détection de contenus abusifs (\textit{Abusive Language Detection}).
+J'ai fais mon stage dans le service MIDL du DTIS. Le sujet est interdisciplinaire : il croise linguistique de corpus, psycholinguistique des émotions et apprentissage automatique appliqué à la détection de contenus abusifs (\textit{Abusive Language Detection}).
 
 La détection automatique des émotions repose historiquement sur des lexiques émotionnels associant des lemmes à des catégories affectives. Nous avons testé ceux développés par Étienne~\citep{etienne2023analyse}, dont le modèle s'appuie également sur une lemmatisation (Stanza). Nous partageons son constat : les lexiques seuls ne suffisent pas à capter la richesse de l'expression émotionnelle, en particulier dans les messages adolescents (abréviations, graphies non standard, sarcasme).\footnote{Scripts d'extraction et de correspondance lexicale : \href{https://github.com/GwenTsang/ExpressionEmotionnelle}{ExpressionEmotionnelle}.}
 
@@ -236,7 +236,7 @@ Les évaluations réalisées pendant le stage ont principalement repris la confi
     Autre & 62 & \cellcolor[HTML]{E4602C}\textcolor{white}{+0.76} & \cellcolor[HTML]{E25727}\textcolor{white}{+0.78} & \cellcolor[HTML]{E97B39}\textcolor{black}{+0.68} \\
     \bottomrule
   \end{tabular}
-  \caption{Heatmap des écarts de performance entre \textit{TextToKids} et \textit{CyberAggAdo} pour les 5~labels les plus représentés dans \textit{CyberAggAdo}. \textit{Cyber} = support dans \textit{CyberAggAdo}. $\Delta > 0$ indique une performance supérieure sur \textit{TextToKids}.}
+  \caption{Heatmap des écarts de performance entre \textit{TextToKids} et \textit{CyberAggAdo}.}
   \label{tab:heatmap-compact}
 \end{table}
 
@@ -256,9 +256,11 @@ Les évaluations réalisées pendant le stage ont principalement repris la confi
     Base & 363 & 4\,133 & \cellcolor[HTML]{E4EC7F}\textcolor{black}{+0.37} & \cellcolor[HTML]{CBEA92}\textcolor{black}{+0.29} & \cellcolor[HTML]{EEDC6F}\textcolor{black}{+0.43} \\
     \bottomrule
   \end{tabular}
-  \caption{Labels concentrant le plus fort décrochage entre \textit{TextToKids} et \textit{CyberAggAdo}. \textit{Cyber} et \textit{TTK} = supports respectifs. Le mode \textit{Suggérée} et le label \textit{Autre} présentent les écarts les plus marqués.}
+  \caption{Labels concentrant le plus fort décrochage entre \textit{TextToKids} et \textit{CyberAggAdo}.}
   \label{tab:heatmap-decrochage}
 \end{table}
+
+On voit que le mode \textit{Suggérée} et le label \textit{Autre} présentent les écarts les plus marqués.
 
 \FloatBarrier
 

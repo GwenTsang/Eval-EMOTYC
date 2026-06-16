@@ -55,7 +55,7 @@
 }
 % ajout de texte ou d'images en haut à gauche, en haut à droite, etc.
 \AddToShipoutPicture{%
-\AtLowerRightCorner{6cm}{0.5cm}{\includegraphics[scale=0.3]{logo-onera-ident-quadri-HD.png}}% image en bas à droite
+\AtLowerRightCorner{6cm}{0.5cm}{\includegraphics[width=144.54pt]{figures/logos/ONERA_logo.pdf}}% image en bas à droite
 }
 
 %% Titre

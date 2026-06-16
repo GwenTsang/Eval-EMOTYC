@@ -10,8 +10,8 @@ import pandas as pd
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PLOTS_DIR = REPO_ROOT / "slides" / "figures" / "plots"
-TABLES_DIR = REPO_ROOT / "slides" / "figures" / "tables"
+PLOTS_DIR = REPO_ROOT / "latex" / "figures" / "plots"
+TABLES_DIR = REPO_ROOT / "latex" / "figures" / "tables"
 RESULTS_DIR = REPO_ROOT / "results"
 
 EMOTION_LABELS = [

@@ -222,9 +222,8 @@ Le script [`orchestrate_emotyc_folder.py`](orchestrate_emotyc_folder.py) (avec l
 ├── dataviz_scripts/                  # rapports HTML, SVG, heatmap
 ├── golds/                            # fichiers gold XLSX/parquet
 ├── model_onnx/                       # config, tokenizer, poids ONNX local
-├── reports/                          # documents de synthèse et rapports LaTeX
-├── results/                          # résultats JSON/rapports générés
-└── slides/                           # matériel Beamer
+├── latex/                            # documents LaTeX (résumé de stage et matériel Beamer)
+└── results/                          # résultats JSON/rapports générés
 ```
 
 ## Installation

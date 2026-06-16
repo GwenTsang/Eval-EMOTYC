@@ -1,4 +1,4 @@
-\begin{filecontents*}{references.bib}
+\begin{filecontents*}{template/references.bib}
 @inproceedings{dragos2022angry,
   title={Angry or sad? emotion annotation for extremist content characterisation},
   author={Dragos, Valentina and Battistelli, Delphine and Etienne, Aline and Constable, Yol{\`e}ne},
@@ -96,7 +96,7 @@
 \end{filecontents*}
 
 \PassOptionsToPackage{table}{xcolor}
-\documentclass{stageOnera}
+\documentclass{template/stageOnera}
 %%
 % Paquets
 %
@@ -170,11 +170,11 @@ La détection automatique des émotions repose historiquement sur des lexiques �
 
 Pour dépasser cette limite, le stage a mobilisé deux familles d'approches complémentaires. D'une part, EMOTYC, un classifieur RoBERTa multi-label issu de la chaîne TextToKids~\citep{etienne2024emotionidentificationfrenchwritten}, qui prédit 19~labels (présence d'émotion, mode d'expression, catégorie émotionnelle).\footnote{EMOTYC : \href{https://texttokids.ortolang.fr/}{site officiel}, \href{https://huggingface.co/spaces/GwendalTsang/EMOTYC}{démo}, \href{https://gitlab.huma-num.fr/texttokids/ttkwp3-2025}{dépôt}.} D'autre part, des classifieurs linéaires (TF-IDF + LinearSVC, scikit-learn) testés comme baselines. Ce choix fait écho aux résultats de Dragos et Constable~\citep{dragos2023comparison}, qui observent que SVM + TF-IDF surpasse des modèles neuronaux plus lourds pour la détection d'extrémisme en français. Les résultats comparatifs sont présentés dans les sections suivantes.
 
-J'ai par ailleurs annoté manuellement 781~messages issus de \textit{CyberAgression-Large} pour produire le gold émotionnel \textit{CyberAggAdo}, compatible avec les sorties d'EMOTYC.\footnote{Gold et visualisations : \href{https://github.com/GwenTsang/Eval-EMOTYC/blob/main/golds/CyberAdoAgg_gold_global_total.xlsx}{annotations}, \href{https://emotyc.github.io/}{EMOTYC}, \href{https://gwentsang.github.io/}{portfolio}.}
+J'ai par ailleurs annoté manuellement 781~messages issus de \textit{CyberAgression-Large} pour produire le gold émotionnel \textit{CyberAggAdo}, compatible avec les sorties d'EMOTYC.\footnote{Gold et visualisations : \href{https://github.com/GwenTsang/Eval-EMOTYC/blob/main/golds/CyberAdoAgg_gold_global_total.xlsx}{Visualisation des annotations}, \href{https://emotyc.github.io/}{Visualisations corpus CyberAggAdo}, \href{https://gwentsang.github.io/}{Visualisation corpus TextToKids}.}
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\textwidth,height=0.25\textheight,keepaspectratio]{figures/schema.pdf}
+  \includegraphics[width=\textwidth,height=0.25\textheight,keepaspectratio]{figures/schemas/schema.pdf}
   \caption{Schéma du modèle EMOTYC.}
   \label{fig:schema-emotyc}
 \end{figure}
@@ -213,7 +213,7 @@ Un second volet a porté sur les marqueurs émotionnels et leur relation aux ém
 
 \subsection{Annotations linguistiques fines et modèle EMOTION}
 
-Le premier axe d'analyse a porté sur le module lexical \textit{EMOTION}, qui associe des lemmes à des catégories émotionnelles.\footnote{Lexique et appariements : \href{https://github.com/GwenTsang/ExpressionEmotionnelle/blob/main/emotions/lexique_emotionnel.tsv}{lexique}, \href{https://github.com/GwenTsang/ExpressionEmotionnelle/tree/main/results/simplesitemo_lexicon_matching}{résultats}.} Cette approche est interprétable et frugale, mais elle reste fragile face aux abréviations, graphies non standard, usages sarcastiques et variations contextuelles des messages adolescents. Un audit local du lexique a aussi relevé une normalisation à harmoniser entre \texttt{degout} et \texttt{dégoût}.
+Le premier axe d'analyse a porté sur le module lexical \textit{EMOTION}, qui associe des lemmes à des catégories émotionnelles.\footnote{Lexique et appariements : \href{https://github.com/GwenTsang/ExpressionEmotionnelle/blob/main/emotions/lexique_emotionnel.tsv}{lexique}, \href{https://github.com/GwenTsang/ExpressionEmotionnelle/tree/main/results/simplesitemo_lexicon_matching}{résultats}.} Cette approche est interprétable et frugale, mais elle reste fragile face aux abréviations, graphies non standard, usages sarcastiques et variations contextuelles des messages adolescents.
 
 \subsection{Tests du modèle EMOTYC}
 
@@ -286,8 +286,8 @@ Une troisième piste concerne la normalisation contrôlée du langage numérique
 Enfin, les variables déjà présentes dans \textit{CyberAggAdo}, telles que \texttt{ROLE}, \texttt{TARGET}, \texttt{HATE}, \texttt{INTENTION} ou \texttt{SENTIMENT}, peuvent être utilisées comme variables d'analyse ou comme informations complémentaires dans de futures expériences. L'objectif serait de mieux décrire la relation entre émotion, agressivité, cible et position interactionnelle, sans réduire la détection du cyberharcèlement à une simple classification binaire.
 
 %% Bibliographie
-\bibliographystyle{onera}
+\bibliographystyle{template/onera}
 \selectlanguage{french}
-\bibliography{references}
+\bibliography{template/references}
 
 \end{document}

@@ -1,18 +1,4 @@
 #!/usr/bin/env python3
-"""
-Baseline classifiers for CyberAggAdo emotion classification.
-Compares TF-IDF + SVM and TF-IDF + RandomForest against EMOTYC.
-
-Uses stratified 5-fold cross-validation on CyberAggAdo (781 samples)
-to give a fair estimate. Since the entire corpus is used both for
-training and evaluation, these baselines have a significant advantage
-over EMOTYC (zero-shot OOD), making the comparison informative:
-if EMOTYC beats trained baselines, the transfer is strong;
-if baselines beat EMOTYC, it confirms the domain gap.
-
-Labels evaluated: the 19 EMOTYC labels (Emo, 4 modes, 2 types, 12 categories).
-"""
-
 import json
 import warnings
 from pathlib import Path
@@ -20,7 +6,6 @@ from pathlib import Path
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import LinearSVC
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import KFold
 from sklearn.metrics import f1_score
 
@@ -121,7 +106,6 @@ def run_cross_validation(texts, gold, model_name, model_factory, tfidf_params=No
             "min_df": 2,
         }
 
-    # Use KFold since StratifiedKFold doesn't work directly with multi-label
     kf = KFold(n_splits=N_FOLDS, shuffle=True, random_state=RANDOM_STATE)
 
     all_preds = np.zeros_like(gold)
@@ -133,21 +117,16 @@ def run_cross_validation(texts, gold, model_name, model_factory, tfidf_params=No
         y_train = gold[train_idx]
         y_test = gold[test_idx]
 
-        # TF-IDF vectorization
         vectorizer = TfidfVectorizer(**tfidf_params)
         X_train = vectorizer.fit_transform(train_texts)
         X_test = vectorizer.transform(test_texts)
 
-        # Train one classifier per label
         y_pred = np.zeros_like(y_test)
         for j in range(gold.shape[1]):
             if y_train[:, j].sum() == 0:
-                # No positive samples for this label in train fold
                 y_pred[:, j] = 0
                 continue
-
             if y_train[:, j].sum() < 3:
-                # Too few samples, predict 0
                 y_pred[:, j] = 0
                 continue
 
@@ -166,7 +145,6 @@ def run_cross_validation(texts, gold, model_name, model_factory, tfidf_params=No
         })
         print(f"  Fold {fold_idx+1}/{N_FOLDS}: macro-F1 = {fold_macro_f1:.4f}")
 
-    # Global evaluation on all folds combined
     results = evaluate_per_label(gold, all_preds, LABELS_19)
     results["model"] = model_name
     results["method"] = "5-fold cross-validation"
@@ -202,25 +180,9 @@ def main():
     print(f"\n  Global: macro-F1 = {svm_results['macro_f1']}, micro-F1 = {svm_results['micro_f1']}, "
           f"exact match = {svm_results['exact_match']}")
 
-    # ── Baseline 2: TF-IDF + RandomForest ─────────────────────────────────
-    print(f"\n{'─' * 70}")
-    print("  Model 2: TF-IDF + RandomForest (One-vs-Rest)")
-    print(f"{'─' * 70}")
-
-    rf_results = run_cross_validation(
-        texts, gold, "TF-IDF + RandomForest",
-        lambda: RandomForestClassifier(
-            n_estimators=200, class_weight="balanced", max_depth=None,
-            min_samples_leaf=3, random_state=RANDOM_STATE, n_jobs=-1,
-        ),
-    )
-    all_results["tfidf_rf"] = rf_results
-    print(f"\n  Global: macro-F1 = {rf_results['macro_f1']}, micro-F1 = {rf_results['micro_f1']}, "
-          f"exact match = {rf_results['exact_match']}")
-
-    # ── Baseline 3: TF-IDF + LinearSVC with char n-grams ─────────────────
+    # ── Baseline 2: TF-IDF + LinearSVC with char n-grams ─────────────────
     print("")
-    print("  Model 3: TF-IDF (char 2-5) + LinearSVC")
+    print("  Model 2: TF-IDF (char 2-5) + LinearSVC")
     print("")
 
     svm_char_results = run_cross_validation(
@@ -243,7 +205,6 @@ def main():
     print("  SUMMARY: Baseline Classifiers vs EMOTYC")
     print("")
 
-    # EMOTYC results from results/All_cyberadoagg_context/emotyc_predictions_summary.json
     emotyc_macro = emotyc_reference["macro_f1"]
     emotyc_micro = emotyc_reference["micro_f1"]
     emotyc_exact = emotyc_reference["exact_match"]
@@ -260,7 +221,6 @@ def main():
     )
 
     for key, label in [("tfidf_svm", "TF-IDF + SVM"),
-                       ("tfidf_rf", "TF-IDF + RF"),
                        ("tfidf_char_svm", "TF-IDF (char) + SVM")]:
         r = all_results[key]
         print(
@@ -271,26 +231,25 @@ def main():
 
     # ── Per-label comparison table ────────────────────────────────────────
     print("\n  Per-label F1 comparison:")
-    print(f"  {'Label':<20s} {'EMOTYC':>8s} {'SVM':>8s} {'RF':>8s} {'Char-SVM':>8s}")
-    print(f"  {'─'*20} {'─'*8} {'─'*8} {'─'*8} {'─'*8}")
+    print(f"  {'Label':<20s} {'EMOTYC':>8s} {'SVM':>8s} {'Char-SVM':>8s}")
+    print(f"  {'─'*20} {'─'*8} {'─'*8} {'─'*8}")
 
     emotyc_f1 = emotyc_reference["per_label_f1"]
 
     for label in LABELS_19:
         ef1 = emotyc_f1[label]
         sf1 = all_results["tfidf_svm"]["per_label"][label]["f1"]
-        rf1 = all_results["tfidf_rf"]["per_label"][label]["f1"]
         cf1 = all_results["tfidf_char_svm"]["per_label"][label]["f1"]
-        best = max(ef1, sf1, rf1, cf1)
+        best = max(ef1, sf1, cf1)
         markers = ""
         if ef1 == best and ef1 > 0:
             markers = " ← EMOTYC best"
-        print(f"  {label:<20s} {ef1:>8.3f} {sf1:>8.3f} {rf1:>8.3f} {cf1:>8.3f}{markers}")
+        print(f"  {label:<20s} {ef1:>8.3f} {sf1:>8.3f} {cf1:>8.3f}{markers}")
 
     # ── Group-level comparison ────────────────────────────────────────────
     print("\n  Group macro-F1 comparison:")
-    print(f"  {'Group':<20s} {'EMOTYC':>8s} {'SVM':>8s} {'RF':>8s} {'Char-SVM':>8s}")
-    print(f"  {'─'*20} {'─'*8} {'─'*8} {'─'*8} {'─'*8}")
+    print(f"  {'Group':<20s} {'EMOTYC':>8s} {'SVM':>8s} {'Char-SVM':>8s}")
+    print(f"  {'─'*20} {'─'*8} {'─'*8} {'─'*8}")
 
     emotyc_groups = {
         name: round(float(np.mean([emotyc_f1[label] for label in group_labels])), 4)
@@ -304,13 +263,12 @@ def main():
     for group in ["meta", "modes", "types", "emotions"]:
         eg = emotyc_groups[group]
         sg = all_results["tfidf_svm"]["group_f1"].get(group, 0.0)
-        rg = all_results["tfidf_rf"]["group_f1"].get(group, 0.0)
         cg = all_results["tfidf_char_svm"]["group_f1"].get(group, 0.0)
-        print(f"  {group:<20s} {eg:>8.3f} {sg:>8.3f} {rg:>8.3f} {cg:>8.3f}")
+        print(f"  {group:<20s} {eg:>8.3f} {sg:>8.3f} {cg:>8.3f}")
 
     # ── Export JSON ───────────────────────────────────────────────────────
     output = {
-        "description": "Baseline classifiers for CyberAggAdo emotion classification (5-fold CV)",
+        "description": "Baseline classifiers for CyberAggAdo emotion classification (5-fold CV, SVM only)",
         "n_samples": len(texts),
         "n_labels": len(LABELS_19),
         "labels": LABELS_19,
@@ -324,8 +282,7 @@ def main():
             "source": emotyc_reference["source"],
             "training_data": "TextToKids (27,911 samples, different domain)",
             "note": (
-                "Zero-shot OOD, no training on CyberAggAdo; exact_match is null "
-                "because the source summary does not include it"
+                "Zero-shot OOD, no training on CyberAggAdo"
             ),
         },
     }
@@ -334,6 +291,7 @@ def main():
     write_json(out_path, output)
 
     print(f"\n  Results saved to: {out_path}")
+
 
 if __name__ == "__main__":
     main()

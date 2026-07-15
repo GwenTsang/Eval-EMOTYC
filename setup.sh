@@ -82,6 +82,23 @@ install_requirements() {
     "$PYTHON_BIN" -m pip install -r "$REQUIREMENTS_FILE"
 }
 
+cuda_available() {
+    command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi >/dev/null 2>&1
+}
+
+install_onnxruntime() {
+    local package="onnxruntime"
+
+    if cuda_available; then
+        log "CUDA detected (nvidia-smi) - installing onnxruntime-gpu"
+        package="onnxruntime-gpu"
+    else
+        log "No CUDA detected - installing onnxruntime (CPU)"
+    fi
+
+    "$PYTHON_BIN" -m pip install "$package"
+}
+
 download_file() {
     rm -f "$MODEL_TMP"
 
@@ -131,5 +148,6 @@ cleanup() {
 trap cleanup EXIT
 
 install_requirements
+install_onnxruntime
 download_model
 log "Setup complete"

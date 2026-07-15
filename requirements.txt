@@ -34,6 +34,6 @@ threadpoolctl
 tokenizers
 tqdm
 urllib3
-onnxruntime
+# onnxruntime / onnxruntime-gpu is installed by setup.sh depending on CUDA availability
 pyarrow
 matplotlib

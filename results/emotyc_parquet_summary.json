@@ -1,0 +1,58 @@
+{
+  "source": "TTK_test.parquet",
+  "n_samples": 5570,
+  "threshold": 0.5,
+  "group_metrics": {
+    "emo": {
+      "labels": [
+        "Emo"
+      ],
+      "macro_f1": 0.925,
+      "precision": 0.919,
+      "recall": 0.932,
+      "display_name": "Caractère émotionnel (Émo)"
+    },
+    "emotion": {
+      "labels": [
+        "Admiration",
+        "Autre",
+        "Colere",
+        "Culpabilite",
+        "Degout",
+        "Embarras",
+        "Fierte",
+        "Jalousie",
+        "Joie",
+        "Peur",
+        "Surprise",
+        "Tristesse"
+      ],
+      "macro_f1": 0.57,
+      "precision": 0.604,
+      "recall": 0.549,
+      "display_name": "Émotions"
+    },
+    "mode": {
+      "labels": [
+        "Comportementale",
+        "Designee",
+        "Montree",
+        "Suggeree"
+      ],
+      "macro_f1": 0.816,
+      "precision": 0.816,
+      "recall": 0.818,
+      "display_name": "Modes d'expression"
+    },
+    "type": {
+      "labels": [
+        "Base",
+        "Complexe"
+      ],
+      "macro_f1": 0.792,
+      "precision": 0.825,
+      "recall": 0.764,
+      "display_name": "Types (Base / Complexe)"
+    }
+  }
+}

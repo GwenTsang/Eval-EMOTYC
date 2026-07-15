@@ -116,14 +116,6 @@ D'autre part, un corpus contenant des messages de Cyber Harcèlement qui est sou
 
 
 
-# 3. Données évaluées
-
-Nous testons les performances d'EMOTYC sur deux corpus. D'une part, [`emotexttokids_gold_flat.xlsx`](golds/emotexttokids_gold_flat.xlsx), qui est le corpus d'entraînement d'EMOTYC, contenant des articles de presse jeunesse et de la littérature pour enfants. Le sous-ensemble TEST est disponible sur [HuggingFace](https://huggingface.co/datasets/TextToKids/EmoTextToKids-sentences).
-
-D'autre part, un corpus contenant des messages de Cyber Harcèlement qui est sous-partie du corpus [CyberAgression-Large-v2](https://github.com/aollagnier/CyberAgression-Large) publié par Ollagnier ([2024](https://hal.science/hal-04514689v1/document)). Ce corpus peut être dit "hors-domaine" dans la mesure où le corpus de fine-tuning d'EMOTYC ne contient pas de messages numériques similaires. Nous avons annoté 781 lignes selon le schéma d'Etienne (2023) via Label Studio pour produire [`golds/CyberAdoAgg_gold_global_total.xlsx`](golds/CyberAdoAgg_gold_global_total.xlsx) en utilisant [ce script d'annotation](https://github.com/42009221/AnnotationsCyberAggAdo).
-
-
-
 ## 3.1 Échantillons
 
 Le script [`prepare_xlsx_samples.py`](prepare_xlsx_samples.py) permet un échantillonnage aléatoire.
@@ -222,7 +214,6 @@ Le script [`orchestrate_emotyc_folder.py`](orchestrate_emotyc_folder.py) (avec l
 ├── dataviz_scripts/                  # rapports HTML, SVG, heatmap
 ├── golds/                            # fichiers gold XLSX/parquet
 ├── model_onnx/                       # config, tokenizer, poids ONNX local
-├── latex/                            # documents LaTeX (résumé de stage et matériel Beamer)
 └── results/                          # résultats JSON/rapports générés
 ```
 
